@@ -1,0 +1,78 @@
+@{
+    ViewData["Title"] = "Lessons";
+    ViewData["Subtitle"] = "Bài học theo khóa, chủ đề và trạng thái";
+    ViewData["Icon"] = "bi-journal-richtext";
+    ViewData["Tone"] = "pink";
+    ViewData["ActionText"] = "Thêm Lesson";
+    ViewData["ActionController"] = "Lesson";
+}
+
+<partial name="_AdminPageHead" />
+
+<div class="admin-filter mb-4">
+    <div class="admin-filter-label"><i class="bi bi-funnel"></i> Bộ lọc</div>
+    <div class="row g-3">
+        <div class="col-lg-4 col-md-6">
+            <label class="form-label fw-semibold">Tìm kiếm</label>
+            <input type="text" id="searchInput" class="form-control" placeholder="Tên Lesson..." />
+        </div>
+        <div class="col-lg-3 col-md-6">
+            <label class="form-label fw-semibold">Course</label>
+            <select id="courseFilter" class="form-select">
+                <option value="">Tất cả Course</option>
+                @foreach (var course in ViewBag.Courses)
+                {
+                    <option value="@course.Value">@course.Text</option>
+                }
+            </select>
+        </div>
+        <div class="col-lg-3 col-md-6">
+            <label class="form-label fw-semibold">Topic</label>
+            <select id="topicFilter" class="form-select">
+                <option value="">Tất cả Topic</option>
+                @foreach (var topic in ViewBag.Topics)
+                {
+                    <option value="@topic.Value">@topic.Text</option>
+                }
+            </select>
+        </div>
+        <div class="col-lg-2 col-md-6">
+            <label class="form-label fw-semibold">Status</label>
+            <select id="statusFilter" class="form-select">
+                <option value="">Tất cả</option>
+                <option value="true">Published</option>
+                <option value="false">Draft</option>
+            </select>
+        </div>
+    </div>
+    <div class="mt-3">
+        <button type="button" id="btnFilter" class="btn btn-dark"><i class="bi bi-search me-1"></i> Tìm</button>
+        <button type="button" id="btnReset" class="btn btn-outline-secondary"><i class="bi bi-arrow-clockwise me-1"></i> Reset</button>
+    </div>
+</div>
+
+<div class="card">
+    <div class="card-header"><h5 class="mb-0 fw-bold">Danh sách Lesson</h5></div>
+    <div class="card-body">
+        <div class="table-responsive">
+            <table id="lessonTable" class="table table-hover align-middle w-100">
+                <thead>
+                    <tr>
+                        <th>Order</th>
+                        <th>Title</th>
+                        <th>Course</th>
+                        <th>Topic</th>
+                        <th>Duration</th>
+                        <th>Status</th>
+                        <th class="text-end">Action</th>
+                    </tr>
+                </thead>
+                <tbody></tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script src="~/js/lesson.js"></script>
+}

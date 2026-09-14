@@ -1,0 +1,46 @@
+@model AppLearningEnglish.Areas.Customer.Controllers.PathTestViewModel
+@{
+    ViewData["Title"] = $"Final Test {Model.Level}";
+}
+<div class="container py-4" style="max-width:800px">
+    <a asp-action="Index">Lộ trình</a>
+    <h1 class="fw-bold">Final Test @Model.Level</h1>
+    <form method="post">
+        @Html.AntiForgeryToken()
+        @foreach (var item in Model.Items)
+        {
+            <div class="card border-0 shadow-sm mb-3">
+                <div class="card-body">
+                    <p class="fw-semibold">@item.QuestionText</p>
+                    @foreach (var option in item.Options)
+                    {
+                        <div class="form-check">
+                            <input class="form-check-input" type="radio" name="answers[@item.QuestionId]" value="@option"
+                                   @(string.Equals(item.UserAnswer, option, StringComparison.OrdinalIgnoreCase) ? "checked" : null) />
+                            <label class="form-check-label">@option</label>
+                        </div>
+                    }
+                    @if (item.IsCorrect != null)
+                    {
+                        <div class="small mt-2">@(item.IsCorrect == true ? "Đúng" : $"Sai · {item.Answer}")</div>
+                    }
+                </div>
+            </div>
+        }
+        @if (!Model.Score.HasValue)
+        {
+            <button class="btn btn-primary" type="submit">Nộp bài</button>
+        }
+        else
+        {
+            <div class="alert @(Model.Passed ? "alert-success" : "alert-warning")">
+                @Model.Score / @Model.Total
+                @(Model.Passed ? "Đạt (≥70%)." : "Chưa đạt. Ôn rồi thi lại.")
+                @if (!string.IsNullOrWhiteSpace(Model.UnlockedLevel))
+                {
+                    <div>Đã mở @Model.UnlockedLevel.</div>
+                }
+            </div>
+        }
+    </form>
+</div>

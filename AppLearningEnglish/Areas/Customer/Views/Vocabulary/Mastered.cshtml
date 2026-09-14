@@ -1,0 +1,78 @@
+@model IEnumerable<AppLearningEnglish.Models.UserVocabulary>
+
+@{
+    ViewData["Title"] = "Mastered Vocabulary";
+}
+
+<div class="container py-5">
+
+    <h2 class="fw-bold mb-4">
+
+        <i class="bi bi-trophy"></i>
+
+        Từ đã thuộc
+
+    </h2>
+
+    @if (!Model.Any())
+    {
+        <div class="alert alert-info">
+
+            Bạn chưa thuộc từ nào.
+
+        </div>
+    }
+    else
+    {
+        <div class="row g-4">
+
+            @foreach (var item in Model)
+            {
+                <div class="col-md-6 col-lg-4">
+
+                    <div class="card border-0 shadow-sm">
+
+                        <div class="card-body">
+
+                            <div class="d-flex justify-content-between">
+
+                                <h4 class="fw-bold">
+
+                                    @item.Word?.WordText
+
+                                </h4>
+
+                                <span class="badge bg-success">
+
+                                    Mastered
+
+                                </span>
+
+                            </div>
+
+                            <p class="text-muted">
+
+                                @item.Word?.Pronunciation
+
+                            </p>
+
+                            <p>
+
+                                Correct:
+                                <strong>
+                                    @item.CorrectCount
+                                </strong>
+
+                            </p>
+
+                        </div>
+
+                    </div>
+
+                </div>
+            }
+
+        </div>
+    }
+
+</div>

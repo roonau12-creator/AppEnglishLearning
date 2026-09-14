@@ -1,0 +1,37 @@
+@{
+    ViewData["Title"] = "Word Meanings";
+    ViewData["Subtitle"] = "Nghĩa theo ngôn ngữ cho từng từ";
+    ViewData["Icon"] = "bi-translate";
+    ViewData["Tone"] = "cyan";
+    ViewData["ActionText"] = "Thêm Meaning";
+    ViewData["ActionController"] = "WordMeaning";
+}
+<partial name="_AdminPageHead" />
+<div class="admin-filter mb-4">
+    <div class="admin-filter-label"><i class="bi bi-funnel"></i> Bộ lọc</div>
+    <div class="row g-3">
+        <div class="col-lg-4"><label class="form-label fw-semibold">Tìm kiếm</label><input id="searchInput" class="form-control" placeholder="Word hoặc Meaning..." /></div>
+        <div class="col-lg-3">
+            <label class="form-label fw-semibold">Word</label>
+            <select id="wordFilter" class="form-select">
+                <option value="">Tất cả Word</option>
+                @foreach (var word in ViewBag.Words) { <option value="@word.Value">@word.Text</option> }
+            </select>
+        </div>
+        <div class="col-lg-3">
+            <label class="form-label fw-semibold">Language</label>
+            <select id="languageFilter" class="form-select">
+                <option value="">Tất cả</option>
+                <option value="Vietnamese">Vietnamese</option>
+                <option value="English">English</option>
+                <option value="Japanese">Japanese</option>
+                <option value="Korean">Korean</option>
+                <option value="Chinese">Chinese</option>
+            </select>
+        </div>
+        <div class="col-lg-2 d-flex align-items-end"><button id="btnFilter" type="button" class="btn btn-dark w-100"><i class="bi bi-search"></i></button></div>
+    </div>
+</div>
+<div class="card"><div class="card-header"><h5 class="mb-0 fw-bold">Danh sách Word Meanings</h5></div>
+<div class="card-body"><table id="wordMeaningTable" class="table table-hover align-middle w-100"><thead><tr><th>Word</th><th>Language</th><th>Meaning</th><th class="text-end">Action</th></tr></thead><tbody></tbody></table></div></div>
+@section Scripts { <script src="~/js/wordMeaning.js"></script> }

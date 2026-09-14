@@ -1,0 +1,22 @@
+@model AppLearningEnglish.Models.ViewModels.SkillReportViewModel
+@{
+    ViewData["Title"] = "Điểm yếu";
+}
+<div class="container py-4">
+    <a asp-action="Index">AI hỗ trợ</a>
+    <h1 class="h3 fw-bold mt-2">Phân tích điểm yếu</h1>
+    <p>Streak @Model.CurrentStreak ngày · Từ thuộc @Model.MasteredWords/@Model.TotalWords · Quiz TB @Model.ExerciseAverage%.</p>
+    <ul class="list-group mb-3">
+        <li class="list-group-item">Nghe @Model.ListeningPercent% · Nói @Model.SpeakingPercent% · Đọc @Model.ReadingPercent% · Viết @Model.WritingPercent% · Ngữ pháp @Model.GrammarPercent%</li>
+    </ul>
+    <h2 class="h5">Từ yếu</h2>
+    <ul>
+        @foreach (var item in Model.WeakList)
+        {
+            <li>@item.Word?.WordText — sai @item.WrongCount lần</li>
+        }
+    </ul>
+    <p class="text-muted">Gợi ý: ôn flashcard từ yếu, làm quiz grammar nếu % ngữ pháp thấp, và Final Test trên lộ trình A1–C2.</p>
+    <a class="btn btn-primary" asp-area="Customer" asp-controller="Path" asp-action="Index">Mở lộ trình</a>
+    <a class="btn btn-outline-primary" asp-area="Customer" asp-controller="Vocabulary" asp-action="Flashcard" asp-route-mode="due">Ôn từ</a>
+</div>

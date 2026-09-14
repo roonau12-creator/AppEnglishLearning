@@ -1,0 +1,31 @@
+@model AppLearningEnglish.Models.Course
+@{
+    Layout = "_Layout";
+    ViewData["Title"] = "Chứng chỉ";
+    var code = ViewBag.CertificateCode as string;
+}
+<div class="certificate-sheet card shadow p-5 mx-auto" style="max-width:800px">
+    <p class="text-center text-muted">AppLearningEnglish</p>
+    <h1 class="text-center fw-bold">Certificate of Completion</h1>
+    <p class="text-center fs-5 mt-4">This certifies that</p>
+    <h2 class="text-center">@ViewBag.UserName</h2>
+    <p class="text-center fs-5">has completed the course</p>
+    <h3 class="text-center text-primary">@Model.Name</h3>
+    <p class="text-center text-muted">@(((DateTime)ViewBag.CompletedAt).ToString("dd MMM yyyy"))</p>
+    @if (!string.IsNullOrWhiteSpace(code))
+    {
+        <p class="text-center text-muted mb-0">
+            Mã chứng chỉ: <strong>@code</strong>
+        </p>
+        <p class="text-center small text-muted">
+            Tra cứu tại
+            <a asp-action="Verify" asp-route-code="@code">trang xác thực chứng chỉ</a>
+        </p>
+    }
+    <div class="text-center mt-4 d-flex gap-2 justify-content-center flex-wrap">
+        <a class="btn btn-primary" asp-action="Download" asp-route-id="@Model.Id">
+            Tải PDF
+        </a>
+        <button class="btn btn-outline-secondary" onclick="window.print()">In</button>
+    </div>
+</div>

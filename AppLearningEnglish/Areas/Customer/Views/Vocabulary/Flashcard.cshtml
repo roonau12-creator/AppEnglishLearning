@@ -1,0 +1,81 @@
+@model AppLearningEnglish.Models.UserVocabulary?
+@{
+    ViewData["Title"] = ViewBag.Mode as string == "quick" ? "Ôn nhanh" : "Flashcard";
+    var mode = ViewBag.Mode as string ?? "due";
+}
+<div class="container py-4" style="max-width:560px">
+    <a asp-action="Index">My Vocabulary</a>
+    <div class="d-flex justify-content-between align-items-center mt-2 mb-3">
+        <h1 class="h3 fw-bold mb-0">@(mode == "quick" ? "Ôn nhanh" : "Flashcard đến hạn")</h1>
+        <span class="badge bg-warning text-dark">Cần ôn hôm nay: @ViewBag.DueCount</span>
+    </div>
+    <div class="mb-3 d-flex gap-2">
+        <a class="btn btn-sm @(mode == "due" ? "btn-dark" : "btn-outline-dark")" asp-action="Flashcard" asp-route-mode="due">Theo lịch</a>
+        <a class="btn btn-sm @(mode == "quick" ? "btn-dark" : "btn-outline-dark")" asp-action="Flashcard" asp-route-mode="quick">Không theo lịch</a>
+    </div>
+
+    @if (Model?.Word == null)
+    {
+        <div class="alert alert-success">Không còn thẻ trong chế độ này.</div>
+    }
+    else
+    {
+        var word = Model.Word;
+        var meaning = word.Meanings.FirstOrDefault()?.Meaning ?? word.Definition ?? "";
+        var example = word.Examples.FirstOrDefault();
+        var total = Model.CorrectCount + Model.WrongCount;
+        var recall = total == 0 ? 0 : (int)Math.Round(100d * Model.CorrectCount / total);
+        <div class="card border-0 shadow-sm flash-card" id="flipCard" role="button" tabindex="0">
+            <div class="card-body text-center p-5">
+                <div class="flip-front">
+                    <div class="text-muted small">Lật thẻ</div>
+                    <h2 class="fw-bold">@word.WordText</h2>
+                    <p class="text-muted">@word.Pronunciation</p>
+                    @if (!string.IsNullOrWhiteSpace(word.ImageUrl))
+                    {
+                        <img src="@word.ImageUrl" class="rounded mb-2" style="max-height:160px;object-fit:cover" alt="" />
+                    }
+                    <button type="button" class="btn btn-sm btn-outline-success speak-word" data-text="@word.WordText">Nghe</button>
+                </div>
+                <div class="flip-back d-none">
+                    <p class="fs-5">@meaning</p>
+                    @if (example != null)
+                    {
+                        <p class="small text-muted">@example.EnglishSentence<br />@example.VietnameseMeaning</p>
+                    }
+                    <div class="small">Tỷ lệ nhớ: @recall% (@Model.CorrectCount đúng / @Model.WrongCount sai)</div>
+                </div>
+            </div>
+        </div>
+        <p class="small text-muted mt-2">Đánh giá sau khi lật: quên / khó / dễ (SM-2).</p>
+        <form asp-action="Rate" method="post" class="d-flex gap-2">
+            @Html.AntiForgeryToken()
+            <input type="hidden" name="wordId" value="@Model.WordId" />
+            <input type="hidden" name="mode" value="@mode" />
+            <button class="btn btn-outline-danger flex-fill" name="quality" value="1">Quên</button>
+            <button class="btn btn-outline-warning flex-fill" name="quality" value="3">Khó</button>
+            <button class="btn btn-success flex-fill" name="quality" value="5">Dễ</button>
+        </form>
+        <form asp-action="Reset" method="post" class="mt-2">
+            @Html.AntiForgeryToken()
+            <input type="hidden" name="wordId" value="@Model.WordId" />
+            <button class="btn btn-link btn-sm px-0" type="submit">Reset tiến độ từ này</button>
+        </form>
+    }
+</div>
+@section Scripts {
+    <script>
+        var card = document.getElementById("flipCard");
+        card?.addEventListener("click", function () {
+            this.querySelector(".flip-front")?.classList.toggle("d-none");
+            this.querySelector(".flip-back")?.classList.toggle("d-none");
+        });
+        document.querySelector(".speak-word")?.addEventListener("click", function (e) {
+            e.stopPropagation();
+            if (!window.speechSynthesis) return;
+            var u = new SpeechSynthesisUtterance(this.getAttribute("data-text") || "");
+            u.lang = "en-US";
+            speechSynthesis.speak(u);
+        });
+    </script>
+}

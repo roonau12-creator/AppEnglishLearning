@@ -1,0 +1,138 @@
+@model AppLearningEnglish.Models.ViewModels.DoExerciseViewModel
+
+@{
+    ViewData["Title"] = Model.ExerciseName;
+
+    var instruction = Model.RenderMode switch
+    {
+        ExerciseRenderMode.Text => "Hãy nhập câu trả lời cho từng câu hỏi.",
+        ExerciseRenderMode.TrueFalse => "Chọn Đúng hoặc Sai cho từng câu.",
+        ExerciseRenderMode.Matching => "Nối mỗi câu với đáp án phù hợp.",
+        ExerciseRenderMode.PassageChoice => "Đọc / nghe nội dung rồi chọn đáp án đúng.",
+        _ => "Hãy chọn đáp án đúng cho từng câu hỏi."
+    };
+}
+
+<div class="container py-5">
+
+    <div class="text-center mb-4">
+        <span class="badge bg-primary mb-2">
+            @AppLearningEnglish.Models.ExerciseTypes.GetDisplayName(Model.ExerciseType)
+        </span>
+        <h1 class="fw-bold">@Model.ExerciseName</h1>
+        <p class="text-muted">@instruction</p>
+    </div>
+
+    @if (!string.IsNullOrWhiteSpace(Model.Passage))
+    {
+        <div class="card bg-light border-0 mb-4">
+            <div class="card-body">
+                <h2 class="h6 fw-bold text-uppercase text-muted">Nội dung</h2>
+                <p class="mb-0" style="white-space:pre-line">@Model.Passage</p>
+            </div>
+        </div>
+    }
+
+    <form asp-area="Customer"
+          asp-controller="Exercise"
+          asp-action="Submit"
+          method="post">
+
+        @Html.AntiForgeryToken()
+
+        <input type="hidden" name="AttemptId" value="@Model.AttemptId" />
+        <input type="hidden" name="ExerciseId" value="@Model.ExerciseId" />
+
+        @for (int i = 0; i < Model.Questions.Count; i++)
+        {
+            var question = Model.Questions[i];
+
+            <div class="card border-0 shadow-sm mb-4">
+                <div class="card-body p-4">
+
+                    <h5 class="fw-bold mb-3">Question @(i + 1)</h5>
+                    <h4 class="mb-4">@question.QuestionText</h4>
+
+                    @switch (Model.RenderMode)
+                    {
+                        case ExerciseRenderMode.Text:
+                            <input type="text"
+                                   class="form-control form-control-lg"
+                                   name="TextAnswers[@question.QuestionId]"
+                                   autocomplete="off"
+                                   placeholder="Nhập câu trả lời" />
+                            break;
+
+                        case ExerciseRenderMode.Matching:
+                            <select class="form-select form-select-lg"
+                                    name="Answers[@question.QuestionId]"
+                                    required>
+                                <option value="">-- Chọn đáp án --</option>
+                                @foreach (var option in Model.MatchingPool)
+                                {
+                                    <option value="@option.AnswerId">@option.AnswerText</option>
+                                }
+                            </select>
+                            break;
+
+                        case ExerciseRenderMode.TrueFalse:
+                            <div class="d-flex gap-3 flex-wrap">
+                                @foreach (var answer in question.Answers)
+                                {
+                                    <div class="form-check border rounded p-3 flex-grow-1">
+                                        <input class="form-check-input"
+                                               type="radio"
+                                               name="Answers[@question.QuestionId]"
+                                               value="@answer.AnswerId"
+                                               id="answer_@answer.AnswerId"
+                                               required />
+                                        <label class="form-check-label w-100 fw-semibold"
+                                               for="answer_@answer.AnswerId">
+                                            @answer.AnswerText
+                                        </label>
+                                    </div>
+                                }
+                            </div>
+                            break;
+
+                        default:
+                            @foreach (var answer in question.Answers)
+                            {
+                                <div class="form-check border rounded p-3 mb-2">
+                                    <input class="form-check-input"
+                                           type="radio"
+                                           name="Answers[@question.QuestionId]"
+                                           value="@answer.AnswerId"
+                                           id="answer_@answer.AnswerId" />
+                                    <label class="form-check-label w-100"
+                                           for="answer_@answer.AnswerId">
+                                        @answer.AnswerText
+                                    </label>
+                                </div>
+                            }
+                            break;
+                    }
+
+                    @if (Model.RenderMode != ExerciseRenderMode.Text &&
+                         Model.RenderMode != ExerciseRenderMode.Matching &&
+                         !question.Answers.Any())
+                    {
+                        <div class="alert alert-warning mb-0">
+                            Câu hỏi này chưa có đáp án. Hãy báo cho giáo viên.
+                        </div>
+                    }
+
+                </div>
+            </div>
+        }
+
+        <div class="text-center mt-4">
+            <button type="submit" class="btn btn-success btn-lg px-5">
+                <i class="bi bi-check-circle"></i>
+                Nộp bài
+            </button>
+        </div>
+
+    </form>
+
+</div>

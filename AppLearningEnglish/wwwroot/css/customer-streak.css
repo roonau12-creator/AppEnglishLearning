@@ -1,0 +1,473 @@
+/* =========================================
+   HEADER
+========================================= */
+
+.streak-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: end;
+    margin-bottom: 40px;
+}
+
+.section-label {
+    color: #4f46e5;
+    font-size: 12px;
+    font-weight: 800;
+    letter-spacing: 1.5px;
+}
+
+
+/* =========================================
+   STREAK HERO
+========================================= */
+
+.streak-hero {
+    border-radius: 28px;
+    padding: 50px;
+    background: linear-gradient(
+        135deg,
+        #4f46e5,
+        #7c3aed
+    );
+    color: white;
+    overflow: hidden;
+    position: relative;
+}
+
+.fire-big {
+    font-size: 65px;
+}
+
+.streak-number {
+    font-size: 85px;
+    line-height: 1;
+    font-weight: 900;
+}
+
+.streak-days {
+    font-size: 18px;
+    font-weight: 700;
+    letter-spacing: 3px;
+}
+
+.streak-message {
+    margin-top: 15px;
+    opacity: 0.9;
+}
+
+
+/* =========================================
+   STREAK STAT
+========================================= */
+
+.streak-stat {
+    background: rgba(255, 255, 255, 0.12);
+    border: 1px solid rgba(255, 255, 255, 0.15);
+    border-radius: 18px;
+    padding: 22px;
+    height: 100%;
+}
+
+.streak-stat .stat-icon {
+    font-size: 28px;
+    margin-bottom: 12px;
+}
+
+.streak-stat span,
+.streak-stat strong {
+    display: block;
+}
+
+.streak-stat span {
+    opacity: 0.75;
+    font-size: 14px;
+}
+
+.streak-stat strong {
+    font-size: 23px;
+    margin-top: 5px;
+}
+
+
+/* =========================================
+   CARD
+========================================= */
+
+.custom-card {
+    border: 0;
+    border-radius: 22px;
+    box-shadow: 0 10px 35px rgba(0, 0, 0, 0.07);
+    overflow: hidden;
+}
+
+
+/* =========================================
+   TODAY
+========================================= */
+
+.today-stat {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    padding: 18px;
+    background: #f8fafc;
+    border-radius: 16px;
+}
+
+.today-stat > span {
+    font-size: 35px;
+}
+
+.today-stat small,
+.today-stat strong {
+    display: block;
+}
+
+.today-stat small {
+    color: #6b7280;
+}
+
+.today-stat strong {
+    font-size: 20px;
+    margin-top: 3px;
+}
+
+
+/* =========================================
+   DAILY GOAL
+========================================= */
+
+.daily-goal {
+    padding-top: 10px;
+}
+
+.daily-goal .progress {
+    height: 12px;
+    border-radius: 20px;
+    background: #e5e7eb;
+}
+
+.daily-goal .progress-bar {
+    border-radius: 20px;
+    background: linear-gradient(
+        90deg,
+        #4f46e5,
+        #7c3aed
+    );
+}
+
+.goal-complete {
+    padding: 12px 15px;
+    border-radius: 12px;
+    background: #dcfce7;
+    color: #166534;
+    font-weight: 700;
+}
+
+
+/* =========================================
+   QUICK CARD
+========================================= */
+
+.quick-card {
+    border: 0;
+    border-radius: 22px;
+    background: #111827;
+    color: white;
+}
+
+.quick-icon {
+    font-size: 55px;
+    margin-bottom: 20px;
+}
+
+.quick-card p {
+    color: #d1d5db;
+    margin-bottom: 25px;
+}
+
+
+/* =========================================
+   CALENDAR
+========================================= */
+
+.calendar-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: end;
+    margin-bottom: 30px;
+}
+
+.calendar-navigation {
+    display: flex;
+    align-items: center;
+    gap: 18px;
+}
+
+.calendar-navigation strong {
+    min-width: 130px;
+    text-align: center;
+}
+
+
+.calendar-grid {
+    display: grid;
+    grid-template-columns:
+        repeat(7, 1fr);
+    gap: 10px;
+}
+
+.calendar-week {
+    margin-bottom: 10px;
+}
+
+.calendar-week div {
+    text-align: center;
+    font-weight: 700;
+    color: #6b7280;
+    font-size: 13px;
+}
+
+
+.calendar-day {
+    min-height: 90px;
+    border: 1px solid #e5e7eb;
+    border-radius: 14px;
+    padding: 10px;
+    position: relative;
+    background: white;
+}
+
+.calendar-day.studied {
+    background: #eef2ff;
+    border-color: #c7d2fe;
+}
+
+.calendar-day.today {
+    border: 2px solid #4f46e5;
+}
+
+.day-number {
+    font-weight: 700;
+}
+
+.day-check {
+    display: block;
+    color: #16a34a;
+    font-size: 18px;
+    margin-top: 8px;
+}
+
+.calendar-day small {
+    display: block;
+    color: #6b7280;
+    margin-top: 3px;
+    font-size: 11px;
+}
+
+
+.calendar-empty {
+    min-height: 90px;
+}
+
+
+.calendar-legend {
+    display: flex;
+    gap: 25px;
+    margin-top: 25px;
+    color: #6b7280;
+    font-size: 13px;
+}
+
+.legend-dot {
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    display: inline-block;
+    margin-right: 5px;
+}
+
+.legend-dot.empty {
+    background: #e5e7eb;
+}
+
+.legend-dot.studied {
+    background: #6366f1;
+}
+
+.legend-dot.today {
+    background: #4f46e5;
+}
+
+
+/* =========================================
+   SECTION HEADER
+========================================= */
+
+.section-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: end;
+    margin-bottom: 20px;
+}
+
+.view-all {
+    color: #4f46e5;
+    text-decoration: none;
+    font-weight: 700;
+}
+
+
+/* =========================================
+   HISTORY
+========================================= */
+
+.history-list {
+    display: flex;
+    flex-direction: column;
+}
+
+.history-item {
+    display: grid;
+    grid-template-columns:
+        70px 1fr 150px 100px;
+    align-items: center;
+    gap: 20px;
+    padding: 18px 5px;
+    border-bottom: 1px solid #e5e7eb;
+}
+
+.history-item:last-child {
+    border-bottom: 0;
+}
+
+.history-date {
+    text-align: center;
+}
+
+.history-day {
+    font-size: 25px;
+    font-weight: 800;
+}
+
+.history-date small {
+    color: #6b7280;
+}
+
+.history-info strong,
+.history-info span {
+    display: block;
+}
+
+.history-info span {
+    color: #6b7280;
+    font-size: 13px;
+    margin-top: 3px;
+}
+
+.history-time {
+    display: flex;
+    gap: 7px;
+}
+
+.history-points {
+    font-weight: 700;
+}
+
+
+/* =========================================
+   EMPTY
+========================================= */
+
+.empty-history {
+    text-align: center;
+    padding: 50px 20px;
+}
+
+.empty-history > div {
+    font-size: 55px;
+    margin-bottom: 15px;
+}
+
+.empty-history h4 {
+    font-weight: 800;
+}
+
+.empty-history p {
+    color: #6b7280;
+}
+
+
+/* =========================================
+   TABLE
+========================================= */
+
+.time-badge {
+    padding: 7px 12px;
+    border-radius: 20px;
+    background: #eef2ff;
+    color: #4338ca;
+    font-size: 13px;
+    font-weight: 600;
+}
+
+.point-badge {
+    padding: 7px 12px;
+    border-radius: 20px;
+    background: #fef3c7;
+    color: #92400e;
+    font-weight: 700;
+    font-size: 13px;
+}
+
+
+/* =========================================
+   RESPONSIVE
+========================================= */
+
+@media (max-width: 768px) {
+
+    .streak-header {
+        flex-direction: column;
+        align-items: start;
+        gap: 20px;
+    }
+
+    .streak-hero {
+        padding: 35px 25px;
+    }
+
+    .streak-number {
+        font-size: 65px;
+    }
+
+    .calendar-grid {
+        gap: 5px;
+    }
+
+    .calendar-day {
+        min-height: 60px;
+        padding: 7px;
+    }
+
+    .calendar-day small {
+        display: none;
+    }
+
+    .history-item {
+        grid-template-columns:
+            55px 1fr;
+    }
+
+    .history-time,
+    .history-points {
+        grid-column: 2;
+    }
+
+    .calendar-header {
+        flex-direction: column;
+        align-items: start;
+        gap: 20px;
+    }
+
+}

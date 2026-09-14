@@ -1,0 +1,62 @@
+@model AppLearningEnglish.Models.ListeningLesson
+@{
+    var isCreate = Model.Id == 0;
+    ViewData["Title"] = isCreate ? "Thêm Listening" : "Sửa Listening";
+}
+<div class="admin-form-banner tone-cyan">
+    <div class="admin-form-icon"><i class="bi bi-headphones"></i></div>
+    <div>
+        <h1 class="fw-bold">@(isCreate ? "Thêm Listening" : "Chỉnh sửa Listening")</h1>
+        <p>Upload audio hoặc dán URL, rồi viết transcript.</p>
+    </div>
+</div>
+<div class="row g-4">
+    <div class="col-xl-8">
+        <div class="card"><div class="card-body">
+            <form asp-area="Admin" asp-controller="ListeningLesson" asp-action="Upsert" method="post" enctype="multipart/form-data">
+                @Html.AntiForgeryToken()
+                <input asp-for="Id" type="hidden" />
+                <div asp-validation-summary="ModelOnly" class="text-danger mb-3"></div>
+                <div class="mb-4">
+                    <label asp-for="LessonId" class="form-label fw-semibold">Lesson</label>
+                    <select asp-for="LessonId" asp-items="ViewBag.Lessons" class="form-select"><option value="">-- Chọn Lesson --</option></select>
+                    <span asp-validation-for="LessonId" class="text-danger"></span>
+                </div>
+                <div class="mb-4">
+                    <label asp-for="AudioFile" class="form-label fw-semibold">Upload Audio</label>
+                    <input asp-for="AudioFile" type="file" class="form-control" accept=".mp3,.wav,.ogg,.m4a,audio/*" />
+                    <div class="form-text">MP3, WAV, OGG, M4A. Tối đa 20MB.</div>
+                </div>
+                <div class="mb-4">
+                    <label asp-for="AudioUrl" class="form-label fw-semibold">Audio URL</label>
+                    <input asp-for="AudioUrl" class="form-control" placeholder="/audio/listening/example.mp3" />
+                </div>
+                @if (!string.IsNullOrWhiteSpace(Model.AudioUrl))
+                {
+                    <div class="admin-preview mb-4">
+                        <small class="text-muted">Audio hiện tại</small>
+                        <audio controls class="w-100 mt-2"><source src="@Model.AudioUrl" /></audio>
+                    </div>
+                }
+                <div class="mb-4">
+                    <label asp-for="Transcript" class="form-label fw-semibold">Transcript</label>
+                    <textarea asp-for="Transcript" class="form-control" rows="8"></textarea>
+                </div>
+                <div class="admin-preview mb-4" id="transcriptPreview" style="white-space:pre-line">
+                    @(string.IsNullOrWhiteSpace(Model.Transcript) ? "Transcript..." : Model.Transcript)
+                </div>
+                <div class="d-flex justify-content-end gap-2">
+                    <a class="btn btn-outline-secondary" asp-area="Admin" asp-controller="ListeningLesson" asp-action="Index">Quay lại</a>
+                    <button class="btn btn-primary" type="submit">@(isCreate ? "Thêm Listening" : "Lưu thay đổi")</button>
+                </div>
+            </form>
+        </div></div>
+    </div>
+    <div class="col-xl-4"><aside class="admin-aside"><h3>Nghe từng câu</h3><p class="mb-0">Transcript dùng cho dạng điền chỗ trống. Sau đó thêm Listening Questions.</p></aside></div>
+</div>
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+    <script>
+        $("#Transcript").on("input", function () { $("#transcriptPreview").text($(this).val() || "Transcript..."); });
+    </script>
+}

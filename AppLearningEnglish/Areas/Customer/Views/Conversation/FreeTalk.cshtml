@@ -1,0 +1,32 @@
+@model AppLearningEnglish.Models.ViewModels.ConversationPlayViewModel
+@{
+    ViewData["Title"] = "Hội thoại tự do";
+}
+<div class="container py-4" style="max-width:720px">
+    <a asp-action="Index">Tất cả tình huống</a>
+    <h1 class="h3 fw-bold mt-2">@Model.Scenario.Title</h1>
+    <p class="text-muted">@Model.Scenario.Setting</p>
+    <div class="card border-0 shadow-sm mb-3">
+        <div class="card-body">
+            <div class="small text-muted">Gia sư</div>
+            <p class="fs-5 mb-0">@Model.Current.Tutor</p>
+        </div>
+    </div>
+    <p class="small">Gợi ý: @Model.Current.Hint</p>
+    <form method="post">
+        @Html.AntiForgeryToken()
+        <input type="hidden" name="turn" value="@Model.TurnIndex" />
+        <input id="reply" name="reply" class="form-control mb-3" value="@Model.Reply" required />
+        <button class="btn btn-primary" type="submit">Gửi</button>
+    </form>
+    @if (Model.Score.HasValue)
+    {
+        <div class="alert @(Model.IsPassed == true ? "alert-success" : "alert-warning") mt-3">
+            Điểm: @Model.Score% · đây là chấm từ khóa, không phải sóng âm.
+        </div>
+        @if (Model.IsPassed == true && !Model.IsLast)
+        {
+            <a class="btn btn-success" asp-action="FreeTalk" asp-route-turn="@(Model.TurnIndex + 1)" asp-route-last="@Model.Reply">Câu tiếp</a>
+        }
+    }
+</div>

@@ -1,0 +1,80 @@
+@model AppLearningEnglish.Models.ViewModels.ReminderPageViewModel
+@{
+    ViewData["Title"] = "Nhật ký nhắc";
+    var zones = new[]
+    {
+        "Asia/Ho_Chi_Minh",
+        "Asia/Bangkok",
+        "Asia/Singapore",
+        "Asia/Tokyo",
+        "UTC",
+        "Europe/London",
+        "America/New_York"
+    };
+}
+
+<div class="container py-4">
+    <div class="d-flex justify-content-between align-items-center mb-3">
+        <div>
+            <h1 class="fw-bold">Nhắc học</h1>
+            <p class="text-muted mb-0">Tự chỉnh giờ, múi giờ, bật/tắt email nhắc.</p>
+        </div>
+        <form method="post" asp-action="MarkRead">
+            @Html.AntiForgeryToken()
+            <button class="btn btn-outline-primary" type="submit">Đánh dấu đã đọc</button>
+        </form>
+    </div>
+
+    <div class="card border-0 shadow-sm mb-4">
+        <div class="card-body">
+            <h2 class="h5">Cài đặt nhắc</h2>
+            <form asp-action="Settings" method="post">
+                @Html.AntiForgeryToken()
+                <div class="form-check form-switch mb-3">
+                    <input class="form-check-input" type="checkbox" asp-for="Settings.ReminderEnabled" />
+                    <label class="form-check-label" asp-for="Settings.ReminderEnabled">Bật email nhắc học</label>
+                </div>
+                <div class="row g-3">
+                    <div class="col-md-4">
+                        <label class="form-label" asp-for="Settings.ReminderHour">Giờ nhắc (0–23)</label>
+                        <input class="form-control" type="number" min="0" max="23" asp-for="Settings.ReminderHour" />
+                    </div>
+                    <div class="col-md-8">
+                        <label class="form-label" asp-for="Settings.TimeZoneId">Múi giờ</label>
+                        <select class="form-select" asp-for="Settings.TimeZoneId">
+                            @foreach (var zone in zones)
+                            {
+                                <option value="@zone">@zone</option>
+                            }
+                        </select>
+                    </div>
+                </div>
+                <button class="btn btn-primary mt-3" type="submit">Lưu cài đặt</button>
+            </form>
+        </div>
+    </div>
+
+    @if (!Model.Logs.Any())
+    {
+        <div class="alert alert-info">Chưa có nhắc nào.</div>
+    }
+    else
+    {
+        <div class="list-group">
+            @foreach (var log in Model.Logs)
+            {
+                <div class="list-group-item">
+                    <div class="d-flex justify-content-between">
+                        <strong>@log.Title</strong>
+                        <span class="small text-muted">@log.CreatedAt.ToLocalTime().ToString("dd/MM HH:mm")</span>
+                    </div>
+                    <p class="mb-1">@log.Body</p>
+                    <small class="@(log.ReadAt == null ? "text-danger" : "text-success")">
+                        @(log.ReadAt == null ? "Chưa đọc" : "Đã đọc " + log.ReadAt.Value.ToLocalTime().ToString("dd/MM HH:mm"))
+                    </small>
+                    <span class="badge bg-light text-dark">@log.Kind</span>
+                </div>
+            }
+        </div>
+    }
+</div>

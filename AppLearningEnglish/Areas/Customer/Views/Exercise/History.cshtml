@@ -1,0 +1,188 @@
+@model IEnumerable<AppLearningEnglish.Models.ExerciseAttempt>
+
+@{
+    ViewData["Title"] = "Exercise History";
+}
+
+<div class="container py-5">
+
+    <div class="mb-4">
+
+        <h1 class="fw-bold">
+
+            <i class="bi bi-clock-history"></i>
+
+            Exercise History
+
+        </h1>
+
+        <p class="text-muted">
+
+            Lịch sử các lần làm bài
+
+        </p>
+
+    </div>
+
+    @if (!Model.Any())
+    {
+        <div class="alert alert-info">
+
+            Bạn chưa làm Exercise này.
+
+        </div>
+    }
+    else
+    {
+        <div class="card border-0 shadow-sm">
+
+            <div class="table-responsive">
+
+                <table class="table align-middle mb-0">
+
+                    <thead>
+
+                        <tr>
+
+                            <th>
+                                #
+                            </th>
+
+                            <th>
+                                Score
+                            </th>
+
+                            <th>
+                                Correct
+                            </th>
+
+                            <th>
+                                Total
+                            </th>
+
+                            <th>
+                                Started
+                            </th>
+
+                            <th>
+                                Completed
+                            </th>
+
+                            <th>
+                                Action
+                            </th>
+
+                        </tr>
+
+                    </thead>
+
+                    <tbody>
+
+                        @{
+                            int number = 1;
+                        }
+
+                        @foreach (var item in Model)
+                        {
+                            <tr>
+
+                                <td>
+                                    @number
+                                </td>
+
+                                <td>
+
+                                    @if (item.Score >= 80)
+                                    {
+                                        <span class="badge bg-success">
+
+                                            @item.Score%
+
+                                        </span>
+                                    }
+                                    else if (item.Score >= 50)
+                                    {
+                                        <span class="badge bg-warning text-dark">
+
+                                            @item.Score%
+
+                                        </span>
+                                    }
+                                    else
+                                    {
+                                        <span class="badge bg-danger">
+
+                                            @item.Score%
+
+                                        </span>
+                                    }
+
+                                </td>
+
+                                <td>
+
+                                    @item.CorrectAnswers
+
+                                </td>
+
+                                <td>
+
+                                    @item.TotalQuestions
+
+                                </td>
+
+                                <td>
+
+                                    @item.StartedAt.ToLocalTime()
+
+                                </td>
+
+                                <td>
+
+                                    @if (item.CompletedAt.HasValue)
+                                    {
+                                        @item.CompletedAt.Value.ToLocalTime()
+                                    }
+                                    else
+                                    {
+                                        <span class="badge bg-secondary">
+
+                                            Chưa hoàn thành
+
+                                        </span>
+                                    }
+
+                                </td>
+
+                                <td>
+
+                                    @if (item.CompletedAt.HasValue)
+                                    {
+                                        <a asp-area="Customer"
+                                           asp-controller="Exercise"
+                                           asp-action="Result"
+                                           asp-route-attemptId="@item.Id"
+                                           class="btn btn-sm btn-outline-primary">
+
+                                            Result
+
+                                        </a>
+                                    }
+
+                                </td>
+
+                            </tr>
+
+                            number++;
+                        }
+
+                    </tbody>
+
+                </table>
+
+            </div>
+
+        </div>
+    }
+
+</div>

@@ -1,0 +1,50 @@
+@model AppLearningEnglish.Models.ViewModels.PlacementResultViewModel
+@{
+    ViewData["Title"] = "Kết quả xếp lớp";
+}
+
+<div class="container py-5" style="max-width:760px">
+    <div class="text-center mb-4">
+        <h1 class="fw-bold">Trình độ: @Model.Level</h1>
+        <p class="lead">Đúng @Model.Score / @Model.Total</p>
+        <p class="text-muted">Đã lưu vào hồ sơ. Các khóa cao hơn trình độ này sẽ bị khóa.</p>
+    </div>
+
+    <h2 class="h5">Khóa phù hợp</h2>
+    @if (!Model.RecommendedCourses.Any())
+    {
+        <p class="text-muted">Chưa có khóa cùng trình độ. Vào catalog để xem tất cả khóa bạn được học.</p>
+    }
+    else
+    {
+        <div class="list-group mb-4">
+            @foreach (var course in Model.RecommendedCourses)
+            {
+                <a class="list-group-item list-group-item-action"
+                   asp-area="Customer"
+                   asp-controller="Course"
+                   asp-action="Details"
+                   asp-route-id="@course.Id">
+                    <strong>@course.Name</strong>
+                    <span class="badge bg-primary ms-2">@course.Level</span>
+                    <div class="small text-muted">@course.Description</div>
+                </a>
+            }
+        </div>
+    }
+
+    @if (Model.LockedCourses.Any())
+    {
+        <h2 class="h5">Khóa đang khóa</h2>
+        <p class="small text-muted">Học xong khóa hiện tại rồi làm lại bài xếp lớp hoặc nâng trình độ.</p>
+        <ul class="text-muted">
+            @foreach (var course in Model.LockedCourses)
+            {
+                <li>@course.Name (@course.Level)</li>
+            }
+        </ul>
+    }
+
+    <a class="btn btn-primary" asp-area="Customer" asp-controller="Course" asp-action="Index">Xem catalog</a>
+    <a class="btn btn-outline-secondary" asp-area="Customer" asp-controller="Home" asp-action="Index">Về Hôm nay</a>
+</div>

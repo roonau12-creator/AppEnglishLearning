@@ -1,0 +1,54 @@
+@model IEnumerable<AppLearningEnglish.Models.PracticeAttempt>
+@{
+    ViewData["Title"] = "Bài nói / viết";
+    ViewData["Subtitle"] = "Lịch sử chấm của học viên để giáo viên xem lại";
+    ViewData["Icon"] = "bi-mic";
+    ViewData["Tone"] = "violet";
+    var kind = ViewData["Kind"] as string;
+}
+<partial name="_AdminPageHead" />
+<div class="mb-3 d-flex gap-2">
+    <a class="btn btn-sm @(string.IsNullOrEmpty(kind) ? "btn-primary" : "btn-outline-primary")" asp-action="Index">Tất cả</a>
+    <a class="btn btn-sm @(kind == "speaking" ? "btn-primary" : "btn-outline-primary")" asp-action="Index" asp-route-kind="speaking">Nói</a>
+    <a class="btn btn-sm @(kind == "writing" ? "btn-primary" : "btn-outline-primary")" asp-action="Index" asp-route-kind="writing">Viết</a>
+</div>
+<div class="card">
+    <div class="card-body">
+        <table id="practiceTable" class="table table-hover align-middle w-100">
+            <thead>
+                <tr>
+                    <th>Học viên</th>
+                    <th>Loại</th>
+                    <th>Đề</th>
+                    <th>Điểm</th>
+                    <th>Lúc</th>
+                    <th></th>
+                </tr>
+            </thead>
+            <tbody>
+            @foreach (var item in Model)
+            {
+                <tr>
+                    <td>
+                        <a asp-controller="User" asp-action="Details" asp-route-id="@item.ApplicationUserId">
+                            @(item.ApplicationUser?.FullName ?? item.ApplicationUser?.Email ?? item.ApplicationUserId)
+                        </a>
+                    </td>
+                    <td>@(item.Kind == "speaking" ? "Nói" : "Viết")</td>
+                    <td>@item.Title</td>
+                    <td>@item.Score%</td>
+                    <td>@item.CreatedAt.ToLocalTime().ToString("dd/MM HH:mm")</td>
+                    <td class="text-end">
+                        <a class="btn btn-sm btn-outline-secondary" asp-action="Details" asp-route-id="@item.Id">Xem</a>
+                    </td>
+                </tr>
+            }
+            </tbody>
+        </table>
+    </div>
+</div>
+@section Scripts {
+<script>
+    $("#practiceTable").DataTable({ language: { search: "Tìm kiếm:" }, order: [[4, "desc"]] });
+</script>
+}

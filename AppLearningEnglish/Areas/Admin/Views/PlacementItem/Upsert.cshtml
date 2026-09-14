@@ -1,0 +1,33 @@
+@model AppLearningEnglish.Models.PlacementItem
+@{
+    var isEdit = Model.Id != 0;
+    ViewData["Title"] = isEdit ? "Sửa câu xếp lớp" : "Thêm câu xếp lớp";
+}
+<div class="card"><div class="card-body">
+    <form asp-action="Upsert" method="post">
+        @Html.AntiForgeryToken()
+        <input asp-for="Id" type="hidden" />
+        <div class="mb-3">
+            <label asp-for="Text" class="form-label">Câu hỏi</label>
+            <input asp-for="Text" class="form-control" />
+        </div>
+        <div class="mb-3">
+            <label asp-for="Options" class="form-label">Lựa chọn (cách nhau bởi |)</label>
+            <input asp-for="Options" class="form-control" />
+        </div>
+        <div class="row">
+            <div class="col-md-6 mb-3">
+                <label asp-for="Answer" class="form-label">Đáp án</label>
+                <input asp-for="Answer" class="form-control" />
+            </div>
+            <div class="col-md-6 mb-3">
+                <label asp-for="SortOrder" class="form-label">Thứ tự</label>
+                <input asp-for="SortOrder" type="number" class="form-control" />
+            </div>
+        </div>
+        <div class="d-flex justify-content-end gap-2">
+            <a class="btn btn-outline-secondary" asp-action="Index">Quay lại</a>
+            <button class="btn btn-primary" type="submit">Lưu</button>
+        </div>
+    </form>
+</div></div>

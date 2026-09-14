@@ -1,0 +1,34 @@
+@model AppLearningEnglish.Models.ViewModels.ForgotPasswordViewModel
+@{
+    ViewData["Title"] = "Gửi lại email xác nhận";
+}
+
+<div class="auth-form-card mx-auto" style="max-width:560px">
+    <h2>Gửi lại email xác nhận</h2>
+    <p class="text-muted">Nhập email đã đăng ký. Bạn phải xác nhận email trước khi đăng nhập.</p>
+
+    @if (ViewBag.Sent as bool? == true)
+    {
+        <div class="alert alert-success">
+            Nếu email tồn tại và chưa xác nhận, chúng tôi đã gửi lại liên kết.
+        </div>
+        @if (ViewBag.ConfirmUrl is string confirmUrl)
+        {
+            <div class="alert alert-info">
+                SMTP chưa cấu hình.
+                <a href="@confirmUrl">Mở liên kết xác nhận email</a>
+            </div>
+        }
+    }
+
+    <form asp-action="ResendConfirmation" method="post">
+        @Html.AntiForgeryToken()
+        <div class="mb-3">
+            <label asp-for="Email" class="form-label">Email</label>
+            <input asp-for="Email" class="form-control" autocomplete="username" />
+            <span asp-validation-for="Email" class="text-danger"></span>
+        </div>
+        <button class="btn btn-primary" type="submit">Gửi liên kết</button>
+        <a class="btn btn-outline-secondary" asp-action="Login">Về đăng nhập</a>
+    </form>
+</div>

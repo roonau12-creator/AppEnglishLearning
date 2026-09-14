@@ -1,0 +1,84 @@
+@model AppLearningEnglish.Models.Exercise
+@{
+    var isCreate = Model.Id == 0;
+    ViewData["Title"] = isCreate ? "Thêm Exercise" : "Sửa Exercise";
+    ViewData["Subtitle"] = "Dạng bài và thứ tự trong lesson";
+}
+
+<div class="admin-form-banner tone-grape">
+    <div class="admin-form-icon"><i class="bi bi-ui-checks"></i></div>
+    <div>
+        <h1 class="fw-bold">@(isCreate ? "Thêm Exercise" : "Chỉnh sửa Exercise")</h1>
+        <p>Chọn lesson, loại bài, rồi viết đề. Preview cập nhật ngay bên dưới.</p>
+    </div>
+</div>
+
+<div class="row g-4">
+    <div class="col-xl-8">
+        <div class="card">
+            <div class="card-body">
+                <form asp-area="Admin" asp-controller="Exercise" asp-action="Upsert" method="post">
+                    @Html.AntiForgeryToken()
+                    <input asp-for="Id" type="hidden" />
+                    <div asp-validation-summary="ModelOnly" class="text-danger mb-3"></div>
+                    <div class="mb-4">
+                        <label asp-for="LessonId" class="form-label fw-semibold">Lesson</label>
+                        <select asp-for="LessonId" asp-items="ViewBag.Lessons" class="form-select">
+                            <option value="">-- Chọn Lesson --</option>
+                        </select>
+                        <span asp-validation-for="LessonId" class="text-danger"></span>
+                    </div>
+                    <div class="mb-4">
+                        <label asp-for="Type" class="form-label fw-semibold">Exercise Type</label>
+                        <select asp-for="Type" class="form-select">
+                            <option value="">-- Chọn loại Exercise --</option>
+                            @foreach (var type in AppLearningEnglish.Models.ExerciseTypes.All)
+                            {
+                                <option value="@type">@AppLearningEnglish.Models.ExerciseTypes.GetDisplayName(type)</option>
+                            }
+                        </select>
+                        <span asp-validation-for="Type" class="text-danger"></span>
+                    </div>
+                    <div class="mb-4">
+                        <label asp-for="Question" class="form-label fw-semibold">Question</label>
+                        <textarea asp-for="Question" class="form-control" rows="5"></textarea>
+                        <span asp-validation-for="Question" class="text-danger"></span>
+                    </div>
+                    <div class="mb-4">
+                        <label asp-for="ExerciseOrder" class="form-label fw-semibold">Thứ tự</label>
+                        <input asp-for="ExerciseOrder" type="number" min="1" class="form-control" />
+                    </div>
+                    <div class="admin-preview mb-4">
+                        <small class="text-muted">Preview</small>
+                        <div><span class="badge text-bg-primary" id="typePreview">Exercise Type</span></div>
+                        <p id="questionPreview" class="mb-0 mt-2">Question...</p>
+                    </div>
+                    <div class="d-flex justify-content-end gap-2">
+                        <a class="btn btn-outline-secondary" asp-area="Admin" asp-controller="Exercise" asp-action="Index">Quay lại</a>
+                        <button type="submit" class="btn btn-primary">
+                            @(isCreate ? "Thêm Exercise" : "Lưu thay đổi")
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+    <div class="col-xl-4">
+        <aside class="admin-aside">
+            <h3>Sau khi lưu</h3>
+            <p class="mb-0">Thêm Question và Answer để học viên làm được bài.</p>
+        </aside>
+    </div>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+    <script>
+        $("#Type").on("change", function () {
+            $("#typePreview").text($(this).val() || "Exercise Type");
+        });
+        $("#Question").on("input", function () {
+            $("#questionPreview").text($(this).val() || "Question...");
+        });
+    </script>
+}

@@ -1,0 +1,239 @@
+@model AppLearningEnglish.Models.ViewModels.AdminUserDetailViewModel
+@{
+    ViewData["Title"] = Model.User.FullName ?? Model.User.Email;
+    ViewData["Subtitle"] = "Hồ sơ, khóa học và bước học của học viên";
+}
+
+<a asp-action="Index" class="text-decoration-none fw-semibold">
+    <i class="bi bi-arrow-left"></i> Danh sách học viên
+</a>
+
+<div class="admin-hero mt-3">
+    <div class="admin-hero-content d-flex align-items-center gap-3 flex-wrap">
+        @if (!string.IsNullOrWhiteSpace(Model.User.AvatarUrl))
+        {
+            <img src="@Model.User.AvatarUrl" class="rounded-circle" style="width:72px;height:72px;object-fit:cover;border:3px solid rgba(255,255,255,.35)" />
+        }
+        <div>
+            <h1 class="fw-bold mb-1">@(Model.User.FullName ?? Model.User.Email)</h1>
+            <div class="text-white-50">
+                @Model.User.Email · @(Model.User.EnglishLevel ?? "chưa đặt trình độ")
+                · @string.Join(", ", Model.Roles)
+                @if (Model.IsLocked)
+                {
+                    <span class="badge bg-danger">Đang khóa</span>
+                }
+                @if (!Model.User.EmailConfirmed)
+                {
+                    <span class="badge bg-warning text-dark">Email chưa xác nhận</span>
+                }
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row g-3 mb-4">
+    <div class="col-md-3">
+        <div class="admin-stat">
+            <div class="admin-stat-icon tone-amber"><i class="bi bi-star-fill"></i></div>
+            <small>Điểm</small>
+            <strong data-count="@Model.Points">@Model.Points</strong>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="admin-stat">
+            <div class="admin-stat-icon tone-pink"><i class="bi bi-fire"></i></div>
+            <small>Chuỗi ngày học</small>
+            <strong data-count="@Model.CurrentStreak">@Model.CurrentStreak</strong>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="admin-stat">
+            <div class="admin-stat-icon tone-cyan"><i class="bi bi-clock-history"></i></div>
+            <small>Tổng phút học</small>
+            <strong data-count="@Model.TotalStudyMinutes">@Model.TotalStudyMinutes</strong>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="admin-stat">
+            <div class="admin-stat-icon tone-violet"><i class="bi bi-bookmark-check-fill"></i></div>
+            <small>Khóa đã đăng ký</small>
+            <strong data-count="@Model.Enrollments.Count">@Model.Enrollments.Count</strong>
+        </div>
+    </div>
+</div>
+
+<div class="card mb-4">
+    <div class="card-body">
+        <h2 class="h5 fw-bold">Khóa học</h2>
+        @if (!Model.Enrollments.Any())
+        {
+            <p class="text-muted">Học viên chưa đăng ký khóa nào.</p>
+        }
+        else
+        {
+            <table class="table align-middle">
+                <thead>
+                    <tr>
+                        <th>Khóa học</th>
+                        <th>Tiến độ</th>
+                        <th>Đăng ký</th>
+                        <th></th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var item in Model.Enrollments)
+                    {
+                        <tr>
+                            <td>@item.Course?.Name</td>
+                            <td>
+                                <div class="admin-rank-bar" style="max-width:160px">
+                                    <span style="width:@item.Progress%"></span>
+                                </div>
+                                <small>@item.Progress%</small>
+                            </td>
+                            <td>@item.EnrolledAt.ToLocalTime().ToString("dd/MM/yyyy")</td>
+                            <td class="text-end">
+                                <form asp-action="Unenroll" method="post"
+                                      onsubmit="return confirm('Hủy đăng ký sẽ xóa tiến độ bài học của khóa này. Tiếp tục?');">
+                                    @Html.AntiForgeryToken()
+                                    <input type="hidden" name="id" value="@Model.User.Id" />
+                                    <input type="hidden" name="courseId" value="@item.CourseId" />
+                                    <button class="btn btn-sm btn-outline-danger">Hủy đăng ký</button>
+                                </form>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        }
+
+        @if (Model.AvailableCourses.Any())
+        {
+            <form asp-action="Enroll" method="post" class="d-flex gap-2 mt-2">
+                @Html.AntiForgeryToken()
+                <input type="hidden" name="id" value="@Model.User.Id" />
+                <select name="courseId" class="form-select" style="max-width:320px">
+                    @foreach (var course in Model.AvailableCourses)
+                    {
+                        <option value="@course.Id">@course.Name</option>
+                    }
+                </select>
+                <button class="btn btn-primary">Đăng ký giúp học viên</button>
+            </form>
+        }
+    </div>
+</div>
+
+<div class="card mb-4">
+    <div class="card-body">
+        <h2 class="h5 fw-bold">Tiến độ bài học</h2>
+        @if (!Model.Lessons.Any())
+        {
+            <p class="text-muted mb-0">Chưa có bài học nào được bắt đầu.</p>
+        }
+        else
+        {
+            <table class="table align-middle mb-0">
+                <thead>
+                    <tr>
+                        <th>Bài học</th>
+                        <th>Tiến độ</th>
+                        <th>Vocab</th>
+                        <th>Listening</th>
+                        <th>Exercise</th>
+                        <th>Hoàn thành</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var lesson in Model.Lessons)
+                    {
+                        <tr>
+                            <td>@lesson.Lesson?.Title</td>
+                            <td>@lesson.Progress%</td>
+                            <td>@(lesson.VocabDone ? "✓" : "—")</td>
+                            <td>@(lesson.ListeningDone ? "✓" : "—")</td>
+                            <td>@(lesson.ExerciseDone ? "✓" : "—")</td>
+                            <td>@(lesson.IsCompleted ? "✓" : "—")</td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        }
+    </div>
+</div>
+
+<div class="card mb-4">
+    <div class="card-body">
+        <h2 class="h5 fw-bold">Bài nói / viết gần đây</h2>
+        @if (!Model.PracticeAttempts.Any())
+        {
+            <p class="text-muted mb-0">Chưa có bài nói hoặc viết nào được lưu.</p>
+        }
+        else
+        {
+            <table class="table align-middle mb-0">
+                <thead>
+                    <tr>
+                        <th>Loại</th>
+                        <th>Đề</th>
+                        <th>Điểm</th>
+                        <th>Lúc</th>
+                        <th></th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var item in Model.PracticeAttempts)
+                    {
+                        <tr>
+                            <td>@(item.Kind == "speaking" ? "Nói" : "Viết")</td>
+                            <td>@item.Title</td>
+                            <td>@item.Score%</td>
+                            <td>@item.CreatedAt.ToLocalTime().ToString("dd/MM HH:mm")</td>
+                            <td class="text-end">
+                                <a asp-controller="PracticeAttempt" asp-action="Details" asp-route-id="@item.Id">Xem</a>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        }
+    </div>
+</div>
+
+<div class="card">
+    <div class="card-body">
+        <h2 class="h5 fw-bold">20 lượt làm bài gần nhất</h2>
+        @if (!Model.Attempts.Any())
+        {
+            <p class="text-muted mb-0">Chưa có lượt làm bài nào.</p>
+        }
+        else
+        {
+            <table class="table align-middle mb-0">
+                <thead>
+                    <tr>
+                        <th>Bài tập</th>
+                        <th>Điểm</th>
+                        <th>Đúng</th>
+                        <th>Thời gian</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var attempt in Model.Attempts)
+                    {
+                        <tr>
+                            <td>@attempt.Exercise?.Question</td>
+                            <td>@attempt.Score%</td>
+                            <td>@attempt.CorrectAnswers / @attempt.TotalQuestions</td>
+                            <td>
+                                @(attempt.CompletedAt?.ToLocalTime().ToString("dd/MM/yyyy HH:mm")
+                                    ?? "chưa nộp")
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        }
+    </div>
+</div>

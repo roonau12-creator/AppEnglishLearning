@@ -1,0 +1,16 @@
+@model IEnumerable<AppLearningEnglish.Models.Topic>
+@{
+    ViewData["Title"] = "Topics";
+}
+<h1 class="fw-bold mb-4">Chủ đề</h1>
+<div class="row g-3">
+    @foreach (var topic in Model)
+    {
+        <div class="col-md-4">
+            <a class="card p-4 text-decoration-none h-100" asp-action="Details" asp-route-id="@topic.Id">
+                <h3>@topic.Name</h3>
+                <p class="text-muted mb-0">@topic.Description</p>
+            </a>
+        </div>
+    }
+</div>

@@ -1,0 +1,18 @@
+@model AppLearningEnglish.Models.Question
+@{ ViewData["Title"] = "Question"; }
+<div class="admin-form-banner tone-violet">
+    <div class="admin-form-icon"><i class="bi bi-question-circle-fill"></i></div>
+    <div>
+        <h1 class="fw-bold">Câu hỏi</h1>
+        <p>@(Model.Exercise?.Type ?? "Exercise")</p>
+    </div>
+</div>
+<div class="card"><div class="card-body">
+    <div class="admin-detail-panel mb-3"><small class="text-muted">Question</small><h4 class="mt-1 mb-0">@Model.QuestionText</h4></div>
+    <div class="admin-detail-panel mb-4"><small class="text-muted">Explanation</small><p class="mb-0 mt-1">@(string.IsNullOrWhiteSpace(Model.Explanation) ? "Chưa có explanation." : Model.Explanation)</p></div>
+    <div class="d-flex gap-2">
+        <a class="btn btn-primary" asp-area="Admin" asp-controller="Question" asp-action="Upsert" asp-route-id="@Model.Id">Sửa</a>
+        <a class="btn btn-outline-primary" asp-area="Admin" asp-controller="Answer" asp-action="Index" asp-route-questionId="@Model.Id">Answers</a>
+        <a class="btn btn-outline-secondary" asp-area="Admin" asp-controller="Question" asp-action="Index" asp-route-exerciseId="@Model.ExerciseId">Quay lại</a>
+    </div>
+</div></div>

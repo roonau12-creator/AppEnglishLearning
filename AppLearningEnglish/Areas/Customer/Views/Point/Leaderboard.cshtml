@@ -1,0 +1,135 @@
+@model IEnumerable<AppLearningEnglish.Models.UserPoint>
+
+@{
+    ViewData["Title"] = "Leaderboard";
+}
+
+<div class="container py-5">
+
+    <div class="text-center mb-5">
+
+        <div class="display-2">
+            🏆
+        </div>
+
+        <h1 class="fw-bold">
+            Leaderboard
+        </h1>
+
+        <p class="text-muted">
+            Những học viên có nhiều điểm nhất.
+        </p>
+        <div class="d-flex justify-content-center gap-2">
+            <a class="btn btn-sm @(ViewBag.Period as string == "all" || ViewBag.Period == null ? "btn-dark" : "btn-outline-dark")" asp-action="Leaderboard" asp-route-period="all">Tất cả</a>
+            <a class="btn btn-sm @(ViewBag.Period as string == "week" ? "btn-dark" : "btn-outline-dark")" asp-action="Leaderboard" asp-route-period="week">Tuần</a>
+            <a class="btn btn-sm @(ViewBag.Period as string == "month" ? "btn-dark" : "btn-outline-dark")" asp-action="Leaderboard" asp-route-period="month">Tháng</a>
+        </div>
+
+    </div>
+
+    <div class="card border-0 shadow-sm">
+
+        <div class="card-body p-0">
+
+            <div class="table-responsive">
+
+                <table class="table table-hover
+                              align-middle
+                              mb-0">
+
+                    <thead>
+
+                        <tr>
+
+                            <th class="ps-4">
+                                Rank
+                            </th>
+
+                            <th>
+                                User
+                            </th>
+
+                            <th class="text-end pe-4">
+                                Points
+                            </th>
+
+                        </tr>
+
+                    </thead>
+
+                    <tbody>
+
+                        @{
+                            int rank = 1;
+                        }
+
+                        @foreach (var item in Model)
+                        {
+                            <tr>
+
+                                <td class="ps-4">
+
+                                    @if (rank == 1)
+                                    {
+                                        <span class="fs-4">
+                                            🥇
+                                        </span>
+                                    }
+                                    else if (rank == 2)
+                                    {
+                                        <span class="fs-4">
+                                            🥈
+                                        </span>
+                                    }
+                                    else if (rank == 3)
+                                    {
+                                        <span class="fs-4">
+                                            🥉
+                                        </span>
+                                    }
+                                    else
+                                    {
+                                        <strong>
+                                            @rank
+                                        </strong>
+                                    }
+
+                                </td>
+
+                                <td>
+
+                                    @(item.ApplicationUser?.FullName
+                                        ?? item.ApplicationUser?.Email
+                                        ?? "Học viên")
+
+                                </td>
+
+                                <td class="text-end pe-4">
+
+                                    <span class="badge
+                                                 bg-warning
+                                                 text-dark
+                                                 fs-6">
+
+                                        ⭐ @item.Points
+
+                                    </span>
+
+                                </td>
+
+                            </tr>
+
+                            rank++;
+                        }
+
+                    </tbody>
+
+                </table>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</div>

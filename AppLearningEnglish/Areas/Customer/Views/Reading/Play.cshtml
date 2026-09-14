@@ -1,0 +1,56 @@
+@model AppLearningEnglish.Models.ViewModels.ReadingPlayViewModel
+@{
+    ViewData["Title"] = Model.Lesson.Title;
+}
+
+<div class="container py-4" style="max-width:860px">
+    <a asp-action="Index">Thư viện đọc</a>
+    <h1 class="fw-bold mt-2">@Model.Lesson.Title</h1>
+    <article class="card border-0 shadow-sm mb-4">
+        <div class="card-body p-4 lesson-content-body">@Model.Lesson.Content</div>
+    </article>
+
+    @if (Model.Score.HasValue)
+    {
+        <div class="alert alert-info">Đúng @Model.Score / @Model.Total. +@Model.Score điểm.</div>
+    }
+
+    @if (!Model.Questions.Any())
+    {
+        <div class="alert alert-warning">Bài này chưa có từ để hỏi.</div>
+    }
+    else if (!Model.Score.HasValue)
+    {
+        <form method="post">
+            @Html.AntiForgeryToken()
+            @for (var i = 0; i < Model.Questions.Count; i++)
+            {
+                var q = Model.Questions[i];
+                <div class="mb-4">
+                    <p class="fw-semibold">@(i + 1). @q.Prompt</p>
+                    @foreach (var option in q.Options)
+                    {
+                        <div class="form-check">
+                            <input class="form-check-input" type="radio" name="answers[@q.WordId]" value="@option" id="r-@q.WordId-@option.GetHashCode()" required />
+                            <label class="form-check-label" for="r-@q.WordId-@option.GetHashCode()">@option</label>
+                        </div>
+                    }
+                </div>
+            }
+            <button class="btn btn-primary" type="submit">Nộp bài</button>
+        </form>
+    }
+    else
+    {
+        @foreach (var q in Model.Questions)
+        {
+            <p>
+                <strong>@q.Prompt</strong>
+                <span class="@(q.IsCorrect == true ? "text-success" : "text-danger")">
+                    @(q.IsCorrect == true ? "Đúng" : $"Sai — {q.Answer}")
+                </span>
+            </p>
+        }
+        <a class="btn btn-outline-primary" asp-action="Index">Đoạn khác</a>
+    }
+</div>

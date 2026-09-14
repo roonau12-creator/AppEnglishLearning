@@ -1,0 +1,86 @@
+@model IEnumerable<AppLearningEnglish.Models.UserVocabulary>
+@{
+    ViewData["Title"] = "AI hỗ trợ";
+    var coach = TempData["coach"] as string;
+}
+<div style="max-width:860px">
+    <div class="page-hero">
+        <div>
+            <p class="section-kicker mb-1">Trợ lý</p>
+            <h1 class="fw-bold">AI hỗ trợ học tập</h1>
+            <p class="text-muted mb-0">
+                Đây là trợ lý theo luật (mẫu câu, ngân hàng ngữ pháp, từ điển ngắn) — không phải mô hình ngôn ngữ lớn.
+                Trình độ: @ViewBag.Level · Mục tiêu: @ViewBag.Goal · @ViewBag.WordCount từ trong sổ.
+            </p>
+        </div>
+    </div>
+    @if (!string.IsNullOrWhiteSpace(coach))
+    {
+        <div class="alert alert-info" style="white-space:pre-wrap">@coach</div>
+    }
+    <div class="row g-3 mb-4">
+        <div class="col-md-6">
+            <div class="card border-0 shadow-sm h-100">
+                <div class="card-body">
+                    <h2 class="h6">Hỏi ngữ pháp / từ vựng</h2>
+                    <form asp-action="Ask" method="post">
+                        @Html.AntiForgeryToken()
+                        <input class="form-control mb-2" name="question" placeholder="present perfect, can, if..." />
+                        <button class="btn btn-primary btn-sm" type="submit">Hỏi</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-6">
+            <div class="card border-0 shadow-sm h-100">
+                <div class="card-body">
+                    <h2 class="h6">Dịch nhanh</h2>
+                    <form asp-action="Translate" method="post">
+                        @Html.AntiForgeryToken()
+                        <input class="form-control mb-2" name="text" placeholder="hello / thank you" />
+                        <button class="btn btn-outline-primary btn-sm" type="submit">Dịch</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-6">
+            <div class="card border-0 shadow-sm h-100">
+                <div class="card-body">
+                    <h2 class="h6">Đồng nghĩa</h2>
+                    <form asp-action="Synonyms" method="post" class="row g-2">
+                        @Html.AntiForgeryToken()
+                        <div class="col-6"><input class="form-control" name="left" placeholder="say" /></div>
+                        <div class="col-6"><input class="form-control" name="right" placeholder="tell" /></div>
+                        <div class="col-12"><button class="btn btn-outline-primary btn-sm" type="submit">So sánh</button></div>
+                    </form>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-6">
+            <div class="card border-0 shadow-sm h-100">
+                <div class="card-body">
+                    <h2 class="h6">Công cụ khác</h2>
+                    <a class="btn btn-sm btn-outline-primary mb-1" asp-action="QuizFromVocab">Tạo quiz từ sổ từ</a>
+                    <a class="btn btn-sm btn-outline-primary mb-1" asp-action="Suggest">Gợi ý bộ từ theo mục tiêu</a>
+                    <a class="btn btn-sm btn-outline-primary mb-1" asp-action="Weakness">Điểm yếu / lộ trình</a>
+                    <a class="btn btn-sm btn-outline-primary mb-1" asp-action="Story">Truyện ngắn từ vựng đang học</a>
+                    <a class="btn btn-sm btn-outline-primary mb-1" asp-action="Weekly">Tóm tắt tuần</a>
+                </div>
+            </div>
+        </div>
+    </div>
+    <h2 class="h5">Sinh câu ví dụ theo trình độ</h2>
+    <div class="row g-2">
+        @foreach (var item in Model)
+        {
+            <div class="col-md-6">
+                <form asp-action="Example" method="post" class="d-flex justify-content-between align-items-center border rounded p-2">
+                    @Html.AntiForgeryToken()
+                    <input type="hidden" name="wordId" value="@item.WordId" />
+                    <span>@item.Word?.WordText</span>
+                    <button class="btn btn-sm btn-outline-secondary" type="submit">Ví dụ</button>
+                </form>
+            </div>
+        }
+    </div>
+</div>

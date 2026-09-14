@@ -1,0 +1,162 @@
+@model AppLearningEnglish.Models.ViewModels.CourseDetailsViewModel
+
+@{
+    ViewData["Title"] = Model.Course.Name;
+    var course = Model.Course;
+    bool isAuthenticated = User.Identity?.IsAuthenticated == true;
+}
+
+<div class="container py-5">
+    <a asp-area="Customer" asp-controller="Course" asp-action="Index" class="text-decoration-none">
+        <i class="bi bi-arrow-left"></i>
+        Tất cả khóa học
+    </a>
+
+    <div class="card border-0 shadow-sm mt-4">
+        <div class="row g-0">
+            <div class="col-lg-5">
+                @if (!string.IsNullOrEmpty(course.ThumbnailUrl))
+                {
+                    <img src="@course.ThumbnailUrl"
+                         class="img-fluid h-100 w-100"
+                         style="object-fit:cover;"
+                         alt="@course.Name" />
+                }
+                else
+                {
+                    <div class="bg-light h-100 d-flex align-items-center justify-content-center" style="min-height:240px">
+                        <i class="bi bi-book display-1 text-muted"></i>
+                    </div>
+                }
+            </div>
+            <div class="col-lg-7">
+                <div class="card-body p-4 p-lg-5">
+                    <span class="badge bg-primary mb-3">@course.Level</span>
+                    @if (Model.IsRecommended)
+                    {
+                        <span class="badge bg-success mb-3">Phù hợp trình độ</span>
+                    }
+                    <h1 class="fw-bold">@course.Name</h1>
+                    <p class="text-muted fs-5">@course.Description</p>
+                    <p class="mb-4">@Model.Lessons.Count bài học công khai</p>
+
+                    @if (Model.IsEnrolled)
+                    {
+                        <div class="mb-3">
+                            <div class="d-flex justify-content-between">
+                                <strong>Course Progress</strong>
+                                <strong>@Model.Progress%</strong>
+                            </div>
+                            <div class="progress mt-2" style="height:12px">
+                                <div class="progress-bar" style="width:@Model.Progress%"></div>
+                            </div>
+                        </div>
+
+                        @if (Model.Progress >= 100)
+                        {
+                            <div class="alert alert-success">
+                                <i class="bi bi-check-circle"></i>
+                                Bạn đã hoàn thành khóa học!
+                            </div>
+                            <a asp-area="Customer" asp-controller="Course" asp-action="Completed" class="btn btn-success">
+                                Xem khóa học đã hoàn thành
+                            </a>
+                            <a asp-area="Customer" asp-controller="Certificate" asp-action="Course" asp-route-id="@course.Id" class="btn btn-outline-success">
+                                Xem chứng chỉ
+                            </a>
+                        }
+                        else
+                        {
+                            <a asp-area="Customer"
+                               asp-controller="Course"
+                               asp-action="Continue"
+                               asp-route-courseId="@course.Id"
+                               class="btn btn-primary btn-lg">
+                                <i class="bi bi-play-fill"></i>
+                                Tiếp tục học
+                            </a>
+                        }
+                    }
+                    else if (isAuthenticated && Model.IsLocked)
+                    {
+                        <div class="alert alert-warning">
+                            Khóa @course.Level đang khóa với trình độ @(Model.UserLevel ?? "chưa xếp lớp").
+                            Hãy làm bài xếp lớp hoặc chọn khóa dễ hơn.
+                        </div>
+                        <a class="btn btn-outline-primary" asp-area="Customer" asp-controller="Placement" asp-action="Index">Bài xếp lớp</a>
+                    }
+                    else if (isAuthenticated)
+                    {
+                        <form asp-area="Customer" asp-controller="Course" asp-action="Enroll" method="post">
+                            @Html.AntiForgeryToken()
+                            <input type="hidden" name="courseId" value="@course.Id" />
+                            <button type="submit" class="btn btn-primary btn-lg">
+                                <i class="bi bi-plus-circle"></i>
+                                Đăng ký khóa học
+                            </button>
+                        </form>
+                    }
+                    else
+                    {
+                        <a asp-area="Identity"
+                           asp-controller="Account"
+                           asp-action="Login"
+                           asp-route-returnUrl="@Url.Action("Details", "Course", new { area = "Customer", id = course.Id })"
+                           class="btn btn-primary btn-lg">
+                            Đăng nhập để đăng ký
+                        </a>
+                    }
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="mt-5">
+        <h2 class="fw-bold">Chương trình học</h2>
+        <p class="text-muted">Xem trước các bài học trong khóa. Đăng ký để bắt đầu luyện tập.</p>
+
+        @if (!Model.Lessons.Any())
+        {
+            <div class="alert alert-info">Khóa học này chưa có bài học công khai.</div>
+        }
+        else
+        {
+            <div class="list-group shadow-sm">
+                @foreach (var lesson in Model.Lessons)
+                {
+                    <div class="list-group-item d-flex justify-content-between align-items-center py-3">
+                        <div>
+                            <span class="badge bg-light text-dark me-2">@lesson.LessonOrder</span>
+                            <strong>@lesson.Title</strong>
+                            <div class="text-muted small">
+                                @lesson.Description
+                                @if (lesson.DurationMinutes > 0)
+                                {
+                                    <span> · @lesson.DurationMinutes phút</span>
+                                }
+                            </div>
+                        </div>
+                        @if (Model.IsEnrolled)
+                        {
+                            <a asp-area="Customer"
+                               asp-controller="Lesson"
+                               asp-action="Details"
+                               asp-route-id="@lesson.Id"
+                               class="btn btn-sm btn-primary">
+                                Học bài
+                            </a>
+                        }
+                        else if (!isAuthenticated)
+                        {
+                            <span class="text-muted small">Đăng nhập để học</span>
+                        }
+                        else
+                        {
+                            <span class="text-muted small">Đăng ký khóa để học</span>
+                        }
+                    </div>
+                }
+            </div>
+        }
+    </div>
+</div>

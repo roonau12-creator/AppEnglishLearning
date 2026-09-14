@@ -1,0 +1,54 @@
+@model AppLearningEnglish.Models.ViewModels.ReadingHubViewModel
+@{
+    ViewData["Title"] = "Đọc hiểu";
+}
+
+<div class="container py-4">
+    <h1 class="fw-bold">Thư viện đọc hiểu</h1>
+    <p class="text-muted">Bài đọc theo trình độ: ý chính, chi tiết, suy luận và True / False / Not Given.</p>
+
+    @if (!Model.Passages.Any())
+    {
+        <div class="alert alert-info">Chưa có bài đọc. Nếu vừa cập nhật, hãy restart app để seed.</div>
+    }
+    else
+    {
+        <div class="row g-3 mb-5">
+            @foreach (var passage in Model.Passages)
+            {
+                <div class="col-md-6">
+                    <div class="card border-0 shadow-sm h-100">
+                        <div class="card-body">
+                            <span class="badge bg-primary">@passage.Level</span>
+                            @if (!string.IsNullOrWhiteSpace(passage.Topic))
+                            {
+                                <span class="badge bg-light text-dark">@passage.Topic</span>
+                            }
+                            <h2 class="h5 mt-2">@passage.Title</h2>
+                            <p class="text-muted small">@(passage.Body.Length > 140 ? passage.Body[..140] + "…" : passage.Body)</p>
+                            <div class="small text-muted mb-2">@passage.Questions.Count câu hỏi</div>
+                            <a class="btn btn-outline-primary" asp-action="Passage" asp-route-id="@passage.Id">Đọc và trả lời</a>
+                        </div>
+                    </div>
+                </div>
+            }
+        </div>
+    }
+
+    <h2 class="h5">Ôn từ trong bài học</h2>
+    <p class="text-muted small">Câu hỏi nghĩa từ — dùng khi muốn ôn vocabulary của lesson.</p>
+    <div class="row g-3">
+        @foreach (var lesson in Model.LessonReadings)
+        {
+            <div class="col-md-6">
+                <div class="card border-0 h-100">
+                    <div class="card-body">
+                        <span class="badge bg-light text-dark">@lesson.Course?.Name</span>
+                        <h3 class="h6 mt-2">@lesson.Title</h3>
+                        <a class="btn btn-sm btn-outline-secondary" asp-action="Play" asp-route-id="@lesson.Id">Ôn từ</a>
+                    </div>
+                </div>
+            </div>
+        }
+    </div>
+</div>

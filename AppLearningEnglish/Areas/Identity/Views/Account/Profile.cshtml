@@ -1,0 +1,120 @@
+@model AppLearningEnglish.Models.ViewModels.ProfileViewModel
+@{
+    Layout = "_Layout";
+    ViewData["Title"] = "Hồ sơ";
+}
+<div class="auth-form-card mx-auto" style="max-width:560px">
+    <h2>Hồ sơ</h2>
+    <form asp-action="Profile" method="post" enctype="multipart/form-data">
+        @Html.AntiForgeryToken()
+        <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+        <div class="mb-3">
+            <label class="form-label">Email</label>
+            <input class="form-control" value="@Model.Email" disabled />
+        </div>
+        <div class="mb-3">
+            <label asp-for="FullName" class="form-label"></label>
+            <input asp-for="FullName" class="form-control" />
+            <span asp-validation-for="FullName" class="text-danger"></span>
+        </div>
+        <div class="mb-3">
+            <label asp-for="EnglishLevel" class="form-label">Trình độ</label>
+            <select asp-for="EnglishLevel" class="form-select">
+                <option value="">-- Chọn --</option>
+                <option>A1</option>
+                <option>A2</option>
+                <option>B1</option>
+                <option>B2</option>
+                <option>C1</option>
+                <option>C2</option>
+            </select>
+        </div>
+        <div class="mb-3">
+            <label asp-for="PreferredTheme" class="form-label">Giao diện</label>
+            <select asp-for="PreferredTheme" class="form-select">
+                <option value="light">Light</option>
+                <option value="dark">Dark</option>
+            </select>
+        </div>
+        <div class="mb-3">
+            <label asp-for="UiLanguage" class="form-label">Ngôn ngữ giao diện</label>
+            <select asp-for="UiLanguage" class="form-select">
+                <option value="vi">Tiếng Việt</option>
+                <option value="en">English</option>
+            </select>
+        </div>
+        <div class="mb-3">
+            <label asp-for="LearningGoalKind" class="form-label">Mục tiêu học</label>
+            <select asp-for="LearningGoalKind" class="form-select">
+                <option value="vocab">2000 từ vựng</option>
+                <option value="ielts">Band IELTS</option>
+                <option value="communication">Giao tiếp</option>
+                <option value="workplace">Công sở</option>
+                <option value="exam">Thi cử</option>
+                <option value="general">Học đều 4 kỹ năng</option>
+            </select>
+        </div>
+        <div class="mb-3">
+            <label asp-for="VocabGoalTotal" class="form-label">Mục tiêu số từ</label>
+            <input asp-for="VocabGoalTotal" type="number" min="50" max="20000" class="form-control" />
+        </div>
+        <div class="mb-3">
+            <label asp-for="IeltsBandTarget" class="form-label">Band IELTS mục tiêu</label>
+            <input asp-for="IeltsBandTarget" type="number" min="0" max="9" step="0.5" class="form-control" />
+        </div>
+        <div class="mb-3">
+            <label class="form-label">Avatar</label>
+            @if (!string.IsNullOrWhiteSpace(Model.AvatarUrl))
+            {
+                <img src="@Model.AvatarUrl" class="rounded mb-2" style="width:80px;height:80px;object-fit:cover" />
+            }
+            <input asp-for="AvatarFile" type="file" class="form-control" accept="image/*" />
+        </div>
+
+        <hr />
+        <h3 class="h5">Cài đặt học tập</h3>
+        <div class="mb-3">
+            <label asp-for="DailyGoalMinutes" class="form-label">Mục tiêu mỗi ngày (phút)</label>
+            <input asp-for="DailyGoalMinutes" type="number" min="5" max="480" class="form-control" />
+            <span asp-validation-for="DailyGoalMinutes" class="text-danger"></span>
+        </div>
+        <div class="mb-3">
+            <label asp-for="VocabDailyTarget" class="form-label">Số từ cần ôn mỗi ngày</label>
+            <input asp-for="VocabDailyTarget" type="number" min="1" max="200" class="form-control" />
+            <div class="form-text">Trang Review chỉ đưa ra đúng số từ này mỗi lần, dù còn nhiều từ đến hạn.</div>
+            <span asp-validation-for="VocabDailyTarget" class="text-danger"></span>
+        </div>
+        <div class="mb-3">
+            <label asp-for="ReviewIntervalPercent" class="form-label">Khoảng cách ôn (%)</label>
+            <input asp-for="ReviewIntervalPercent" type="number" min="25" max="400" step="25" class="form-control" />
+            <div class="form-text">100% là mặc định. Nhỏ hơn 100% thì ôn dày hơn, lớn hơn thì ôn thưa hơn.</div>
+            <span asp-validation-for="ReviewIntervalPercent" class="text-danger"></span>
+        </div>
+        <div class="form-check form-switch mb-3">
+            <input class="form-check-input" type="checkbox" asp-for="ReminderEnabled" />
+            <label class="form-check-label" asp-for="ReminderEnabled">Bật email nhắc học</label>
+        </div>
+        <div class="mb-3">
+            <label asp-for="ReminderHour" class="form-label">Giờ nhắc (0–23)</label>
+            <input asp-for="ReminderHour" type="number" min="0" max="23" class="form-control" />
+        </div>
+        <div class="mb-3">
+            <label asp-for="TimeZoneId" class="form-label">Múi giờ</label>
+            <select asp-for="TimeZoneId" class="form-select">
+                <option>Asia/Ho_Chi_Minh</option>
+                <option>Asia/Bangkok</option>
+                <option>Asia/Singapore</option>
+                <option>Asia/Tokyo</option>
+                <option>UTC</option>
+                <option>Europe/London</option>
+                <option>America/New_York</option>
+            </select>
+        </div>
+
+        <button class="btn btn-primary" type="submit">Lưu</button>
+        <a class="btn btn-outline-secondary" asp-action="ChangePassword">Đổi mật khẩu</a>
+        <a class="btn btn-outline-primary" asp-area="Customer" asp-controller="Placement" asp-action="Index">Bài xếp lớp</a>
+        <a class="btn btn-outline-secondary" asp-action="ExportData">Xuất dữ liệu cá nhân</a>
+        <a class="btn btn-outline-danger" asp-action="DeleteAccount">Xóa tài khoản</a>
+    </form>
+</div>

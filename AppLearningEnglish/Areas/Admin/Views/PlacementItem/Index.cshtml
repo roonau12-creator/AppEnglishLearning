@@ -1,0 +1,45 @@
+@model IEnumerable<AppLearningEnglish.Models.PlacementItem>
+@{
+    ViewData["Title"] = "Bài xếp lớp";
+    ViewData["Subtitle"] = "Câu hỏi xếp trình độ, sửa được không cần đụng code";
+    ViewData["Icon"] = "bi-clipboard-check";
+    ViewData["Tone"] = "violet";
+    ViewData["ActionText"] = "Thêm câu";
+    ViewData["ActionController"] = "PlacementItem";
+}
+<partial name="_AdminPageHead" />
+<div class="card"><div class="card-body">
+    <table id="placementTable" class="table table-hover align-middle w-100">
+        <thead><tr><th>#</th><th>Câu hỏi</th><th>Đáp án</th><th class="text-end">Action</th></tr></thead>
+        <tbody>
+        @{ var n = 1; }
+        @foreach (var item in Model)
+        {
+            <tr>
+                <td>@n</td>
+                <td><strong>@item.Text</strong><div class="small text-muted">@item.Options</div></td>
+                <td>@item.Answer</td>
+                <td class="text-end">
+                    <a class="btn btn-sm btn-outline-primary" asp-action="Upsert" asp-route-id="@item.Id"><i class="bi bi-pencil"></i></a>
+                    <button type="button" class="btn btn-sm btn-outline-danger" onclick="deleteItem(@item.Id)"><i class="bi bi-trash"></i></button>
+                </td>
+            </tr>
+            n++;
+        }
+        </tbody>
+    </table>
+</div></div>
+@section Scripts {
+<script>
+    $("#placementTable").DataTable({ language: { search: "Tìm kiếm:" } });
+    function deleteItem(id) {
+        Swal.fire({ title: "Xóa câu?", icon: "warning", showCancelButton: true, confirmButtonText: "Xóa" })
+            .then(function (r) {
+                if (!r.isConfirmed) return;
+                $.post("/Admin/PlacementItem/Delete", { id: id, __RequestVerificationToken: $('input[name="__RequestVerificationToken"]').first().val() }, function (res) {
+                    Swal.fire({ icon: res.success ? "success" : "error", title: res.message }).then(function () { if (res.success) location.reload(); });
+                });
+            });
+    }
+</script>
+}

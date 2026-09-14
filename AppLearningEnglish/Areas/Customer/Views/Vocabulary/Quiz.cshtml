@@ -1,0 +1,101 @@
+@model AppLearningEnglish.Models.ViewModels.VocabQuizViewModel
+@{
+    ViewData["Title"] = "Kiểm tra từ";
+    var word = Model.Item?.Word;
+    var meaning = word?.Meanings?.FirstOrDefault()?.Meaning ?? word?.Definition;
+}
+
+<div class="container py-4" style="max-width:720px">
+    <div class="d-flex justify-content-between align-items-center mb-3">
+        <a asp-action="Review">Quay lại Nhớ / Không nhớ</a>
+        <span class="text-muted small">Còn @Model.Remaining từ</span>
+    </div>
+
+    <div class="btn-group mb-4 w-100">
+        <a class="btn @(Model.Mode == "type" ? "btn-primary" : "btn-outline-primary")" asp-action="Quiz" asp-route-mode="type">Gõ từ</a>
+        <a class="btn @(Model.Mode == "choice" ? "btn-primary" : "btn-outline-primary")" asp-action="Quiz" asp-route-mode="choice">Chọn nghĩa</a>
+        <a class="btn @(Model.Mode == "listen" ? "btn-primary" : "btn-outline-primary")" asp-action="Quiz" asp-route-mode="listen">Nghe rồi viết</a>
+    </div>
+
+    @if (word == null)
+    {
+        <div class="alert alert-success">Hết từ đến hạn.</div>
+    }
+    else
+    {
+        <div class="card border-0 shadow-sm">
+            <div class="card-body p-4">
+                @if (Model.Mode == "type")
+                {
+                    <p class="text-muted mb-1">Gõ từ tiếng Anh cho nghĩa:</p>
+                    <h2 class="h4">@meaning</h2>
+                }
+                else if (Model.Mode == "choice")
+                {
+                    <p class="text-muted mb-1">Chọn nghĩa của</p>
+                    <h2 class="h4">@word.WordText</h2>
+                    <p class="text-muted">@word.Pronunciation</p>
+                }
+                else
+                {
+                    <p class="text-muted">Nghe rồi viết lại từ.</p>
+                    <button type="button" class="btn btn-outline-success mb-3" id="hearSample" data-text="@word.WordText">
+                        <i class="bi bi-volume-up"></i> Nghe
+                    </button>
+                }
+
+                @if (Model.IsCorrect == true)
+                {
+                    <div class="alert alert-success">Đúng. +2 điểm.</div>
+                }
+                else if (Model.IsCorrect == false)
+                {
+                    <div class="alert alert-warning">
+                        Sai. Đáp án: <strong>@(Model.Mode == "choice" ? meaning : word.WordText)</strong>
+                    </div>
+                }
+
+                @if (Model.IsCorrect == null)
+                {
+                    <form method="post" asp-action="Quiz">
+                        @Html.AntiForgeryToken()
+                        <input type="hidden" name="mode" value="@Model.Mode" />
+                        <input type="hidden" name="wordId" value="@Model.Item!.WordId" />
+
+                        @if (Model.Mode == "choice")
+                        {
+                            @foreach (var choice in Model.Choices)
+                            {
+                                <div class="form-check mb-2">
+                                    <input class="form-check-input" type="radio" name="userAnswer" value="@choice" id="c-@choice.GetHashCode()" required />
+                                    <label class="form-check-label" for="c-@choice.GetHashCode()">@choice</label>
+                                </div>
+                            }
+                        }
+                        else
+                        {
+                            <input class="form-control mb-3" name="userAnswer" placeholder="Nhập từ tiếng Anh" required autofocus />
+                        }
+
+                        <button class="btn btn-primary w-100" type="submit">Kiểm tra</button>
+                    </form>
+                }
+                else
+                {
+                    <a class="btn btn-primary w-100" asp-action="Quiz" asp-route-mode="@Model.Mode">Từ tiếp theo</a>
+                }
+            </div>
+        </div>
+    }
+</div>
+
+@section Scripts {
+    <script>
+        document.getElementById("hearSample")?.addEventListener("click", function () {
+            if (!window.speechSynthesis) return;
+            var u = new SpeechSynthesisUtterance(this.getAttribute("data-text") || "");
+            u.lang = "en-US";
+            window.speechSynthesis.speak(u);
+        });
+    </script>
+}

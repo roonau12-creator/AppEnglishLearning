@@ -1,0 +1,64 @@
+@model AppLearningEnglish.Models.ViewModels.ConversationPlayViewModel
+@{
+    ViewData["Title"] = Model.Scenario.Title;
+}
+<div class="container py-4" style="max-width:720px">
+    <a asp-action="Index">Tất cả tình huống</a>
+    <h1 class="h3 fw-bold mt-2">@Model.Scenario.Title</h1>
+    <p class="text-muted">@Model.Scenario.Setting · Lượt @(Model.TurnIndex + 1)/@Model.Scenario.Turns.Count</p>
+
+    <div class="card border-0 shadow-sm mb-3">
+        <div class="card-body">
+            <div class="small text-muted">Gia sư</div>
+            <p class="fs-5 mb-0">@Model.Current.Tutor</p>
+        </div>
+    </div>
+    <p class="small">Gợi ý: @Model.Current.Hint</p>
+
+    <form method="post">
+        @Html.AntiForgeryToken()
+        <input type="hidden" name="id" value="@Model.Scenario.Id" />
+        <input type="hidden" name="turn" value="@Model.TurnIndex" />
+        <label class="form-label" for="reply">Bạn nói</label>
+        <div class="input-group mb-3">
+            <input id="reply" name="reply" class="form-control" value="@Model.Reply" placeholder="Bấm micro hoặc gõ" required />
+            <button type="button" class="btn btn-danger" id="startSpeech"><i class="bi bi-mic"></i></button>
+        </div>
+        <button class="btn btn-primary" type="submit">Gửi lượt này</button>
+    </form>
+
+    @if (Model.Score.HasValue)
+    {
+        <hr />
+        <div class="alert @(Model.IsPassed == true ? "alert-success" : "alert-warning")">
+            Điểm lượt này: @Model.Score%
+            @if (Model.IsPassed != true)
+            {
+                <div class="small mt-1">Câu mẫu: @Model.Current.Sample</div>
+            }
+        </div>
+        @if (Model.IsPassed == true && !Model.IsLast)
+        {
+            <a class="btn btn-success" asp-action="Play" asp-route-id="@Model.Scenario.Id" asp-route-turn="@(Model.TurnIndex + 1)">Lượt tiếp</a>
+        }
+        else if (Model.IsPassed == true && Model.IsLast)
+        {
+            <div class="alert alert-success">Xong tình huống. Bạn có thể chọn hội thoại khác.</div>
+            <a class="btn btn-outline-primary" asp-action="Index">Chọn tình huống khác</a>
+        }
+    }
+</div>
+@section Scripts {
+<script>
+    document.getElementById("startSpeech")?.addEventListener("click", function () {
+        var Speech = window.SpeechRecognition || window.webkitSpeechRecognition;
+        if (!Speech) { return; }
+        var rec = new Speech();
+        rec.lang = "en-US";
+        rec.onresult = function (e) {
+            document.getElementById("reply").value = e.results[0][0].transcript;
+        };
+        rec.start();
+    });
+</script>
+}

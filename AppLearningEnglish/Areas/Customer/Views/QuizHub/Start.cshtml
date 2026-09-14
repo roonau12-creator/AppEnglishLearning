@@ -1,0 +1,73 @@
+@model AppLearningEnglish.Areas.Customer.Controllers.QuizHubPlayViewModel
+@{
+    ViewData["Title"] = "Làm quiz";
+}
+<div style="max-width:800px">
+    <a asp-action="Index" class="page-back"><i class="bi bi-arrow-left"></i> Quiz Hub</a>
+    <h1 class="fw-bold">Quiz · @Model.Kind</h1>
+    @if (Model.Timed && !Model.Score.HasValue)
+    {
+        <p class="text-danger fw-bold">Còn <span id="quizTimer">@Model.Seconds</span> giây</p>
+    }
+    <form method="post" id="quizForm">
+        @Html.AntiForgeryToken()
+        <input type="hidden" name="kind" value="@Model.Kind" />
+        @for (var i = 0; i < Model.Items.Count; i++)
+        {
+            var item = Model.Items[i];
+            <div class="card border-0 shadow-sm mb-3">
+                <div class="card-body">
+                    <span class="badge bg-light text-dark">@item.Type</span>
+                    <p class="fw-semibold mt-2">@(i + 1). @item.Prompt</p>
+                    @if (item.Type == "scramble")
+                    {
+                        <input class="form-control" name="answers[@item.QuestionId]" value="@item.UserAnswer" placeholder="Gõ câu đúng" />
+                    }
+                    else
+                    {
+                        foreach (var option in item.Options)
+                        {
+                            <div class="form-check">
+                                <input class="form-check-input" type="radio" name="answers[@item.QuestionId]" value="@option"
+                                       @(string.Equals(item.UserAnswer, option, StringComparison.OrdinalIgnoreCase) ? "checked" : null) />
+                                <label class="form-check-label">@option</label>
+                            </div>
+                        }
+                    }
+                    @if (item.IsCorrect != null)
+                    {
+                        <div class="mt-2 small @(item.IsCorrect == true ? "text-success" : "text-danger")">
+                            @(item.IsCorrect == true ? "Đúng" : $"Sai · đáp án: {item.Answer}")
+                        </div>
+                    }
+                </div>
+            </div>
+        }
+        @if (!Model.Score.HasValue)
+        {
+            <button class="btn btn-primary" type="submit">Nộp bài</button>
+        }
+        else
+        {
+            <div class="alert alert-info">Kết quả: @Model.Score / @Model.Total</div>
+            <a class="btn btn-outline-primary" asp-action="Review">Xem câu sai</a>
+        }
+    </form>
+</div>
+@section Scripts {
+    @if (Model.Timed && !Model.Score.HasValue)
+    {
+        <script>
+            var left = @Model.Seconds;
+            var el = document.getElementById("quizTimer");
+            var t = setInterval(function () {
+                left--;
+                if (el) el.textContent = left;
+                if (left <= 0) {
+                    clearInterval(t);
+                    document.getElementById("quizForm")?.submit();
+                }
+            }, 1000);
+        </script>
+    }
+}

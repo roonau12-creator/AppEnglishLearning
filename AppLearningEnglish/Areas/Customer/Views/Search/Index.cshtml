@@ -1,0 +1,62 @@
+@model AppLearningEnglish.Models.ViewModels.SearchResultViewModel
+@{
+    ViewData["Title"] = "Tìm kiếm";
+}
+<h1 class="fw-bold">Tìm kiếm</h1>
+<form method="get" class="mb-4">
+    <div class="input-group">
+        <input class="form-control" name="q" value="@Model.Query" placeholder="Khóa, bài, từ, đọc, ngữ pháp, đề viết..." />
+        <button class="btn btn-primary">Tìm</button>
+    </div>
+</form>
+@if (!string.IsNullOrWhiteSpace(Model.Query))
+{
+    <h2 class="h5">Khóa học</h2>
+    @if (!Model.Courses.Any()) { <p class="text-muted">Không có khóa học.</p> }
+    <ul>
+        @foreach (var course in Model.Courses)
+        {
+            <li><a asp-area="Customer" asp-controller="Course" asp-action="Details" asp-route-id="@course.Id">@course.Name</a></li>
+        }
+    </ul>
+    <h2 class="h5">Bài học</h2>
+    @if (!Model.Lessons.Any()) { <p class="text-muted">Không có bài học.</p> }
+    <ul>
+        @foreach (var lesson in Model.Lessons)
+        {
+            <li><a asp-area="Customer" asp-controller="Lesson" asp-action="Details" asp-route-id="@lesson.Id">@lesson.Title</a></li>
+        }
+    </ul>
+    <h2 class="h5">Từ vựng</h2>
+    @if (!Model.Words.Any()) { <p class="text-muted">Không có từ.</p> }
+    <ul>
+        @foreach (var word in Model.Words)
+        {
+            <li>@word.WordText — @word.Definition</li>
+        }
+    </ul>
+    <h2 class="h5">Đọc hiểu</h2>
+    @if (!Model.Passages.Any()) { <p class="text-muted">Không có bài đọc.</p> }
+    <ul>
+        @foreach (var passage in Model.Passages)
+        {
+            <li><a asp-area="Customer" asp-controller="Reading" asp-action="Passage" asp-route-id="@passage.Id">@passage.Title</a> <span class="text-muted">@passage.Level</span></li>
+        }
+    </ul>
+    <h2 class="h5">Ngữ pháp</h2>
+    @if (!Model.GrammarTopics.Any()) { <p class="text-muted">Không có chủ điểm.</p> }
+    <ul>
+        @foreach (var topic in Model.GrammarTopics)
+        {
+            <li><a asp-area="Customer" asp-controller="Grammar" asp-action="Study" asp-route-id="@topic.Id">@topic.Title</a></li>
+        }
+    </ul>
+    <h2 class="h5">Đề viết</h2>
+    @if (!Model.WritingPrompts.Any()) { <p class="text-muted">Không có đề viết.</p> }
+    <ul>
+        @foreach (var prompt in Model.WritingPrompts)
+        {
+            <li><a asp-area="Customer" asp-controller="Writing" asp-action="Prompt" asp-route-id="@prompt.Id">@prompt.Title</a></li>
+        }
+    </ul>
+}

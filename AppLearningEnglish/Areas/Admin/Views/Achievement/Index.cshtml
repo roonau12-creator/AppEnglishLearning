@@ -1,0 +1,79 @@
+@model IEnumerable<AppLearningEnglish.Models.Achievement>
+@{
+    ViewData["Title"] = "Achievements";
+    ViewData["Subtitle"] = "Huy hiệu mở khóa theo điểm";
+    ViewData["Icon"] = "bi-trophy-fill";
+    ViewData["Tone"] = "amber";
+    ViewData["ActionText"] = "Thêm Achievement";
+    ViewData["ActionController"] = "Achievement";
+}
+<partial name="_AdminPageHead" />
+<div class="card">
+    <div class="card-body">
+        <table id="achievementTable" class="table table-hover align-middle w-100">
+            <thead>
+                <tr>
+                    <th>#</th>
+                    <th>Icon</th>
+                    <th>Name</th>
+                    <th>Description</th>
+                    <th>Required Points</th>
+                    <th class="text-end">Action</th>
+                </tr>
+            </thead>
+            <tbody>
+                @{ var number = 1; }
+                @foreach (var item in Model)
+                {
+                    <tr>
+                        <td>@number</td>
+                        <td>
+                            @if (!string.IsNullOrEmpty(item.IconUrl))
+                            {
+                                <img src="@item.IconUrl" width="45" height="45" class="rounded-circle" style="object-fit:cover" />
+                            }
+                            else
+                            {
+                                <i class="bi bi-trophy-fill fs-3 text-warning"></i>
+                            }
+                        </td>
+                        <td><strong>@item.Name</strong></td>
+                        <td>@item.Description</td>
+                        <td><span class="badge text-bg-warning">⭐ @item.RequiredPoints</span></td>
+                        <td class="text-end">
+                            <a class="btn btn-sm btn-outline-primary" asp-area="Admin" asp-controller="Achievement" asp-action="Upsert" asp-route-id="@item.Id">
+                                <i class="bi bi-pencil"></i>
+                            </a>
+                            <button type="button" class="btn btn-sm btn-outline-danger" onclick="deleteAchievement(@item.Id)">
+                                <i class="bi bi-trash"></i>
+                            </button>
+                        </td>
+                    </tr>
+                    number++;
+                }
+            </tbody>
+        </table>
+    </div>
+</div>
+@section Scripts {
+<script>
+    $("#achievementTable").DataTable({
+        language: { search: "Tìm kiếm:", lengthMenu: "Hiển thị _MENU_ dòng", info: "Hiển thị _START_ đến _END_ của _TOTAL_", paginate: { previous: "Trước", next: "Sau" } }
+    });
+    function deleteAchievement(id) {
+        Swal.fire({ title: "Xóa Achievement?", text: "Dữ liệu thành tựu của User cũng sẽ bị xóa.", icon: "warning", showCancelButton: true, confirmButtonText: "Xóa", cancelButtonText: "Hủy" })
+            .then(function (result) {
+                if (!result.isConfirmed) return;
+                $.ajax({
+                    url: "/Admin/Achievement/Delete", type: "POST",
+                    data: { id: id, __RequestVerificationToken: $('input[name="__RequestVerificationToken"]').first().val() },
+                    success: function (response) {
+                        if (response.success) { Swal.fire({ icon: "success", title: "Thành công", text: response.message }).then(function () { location.reload(); }); }
+                        else { Swal.fire({ icon: "error", title: "Lỗi", text: response.message }); }
+                    },
+                    error: function () { Swal.fire({ icon: "error", title: "Lỗi", text: "Không thể xóa Achievement." }); }
+                });
+            });
+    }
+</script>
+}

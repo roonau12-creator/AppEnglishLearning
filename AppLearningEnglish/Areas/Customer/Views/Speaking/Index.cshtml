@@ -1,0 +1,57 @@
+@model IReadOnlyList<AppLearningEnglish.Models.Word>
+@{
+    ViewData["Title"] = "Luyện nói";
+}
+
+<div class="page-hero text-lg-center flex-lg-column align-items-lg-center">
+    <div>
+        <p class="section-kicker mb-1">Nói</p>
+        <h1 class="fw-bold">
+            <i class="bi bi-mic"></i>
+            Luyện nói
+        </h1>
+        <p class="text-muted mb-3">
+            Đọc từ, câu, hội thoại hoặc đoạn. Hệ thống chỉ từ sai, gần âm, trọng âm và ngữ điệu.
+        </p>
+        <div class="d-flex justify-content-lg-center flex-wrap gap-2">
+            <a class="btn btn-outline-primary" asp-action="Prompt" asp-route-mode="sentence">Nói câu</a>
+            <a class="btn btn-outline-primary" asp-action="Prompt" asp-route-mode="dialogue">Hội thoại</a>
+            <a class="btn btn-outline-primary" asp-action="Prompt" asp-route-mode="passage">Đọc đoạn</a>
+            <a class="btn btn-outline-success" asp-area="Customer" asp-controller="Conversation" asp-action="Index">Hội thoại tình huống</a>
+            <a class="btn btn-outline-secondary" asp-action="History">Lịch sử</a>
+        </div>
+    </div>
+</div>
+
+@if (!Model.Any())
+{
+    <div class="empty-state">
+        <i class="bi bi-mic"></i>
+        <h3>Chưa có từ để luyện</h3>
+        <p>Hãy thêm từ vào sổ từ vựng hoặc mở một bài học.</p>
+        <a class="btn btn-primary mt-3" asp-area="Customer" asp-controller="Vocabulary" asp-action="Index">Mở sổ từ</a>
+    </div>
+}
+else
+{
+    <div class="row g-3">
+        @foreach (var word in Model)
+        {
+            <div class="col-md-4 col-lg-3">
+                <div class="word-card h-100">
+                    <div class="card-body p-4">
+                        <h2 class="h5 fw-bold mb-1">@word.WordText</h2>
+                        <p class="text-muted small mb-3">@word.Pronunciation</p>
+                        <a class="btn btn-outline-primary w-100"
+                           asp-area="Customer"
+                           asp-controller="Speaking"
+                           asp-action="Practice"
+                           asp-route-wordId="@word.Id">
+                            Luyện phát âm
+                        </a>
+                    </div>
+                </div>
+            </div>
+        }
+    </div>
+}

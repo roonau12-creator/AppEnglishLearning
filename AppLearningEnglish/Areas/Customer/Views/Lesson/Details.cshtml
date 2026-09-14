@@ -1,0 +1,262 @@
+@model AppLearningEnglish.Models.ViewModels.LessonDetailsViewModel
+
+@{
+    ViewData["Title"] = Model.Lesson.Title;
+    var lesson = Model.Lesson;
+    decimal progress = Model.Progress?.Progress ?? 0;
+    bool completed = Model.Progress?.IsCompleted == true;
+}
+
+<div class="lesson-page">
+    <a asp-area="Customer"
+       asp-controller="Course"
+       asp-action="Details"
+       asp-route-id="@lesson.CourseId"
+       class="text-decoration-none">
+        <i class="bi bi-arrow-left"></i>
+        Quay lại khóa học
+    </a>
+
+    <div class="card shadow-sm border-0 mt-3">
+        <div class="card-body p-4 p-lg-5">
+            <div class="d-flex flex-wrap justify-content-between gap-3 mb-4">
+                <div>
+                    <span class="badge bg-primary mb-2">Lesson @lesson.LessonOrder</span>
+                    @if (lesson.Topic != null)
+                    {
+                        <span class="badge bg-light text-dark">@lesson.Topic.Name</span>
+                    }
+                    <h1 class="fw-bold mt-2">@lesson.Title</h1>
+                    <p class="text-muted mb-0">@lesson.Description</p>
+                    <form asp-action="ToggleBookmark" method="post" class="d-inline mt-2">
+                        @Html.AntiForgeryToken()
+                        <input type="hidden" name="lessonId" value="@lesson.Id" />
+                        <button type="submit" class="btn btn-sm @(Model.IsBookmarked ? "btn-warning" : "btn-outline-secondary")">
+                            <i class="bi @(Model.IsBookmarked ? "bi-bookmark-fill" : "bi-bookmark")"></i>
+                            @(Model.IsBookmarked ? "Đã đánh dấu" : "Đánh dấu bài")
+                        </button>
+                    </form>
+                </div>
+                <div class="text-lg-end">
+                    <div class="display-6 fw-bold">@progress%</div>
+                    <small class="text-muted">Tiến độ</small>
+                    <div class="progress mt-2" style="width:160px;height:10px">
+                        <div class="progress-bar" style="width:@progress%"></div>
+                    </div>
+                </div>
+            </div>
+
+            @if (!string.IsNullOrWhiteSpace(Model.YoutubeEmbedUrl))
+            {
+                <div class="ratio ratio-16x9 mb-4 rounded overflow-hidden">
+                    <iframe src="@Model.YoutubeEmbedUrl"
+                            title="@lesson.Title"
+                            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                            allowfullscreen></iframe>
+                </div>
+            }
+
+            @if (!string.IsNullOrWhiteSpace(lesson.Content))
+            {
+                <section class="lesson-content mb-4">
+                    <h2 class="h4 fw-bold">Đọc bài</h2>
+                    <p class="lesson-content-body">@lesson.Content</p>
+                </section>
+            }
+
+            @if (!string.IsNullOrWhiteSpace(lesson.GrammarNotes))
+            {
+                <section class="lesson-grammar mb-4">
+                    <h2 class="h4 fw-bold">
+                        <i class="bi bi-book-half"></i>
+                        Grammar
+                    </h2>
+                    <p class="mb-0">@lesson.GrammarNotes</p>
+                </section>
+            }
+
+            <h2 class="h4 fw-bold mt-4">Lộ trình học</h2>
+            <p class="text-muted">Làm lần lượt từng bước để hoàn thành bài.</p>
+
+            <div class="row g-3">
+                <div class="col-md-4">
+                    <a asp-area="Customer"
+                       asp-controller="Vocabulary"
+                       asp-action="Lesson"
+                       asp-route-lessonId="@lesson.Id"
+                       class="btn btn-outline-primary w-100 p-3 lesson-step">
+                        <span class="badge rounded-pill text-bg-primary mb-2">1</span>
+                        @if (Model.VocabDone)
+                        {
+                            <i class="bi bi-check-circle-fill text-success fs-4 d-block"></i>
+                        }
+                        else
+                        {
+                            <i class="bi bi-book fs-4 d-block"></i>
+                        }
+                        Vocabulary
+                        <small class="d-block text-muted">@Model.WordCount từ trong bài</small>
+                    </a>
+                </div>
+                <div class="col-md-4">
+                    @if (Model.HasListening)
+                    {
+                        <a asp-area="Customer"
+                           asp-controller="Listening"
+                           asp-action="Play"
+                           asp-route-lessonId="@lesson.Id"
+                           class="btn btn-outline-success w-100 p-3 lesson-step">
+                            <span class="badge rounded-pill text-bg-success mb-2">2</span>
+                            @if (Model.ListeningDone)
+                            {
+                                <i class="bi bi-check-circle-fill text-success fs-4 d-block"></i>
+                            }
+                            else
+                            {
+                                <i class="bi bi-headphones fs-4 d-block"></i>
+                            }
+                            Listening
+                            <small class="d-block text-muted">Nghe audio và trả lời</small>
+                        </a>
+                    }
+                    else
+                    {
+                        <div class="btn btn-outline-secondary w-100 p-3 disabled lesson-step">
+                            <span class="badge rounded-pill text-bg-secondary mb-2">2</span>
+                            <i class="bi bi-headphones fs-4 d-block"></i>
+                            Listening
+                            <small class="d-block">Chưa có bài nghe</small>
+                        </div>
+                    }
+                </div>
+                <div class="col-md-4">
+                    @if (Model.HasExercise)
+                    {
+                        <a asp-area="Customer"
+                           asp-controller="Exercise"
+                           asp-action="Index"
+                           asp-route-lessonId="@lesson.Id"
+                           class="btn btn-outline-warning w-100 p-3 lesson-step">
+                            <span class="badge rounded-pill text-bg-warning mb-2">3</span>
+                            @if (Model.ExerciseDone)
+                            {
+                                <i class="bi bi-check-circle-fill text-success fs-4 d-block"></i>
+                            }
+                            else
+                            {
+                                <i class="bi bi-pencil-square fs-4 d-block"></i>
+                            }
+                            Exercise
+                            <small class="d-block text-muted">Làm bài tập củng cố</small>
+                        </a>
+                    }
+                    else
+                    {
+                        <div class="btn btn-outline-secondary w-100 p-3 disabled lesson-step">
+                            <span class="badge rounded-pill text-bg-secondary mb-2">3</span>
+                            <i class="bi bi-pencil-square fs-4 d-block"></i>
+                            Exercise
+                            <small class="d-block">Chưa có bài tập</small>
+                        </div>
+                    }
+                </div>
+                @if (Model.HasReading)
+                {
+                    <div class="col-md-4">
+                        <a asp-area="Customer" asp-controller="Reading" asp-action="Passage"
+                           asp-route-id="@lesson.ReadingPassageId"
+                           class="btn btn-outline-info w-100 p-3 lesson-step">
+                            <span class="badge rounded-pill text-bg-info mb-2">4</span>
+                            @if (Model.ReadingDone) { <i class="bi bi-check-circle-fill text-success fs-4 d-block"></i> }
+                            else { <i class="bi bi-journal-text fs-4 d-block"></i> }
+                            Reading
+                            <small class="d-block text-muted">Đọc hiểu của bài</small>
+                        </a>
+                    </div>
+                }
+                @if (Model.HasSpeaking)
+                {
+                    <div class="col-md-4">
+                        <a asp-area="Customer" asp-controller="Speaking" asp-action="Index"
+                           asp-route-lessonId="@lesson.Id"
+                           class="btn btn-outline-danger w-100 p-3 lesson-step">
+                            <span class="badge rounded-pill text-bg-danger mb-2">5</span>
+                            @if (Model.SpeakingDone) { <i class="bi bi-check-circle-fill text-success fs-4 d-block"></i> }
+                            else { <i class="bi bi-mic fs-4 d-block"></i> }
+                            Speaking
+                            <small class="d-block text-muted">Nói từ trong bài (đạt ≥ 70%)</small>
+                        </a>
+                    </div>
+                }
+                @if (Model.HasWriting)
+                {
+                    <div class="col-md-4">
+                        <a asp-area="Customer" asp-controller="Writing" asp-action="Prompt"
+                           asp-route-id="@lesson.WritingPromptId"
+                           class="btn btn-outline-secondary w-100 p-3 lesson-step">
+                            <span class="badge rounded-pill text-bg-secondary mb-2">6</span>
+                            @if (Model.WritingDone) { <i class="bi bi-check-circle-fill text-success fs-4 d-block"></i> }
+                            else { <i class="bi bi-pencil fs-4 d-block"></i> }
+                            Writing
+                            <small class="d-block text-muted">Viết theo đề của bài</small>
+                        </a>
+                    </div>
+                }
+                @if (Model.HasGrammar)
+                {
+                    <div class="col-md-4">
+                        <a asp-area="Customer" asp-controller="Grammar" asp-action="TopicDrill"
+                           asp-route-id="@lesson.GrammarTopicId"
+                           class="btn btn-outline-dark w-100 p-3 lesson-step">
+                            <span class="badge rounded-pill text-bg-dark mb-2">7</span>
+                            @if (Model.GrammarDone) { <i class="bi bi-check-circle-fill text-success fs-4 d-block"></i> }
+                            else { <i class="bi bi-spellcheck fs-4 d-block"></i> }
+                            Grammar
+                            <small class="d-block text-muted">Luyện chủ điểm của bài</small>
+                        </a>
+                    </div>
+                }
+            </div>
+
+            <hr class="my-4" />
+
+            <h2 class="h5 fw-bold">Ghi chú của bạn</h2>
+            <form asp-action="SaveNote" method="post" class="mb-4">
+                @Html.AntiForgeryToken()
+                <input type="hidden" name="lessonId" value="@lesson.Id" />
+                <textarea name="body" class="form-control mb-2" rows="3" placeholder="Ghi chú, đánh giá bài...">@Model.NoteBody</textarea>
+                <button class="btn btn-outline-primary" type="submit">Lưu ghi chú</button>
+                <a class="btn btn-link" asp-area="Customer" asp-controller="Notebook" asp-action="Index">Xem tất cả</a>
+            </form>
+
+            @if (completed)
+            {
+                <div class="alert alert-success mb-0">
+                    <i class="bi bi-check-circle"></i>
+                    Bạn đã hoàn thành bài học này!
+                </div>
+            }
+            else if (!Model.CanComplete)
+            {
+                <div class="alert alert-warning mb-0">
+                    Hãy hoàn thành các bước còn thiếu trước khi kết thúc bài:
+                    <strong>@string.Join(", ", Model.MissingSteps)</strong>
+                </div>
+            }
+            else
+            {
+                <form asp-area="Customer"
+                      asp-controller="Lesson"
+                      asp-action="Complete"
+                      method="post">
+                    @Html.AntiForgeryToken()
+                    <input type="hidden" name="lessonId" value="@lesson.Id" />
+                    <button type="submit" class="btn btn-success w-100">
+                        <i class="bi bi-check-circle"></i>
+                        Hoàn thành bài học (+20 điểm)
+                    </button>
+                </form>
+            }
+        </div>
+    </div>
+</div>

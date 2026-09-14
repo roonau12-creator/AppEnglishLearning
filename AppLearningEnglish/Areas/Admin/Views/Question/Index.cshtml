@@ -1,0 +1,26 @@
+@{
+    ViewData["Title"] = "Questions";
+    ViewData["Subtitle"] = "Câu hỏi trong từng Exercise";
+    ViewData["Icon"] = "bi-question-circle-fill";
+    ViewData["Tone"] = "violet";
+    ViewData["ActionText"] = "Thêm Question";
+    ViewData["ActionController"] = "Question";
+}
+<partial name="_AdminPageHead" />
+<div class="admin-filter mb-4">
+    <div class="admin-filter-label"><i class="bi bi-funnel"></i> Bộ lọc</div>
+    <div class="row g-3">
+        <div class="col-lg-5"><label class="form-label fw-semibold">Tìm kiếm</label><input id="searchInput" class="form-control" placeholder="Question hoặc Explanation..." /></div>
+        <div class="col-lg-5">
+            <label class="form-label fw-semibold">Exercise</label>
+            <select id="exerciseFilter" class="form-select">
+                <option value="">Tất cả Exercise</option>
+                @foreach (var exercise in ViewBag.Exercises) { <option value="@exercise.Value">@exercise.Text</option> }
+            </select>
+        </div>
+        <div class="col-lg-2 d-flex align-items-end"><button id="btnFilter" type="button" class="btn btn-dark w-100"><i class="bi bi-search"></i></button></div>
+    </div>
+</div>
+<div class="card"><div class="card-header"><h5 class="mb-0 fw-bold">Danh sách Questions</h5></div>
+<div class="card-body"><table id="questionTable" class="table table-hover align-middle w-100"><thead><tr><th>Exercise</th><th>Question</th><th>Explanation</th><th class="text-end">Action</th></tr></thead><tbody></tbody></table></div></div>
+@section Scripts { <script src="~/js/question.js"></script> }

@@ -1,0 +1,67 @@
+@using AppLearningEnglish.Business
+@model AppLearningEnglish.Models.ViewModels.GrammarHubViewModel
+@{
+    ViewData["Title"] = "Ngữ pháp";
+    var groups = Model.Topics
+        .GroupBy(x => EnglishLevelScale.Normalize(x.Level))
+        .OrderBy(g => EnglishLevelScale.Rank(g.Key));
+}
+
+<div class="container py-4">
+    <h1 class="fw-bold">Cây ngữ pháp A1–C2</h1>
+    <p class="text-muted">
+        @(string.IsNullOrWhiteSpace(Model.UserLevel) ? "Làm bài xếp lớp để khóa chủ điểm quá khó." : $"Trình độ hiện tại: {EnglishLevelScale.Display(Model.UserLevel)}")
+    </p>
+    <div class="d-flex flex-wrap gap-2 mb-3">
+        <a class="btn btn-outline-primary btn-sm" asp-action="Conjugate">Chia động từ</a>
+        <a class="btn btn-outline-primary btn-sm" asp-action="Rewrite">Viết lại câu</a>
+        <a class="btn btn-outline-secondary btn-sm" asp-area="Customer" asp-controller="Path" asp-action="Index">Lộ trình A1–C2</a>
+    </div>
+
+    @foreach (var group in groups)
+    {
+        <h2 class="h4 mt-4">@group.Key</h2>
+        <div class="row g-3 mb-3">
+            @foreach (var topic in group.OrderBy(x => x.SortOrder))
+            {
+                var locked = EnglishLevelScale.IsTooHard(Model.UserLevel, topic.Level);
+                Model.Progress.TryGetValue(topic.Id, out var progress);
+                var percent = progress?.BestPercent ?? 0;
+                <div class="col-md-6">
+                    <div class="card border-0 shadow-sm h-100 @(locked ? "opacity-75" : null)">
+                        <div class="card-body">
+                            <span class="badge bg-primary">@EnglishLevelScale.Display(topic.Level)</span>
+                            <h3 class="h5 mt-2">@topic.Title</h3>
+                            <div class="small text-muted mb-2">@percent% · @topic.Items.Count câu</div>
+                            <div class="chart-bar mb-3"><span style="width:@percent%"></span></div>
+                            @if (locked)
+                            {
+                                <span class="text-muted small">Khóa — cao hơn trình độ của bạn.</span>
+                            }
+                            else
+                            {
+                                <a class="btn btn-outline-primary" asp-action="Study" asp-route-id="@topic.Id">Học rồi luyện</a>
+                            }
+                        </div>
+                    </div>
+                </div>
+            }
+        </div>
+    }
+
+    <h2 class="h5">Drill theo bài học</h2>
+    <div class="row g-3">
+        @foreach (var lesson in Model.LessonDrills)
+        {
+            <div class="col-md-6">
+                <div class="card border-0 h-100">
+                    <div class="card-body">
+                        <span class="badge bg-light text-dark">@lesson.Course?.Name</span>
+                        <h3 class="h6 mt-2">@lesson.Title</h3>
+                        <a class="btn btn-sm btn-outline-secondary" asp-action="Drill" asp-route-id="@lesson.Id">Drill bài</a>
+                    </div>
+                </div>
+            </div>
+        }
+    </div>
+</div>

@@ -1,0 +1,73 @@
+@model AppLearningEnglish.Models.ListeningQuestion
+@{
+    var isCreate = Model.Id == 0;
+    ViewData["Title"] = isCreate ? "Thêm Listening Question" : "Sửa Listening Question";
+}
+<div class="admin-form-banner tone-sky">
+    <div class="admin-form-icon"><i class="bi bi-ear"></i></div>
+    <div>
+        <h1 class="fw-bold">@(isCreate ? "Thêm câu hỏi nghe" : "Chỉnh sửa câu hỏi nghe")</h1>
+        <p>Điền chữ, chọn đáp án, điền transcript, nghe từng câu hoặc chính tả.</p>
+    </div>
+</div>
+<div class="row g-4">
+    <div class="col-xl-8">
+        <div class="card"><div class="card-body">
+            <form asp-area="Admin" asp-controller="ListeningQuestion" asp-action="Upsert" method="post">
+                @Html.AntiForgeryToken()
+                <input asp-for="Id" type="hidden" />
+                <div asp-validation-summary="ModelOnly" class="text-danger mb-3"></div>
+                <div class="mb-4">
+                    <label asp-for="ListeningLessonId" class="form-label fw-semibold">Listening Lesson</label>
+                    <select asp-for="ListeningLessonId" asp-items="ViewBag.ListeningLessons" class="form-select">
+                        <option value="">-- Chọn Listening Lesson --</option>
+                    </select>
+                    <span asp-validation-for="ListeningLessonId" class="text-danger"></span>
+                </div>
+                <div class="mb-4">
+                    <label asp-for="Question" class="form-label fw-semibold">Question</label>
+                    <textarea asp-for="Question" class="form-control" rows="4"></textarea>
+                    <span asp-validation-for="Question" class="text-danger"></span>
+                </div>
+                <div class="mb-4">
+                    <label asp-for="Answer" class="form-label fw-semibold">Answer</label>
+                    <textarea asp-for="Answer" class="form-control" rows="3"></textarea>
+                    <span asp-validation-for="Answer" class="text-danger"></span>
+                </div>
+                <div class="mb-4">
+                    <label asp-for="QuestionType" class="form-label fw-semibold">Dạng câu hỏi</label>
+                    <select asp-for="QuestionType" class="form-select">
+                        <option value="FillBlank">Nhập câu trả lời</option>
+                        <option value="MultipleChoice">Chọn đáp án</option>
+                        <option value="TranscriptGap">Điền chỗ trống trong transcript</option>
+                        <option value="Sentence">Nghe từng câu</option>
+                        <option value="Dictation">Chính tả</option>
+                    </select>
+                </div>
+                <div class="mb-4">
+                    <label asp-for="Options" class="form-label fw-semibold">Các lựa chọn</label>
+                    <input asp-for="Options" class="form-control" placeholder="Anna|Minh|Lan" />
+                    <div class="form-text">Chọn đáp án: phân tách bằng |. TranscriptGap dùng ___ . Sentence/Dictation: Answer là câu nghe.</div>
+                </div>
+                <div class="admin-preview mb-4">
+                    <small class="text-muted">Question</small>
+                    <div id="questionPreview" class="fw-semibold">Question...</div>
+                    <small class="text-muted mt-2 d-block">Answer</small>
+                    <div id="answerPreview">Answer...</div>
+                </div>
+                <div class="d-flex justify-content-end gap-2">
+                    <a class="btn btn-outline-secondary" asp-area="Admin" asp-controller="ListeningQuestion" asp-action="Index">Quay lại</a>
+                    <button class="btn btn-primary" type="submit">@(isCreate ? "Thêm Question" : "Lưu thay đổi")</button>
+                </div>
+            </form>
+        </div></div>
+    </div>
+    <div class="col-xl-4"><aside class="admin-aside"><h3>Dạng mới</h3><p class="mb-0">TranscriptGap, Sentence và Dictation xuất hiện trên trang Play của học viên.</p></aside></div>
+</div>
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+    <script>
+        $("#Question").on("input", function () { $("#questionPreview").text($(this).val() || "Question..."); });
+        $("#Answer").on("input", function () { $("#answerPreview").text($(this).val() || "Answer..."); });
+    </script>
+}

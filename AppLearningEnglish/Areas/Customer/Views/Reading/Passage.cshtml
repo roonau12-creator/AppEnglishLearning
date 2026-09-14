@@ -1,0 +1,122 @@
+@model AppLearningEnglish.Models.ViewModels.ReadingPassagePlayViewModel
+@{
+    ViewData["Title"] = Model.Passage.Title;
+    string TypeLabel(string type) => type switch
+    {
+        "MainIdea" => "Ý chính",
+        "Inference" => "Suy luận",
+        "TrueFalseNotGiven" => "True / False / Not Given",
+        _ => "Chi tiết"
+    };
+}
+
+<div class="container py-4" style="max-width:860px">
+    <a asp-action="Index">Thư viện đọc</a>
+    <div class="d-flex gap-2 mt-3 mb-2">
+        <span class="badge bg-primary">@Model.Passage.Level</span>
+        <span class="badge bg-light text-dark">@Model.Passage.Topic</span>
+    </div>
+    <h1 class="fw-bold">@Model.Passage.Title</h1>
+    <div class="d-flex flex-wrap gap-2 mb-3">
+        <button type="button" class="btn btn-sm btn-outline-success" id="readPassage" data-text="@Model.Passage.Body">
+            <i class="bi bi-volume-up"></i> Nghe bài đọc
+        </button>
+        @if (!string.IsNullOrWhiteSpace(Model.Passage.AudioUrl))
+        {
+            <audio controls src="@Model.Passage.AudioUrl"></audio>
+        }
+        <button class="btn btn-sm btn-outline-secondary" type="button" data-bs-toggle="collapse" data-bs-target="#readingTranslation">
+            Dịch đoạn
+        </button>
+    </div>
+    <article class="card border-0 shadow-sm my-4">
+        <div class="card-body p-4 reading-body" id="readingBody" style="white-space:pre-wrap; line-height:1.7">@Model.Passage.Body</div>
+    </article>
+    <p class="small text-muted">Từ đã học được tô vàng trong bài.</p>
+    @if (!string.IsNullOrWhiteSpace(Model.Passage.TranslationVi))
+    {
+        <div class="collapse mb-3" id="readingTranslation">
+            <div class="alert alert-info">@Model.Passage.TranslationVi</div>
+        </div>
+    }
+    <form asp-action="SaveWord" method="post" class="row g-2 mb-4">
+        @Html.AntiForgeryToken()
+        <input type="hidden" name="passageId" value="@Model.Passage.Id" />
+        <div class="col-md-8">
+            <input class="form-control" name="wordText" id="savedWord" placeholder="Bôi từ trong bài rồi lưu vào sổ" />
+        </div>
+        <div class="col-md-4">
+            <button class="btn btn-outline-primary" type="submit">Lưu từ mới</button>
+        </div>
+    </form>
+
+    <form method="post">
+        @Html.AntiForgeryToken()
+        @for (var i = 0; i < Model.Questions.Count; i++)
+        {
+            var question = Model.Questions[i];
+            <div class="card border-0 shadow-sm mb-3">
+                <div class="card-body">
+                    <span class="badge bg-light text-dark mb-2">@TypeLabel(question.Type)</span>
+                    <p class="fw-semibold">@(i + 1). @question.Prompt</p>
+                    @foreach (var option in question.Options)
+                    {
+                        <div class="form-check">
+                            <input class="form-check-input"
+                                   type="radio"
+                                   name="answers[@question.QuestionId]"
+                                   value="@option"
+                                   id="q-@question.QuestionId-@option.GetHashCode()"
+                                   @(string.Equals(question.UserAnswer, option, StringComparison.OrdinalIgnoreCase) ? "checked" : null) />
+                            <label class="form-check-label" for="q-@question.QuestionId-@option.GetHashCode()">@option</label>
+                        </div>
+                    }
+                    @if (question.IsCorrect != null)
+                    {
+                        <div class="mt-2 alert @(question.IsCorrect == true ? "alert-success" : "alert-warning") mb-0">
+                            @(question.IsCorrect == true ? "Đúng." : $"Sai. Đáp án: {question.Answer}")
+                            @if (!string.IsNullOrWhiteSpace(question.Explanation))
+                            {
+                                <div class="small mt-1">@question.Explanation</div>
+                            }
+                        </div>
+                    }
+                </div>
+            </div>
+        }
+        @if (!Model.Score.HasValue)
+        {
+            <button class="btn btn-primary" type="submit">Nộp bài</button>
+        }
+        else
+        {
+            <div class="alert alert-info">Đúng @Model.Score / @Model.Total</div>
+            <a class="btn btn-outline-primary" asp-action="Index">Bài khác</a>
+        }
+    </form>
+</div>
+@section Scripts {
+    <script>
+        var learned = @Html.Raw(System.Text.Json.JsonSerializer.Serialize(Model.LearnedWords));
+        var body = document.getElementById("readingBody");
+        if (body && learned && learned.length) {
+            var set = learned.map(function (w) { return (w || "").toLowerCase(); });
+            body.innerHTML = body.textContent.replace(/[A-Za-z']+/g, function (token) {
+                return set.indexOf(token.toLowerCase()) >= 0
+                    ? '<mark class="learned-word">' + token + '</mark>'
+                    : token;
+            });
+        }
+        document.getElementById("readPassage")?.addEventListener("click", function () {
+            if (!window.speechSynthesis) return;
+            window.speechSynthesis.cancel();
+            var u = new SpeechSynthesisUtterance(this.getAttribute("data-text") || "");
+            u.lang = "en-US";
+            window.speechSynthesis.speak(u);
+        });
+        document.getElementById("readingBody")?.addEventListener("mouseup", function () {
+            var text = (window.getSelection()?.toString() || "").trim();
+            if (text) document.getElementById("savedWord").value = text.split(/\s+/)[0];
+        });
+    </script>
+}

@@ -1,0 +1,204 @@
+@model AppLearningEnglish.Models.ViewModels.AdminDashboardViewModel
+@{
+    ViewData["Title"] = "Dashboard";
+    ViewData["Subtitle"] = "Nhịp học của cả hệ thống trong một màn hình";
+    var labels = System.Text.Json.JsonSerializer.Serialize(
+        Model.EnrollmentTrend.Select(x => x.Label));
+    var enrollSeries = System.Text.Json.JsonSerializer.Serialize(
+        Model.EnrollmentTrend.Select(x => x.Value));
+    var attemptSeries = System.Text.Json.JsonSerializer.Serialize(
+        Model.AttemptTrend.Select(x => x.Value));
+    var hour = DateTime.Now.Hour;
+    var greeting = "Chào buổi tối";
+    if (hour >= 5 && hour <= 11)
+    {
+        greeting = "Chào buổi sáng";
+    }
+    else if (hour >= 12 && hour <= 17)
+    {
+        greeting = "Chào buổi chiều";
+    }
+}
+
+<div class="admin-hero">
+    <div class="admin-hero-content">
+        <span class="badge rounded-pill text-bg-light text-dark">Trực tiếp</span>
+        <h1 class="fw-bold">@greeting, đây là bức tranh học tập hôm nay</h1>
+        <p class="mb-0 text-white-50">
+            @Model.ActiveLearnersToday học viên đã học hôm nay ·
+            @Model.Attempts lượt làm bài ·
+            @Model.CompletionRate% khóa đã hoàn thành
+        </p>
+    </div>
+</div>
+
+<div class="row g-3 mb-4">
+    <div class="col-sm-6 col-xl-3">
+        <div class="admin-stat">
+            <div class="admin-stat-icon tone-violet"><i class="bi bi-people-fill"></i></div>
+            <small>Học viên</small>
+            <strong data-count="@Model.Users">@Model.Users</strong>
+            <p>Tài khoản trong hệ thống</p>
+        </div>
+    </div>
+    <div class="col-sm-6 col-xl-3">
+        <div class="admin-stat">
+            <div class="admin-stat-icon tone-cyan"><i class="bi bi-lightning-charge-fill"></i></div>
+            <small>Học hôm nay</small>
+            <strong data-count="@Model.ActiveLearnersToday">@Model.ActiveLearnersToday</strong>
+            <p>Giữ streak hoặc vừa học</p>
+        </div>
+    </div>
+    <div class="col-sm-6 col-xl-3">
+        <div class="admin-stat">
+            <div class="admin-stat-icon tone-mint"><i class="bi bi-mortarboard-fill"></i></div>
+            <small>Tỉ lệ hoàn thành</small>
+            <strong><span data-count="@Model.CompletionRate.ToString(System.Globalization.CultureInfo.InvariantCulture)" data-decimals="1">@Model.CompletionRate</span>%</strong>
+            <p>@Model.CompletedEnrollments khóa đạt 100%</p>
+        </div>
+    </div>
+    <div class="col-sm-6 col-xl-3">
+        <div class="admin-stat">
+            <div class="admin-stat-icon tone-amber"><i class="bi bi-stars"></i></div>
+            <small>Điểm bài tập TB</small>
+            <strong data-count="@Model.AverageScore.ToString(System.Globalization.CultureInfo.InvariantCulture)" data-decimals="1">@Model.AverageScore</strong>
+            <p>Trung bình các bài đã nộp</p>
+        </div>
+    </div>
+    <div class="col-sm-6 col-xl-3">
+        <div class="admin-stat">
+            <div class="admin-stat-icon tone-sky"><i class="bi bi-collection-play-fill"></i></div>
+            <small>Khóa học</small>
+            <strong data-count="@Model.Courses">@Model.Courses</strong>
+            <p>@Model.Enrollments lượt đăng ký</p>
+        </div>
+    </div>
+    <div class="col-sm-6 col-xl-3">
+        <div class="admin-stat">
+            <div class="admin-stat-icon tone-pink"><i class="bi bi-journal-richtext"></i></div>
+            <small>Bài học</small>
+            <strong data-count="@Model.Lessons">@Model.Lessons</strong>
+            <p>Nội dung đang quản lý</p>
+        </div>
+    </div>
+    <div class="col-sm-6 col-xl-3">
+        <div class="admin-stat">
+            <div class="admin-stat-icon tone-orange"><i class="bi bi-chat-quote-fill"></i></div>
+            <small>Từ vựng</small>
+            <strong data-count="@Model.Words">@Model.Words</strong>
+            <p>Kho từ trong catalog</p>
+        </div>
+    </div>
+    <div class="col-sm-6 col-xl-3">
+        <div class="admin-stat">
+            <div class="admin-stat-icon tone-grape"><i class="bi bi-pencil-square"></i></div>
+            <small>Lượt làm bài</small>
+            <strong data-count="@Model.Attempts">@Model.Attempts</strong>
+            <p>Exercise attempts</p>
+        </div>
+    </div>
+</div>
+
+<div class="row g-3">
+    <div class="col-xl-8">
+        <div class="card h-100">
+            <div class="card-body">
+                <div class="d-flex justify-content-between align-items-start mb-3">
+                    <div>
+                        <h2 class="h5 fw-bold mb-1">Nhịp 14 ngày</h2>
+                        <p class="text-muted mb-0">Đăng ký khóa và lượt nộp bài</p>
+                    </div>
+                    <span class="badge rounded-pill text-bg-light">Live chart</span>
+                </div>
+                <canvas id="trendChart" height="118"></canvas>
+            </div>
+        </div>
+    </div>
+    <div class="col-xl-4">
+        <div class="card h-100">
+            <div class="card-body">
+                <h2 class="h5 fw-bold mb-1">Khóa đông học viên</h2>
+                <p class="text-muted">Top 5 theo lượt đăng ký</p>
+                @if (!Model.TopCourses.Any())
+                {
+                    <p class="text-muted mb-0">Chưa có lượt đăng ký nào.</p>
+                }
+                else
+                {
+                    var maxEnroll = Math.Max(1, Model.TopCourses.Max(x => x.Enrollments));
+                    var rank = 1;
+                    foreach (var course in Model.TopCourses)
+                    {
+                        var width = Math.Max(8, course.Enrollments * 100 / maxEnroll);
+                        <div class="admin-rank">
+                            <div class="admin-rank-index">@rank</div>
+                            <div class="flex-grow-1">
+                                <div class="d-flex justify-content-between gap-2">
+                                    <strong>@course.CourseName</strong>
+                                    <span class="text-muted">@course.Enrollments HV</span>
+                                </div>
+                                <div class="admin-rank-bar mt-2">
+                                    <span style="width:@width%"></span>
+                                </div>
+                                <small class="text-muted">Tiến độ TB @course.AverageProgress%</small>
+                            </div>
+                        </div>
+                        rank++;
+                    }
+                }
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+<script>
+    const ctx = document.getElementById("trendChart");
+    const enrollFill = ctx.getContext("2d").createLinearGradient(0, 0, 0, 280);
+    enrollFill.addColorStop(0, "rgba(99, 102, 241, 0.28)");
+    enrollFill.addColorStop(1, "rgba(99, 102, 241, 0)");
+    const attemptFill = ctx.getContext("2d").createLinearGradient(0, 0, 0, 280);
+    attemptFill.addColorStop(0, "rgba(34, 211, 238, 0.26)");
+    attemptFill.addColorStop(1, "rgba(34, 211, 238, 0)");
+
+    new Chart(ctx, {
+        type: "line",
+        data: {
+            labels: @Html.Raw(labels),
+            datasets: [
+                {
+                    label: "Đăng ký khóa",
+                    data: @Html.Raw(enrollSeries),
+                    borderColor: "#6366f1",
+                    backgroundColor: enrollFill,
+                    fill: true,
+                    tension: 0.4,
+                    pointRadius: 3,
+                    pointBackgroundColor: "#6366f1"
+                },
+                {
+                    label: "Lượt làm bài",
+                    data: @Html.Raw(attemptSeries),
+                    borderColor: "#22d3ee",
+                    backgroundColor: attemptFill,
+                    fill: true,
+                    tension: 0.4,
+                    pointRadius: 3,
+                    pointBackgroundColor: "#22d3ee"
+                }
+            ]
+        },
+        options: {
+            responsive: true,
+            plugins: {
+                legend: { labels: { usePointStyle: true, padding: 18 } }
+            },
+            scales: {
+                x: { grid: { display: false } },
+                y: { beginAtZero: true, ticks: { precision: 0 }, grid: { color: "#eef2f7" } }
+            }
+        }
+    });
+</script>
+}

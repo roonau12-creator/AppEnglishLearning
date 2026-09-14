@@ -1,0 +1,113 @@
+@model AppLearningEnglish.Models.ViewModels.SpeakingPromptViewModel
+@{
+    ViewData["Title"] = "Luyện nói";
+}
+
+<div style="max-width:720px" class="mx-auto">
+    <a asp-action="Index" class="page-back"><i class="bi bi-arrow-left"></i> Danh sách từ</a>
+    <div class="btn-group my-3 w-100">
+        <a class="btn @(Model.Mode == "sentence" ? "btn-primary" : "btn-outline-primary")" asp-action="Prompt" asp-route-mode="sentence">Nói câu</a>
+        <a class="btn @(Model.Mode == "dialogue" ? "btn-primary" : "btn-outline-primary")" asp-action="Prompt" asp-route-mode="dialogue">Hội thoại</a>
+        <a class="btn @(Model.Mode == "passage" ? "btn-primary" : "btn-outline-primary")" asp-action="Prompt" asp-route-mode="passage">Đọc đoạn</a>
+    </div>
+
+    <div class="speak-studio text-start">
+            <span class="mode-chip mb-3">Luyện nói</span>
+            <h1 class="h4 fw-bold">@Model.Title</h1>
+            <p class="text-muted">@Model.Hint</p>
+            <p class="fs-5" style="white-space:pre-wrap">@Model.Expected</p>
+
+            <div class="speak-actions justify-content-start">
+                <button type="button" class="btn btn-outline-success" id="hearSample" data-text="@Model.Expected">
+                    <i class="bi bi-volume-up"></i> Nghe mẫu
+                </button>
+                <div class="btn-group">
+                    <button type="button" class="btn btn-sm btn-outline-secondary accent-btn" data-lang="en-US">US</button>
+                    <button type="button" class="btn btn-sm btn-outline-secondary accent-btn" data-lang="en-GB">UK</button>
+                </div>
+                <button type="button" class="btn btn-outline-dark" id="recordSelf">Ghi âm</button>
+                <button type="button" class="btn btn-outline-dark" id="playSelf" disabled>Nghe lại</button>
+                <button type="button" class="btn btn-outline-primary" id="shadowPlay">Shadowing</button>
+            </div>
+            <audio id="selfPlayback" class="w-100 mb-3 d-none" controls></audio>
+
+            <form method="post" id="speechForm">
+                @Html.AntiForgeryToken()
+                <input type="hidden" name="mode" value="@Model.Mode" />
+                <input type="hidden" name="durationMs" id="durationMs" value="@Model.DurationMs" />
+                <p class="mb-2 fw-semibold">Bấm mic rồi nói. Web Speech API của trình duyệt chuyển giọng thành chữ.</p>
+                <div class="text-center mb-3">
+                    <button type="button" class="btn btn-danger btn-mic" id="startSpeech" aria-label="Bắt đầu nói">
+                        <i class="bi bi-mic-fill"></i>
+                    </button>
+                </div>
+                <label class="form-label" for="heardText">Bạn nói</label>
+                <textarea id="heardText" name="heardText" class="form-control" rows="3" required>@Model.HeardText</textarea>
+                <p class="small text-muted" id="speechStatus">Chrome / Edge + micro. Không gọi AI trả phí.</p>
+                <button class="btn btn-primary w-100" type="submit">Chấm phát âm</button>
+            </form>
+
+            @if (Model.ScorePercent.HasValue)
+            {
+                <hr />
+                <div class="alert @(Model.IsPassed == true ? "alert-success" : "alert-warning")">
+                    @(Model.IsPassed == true ? $"Đạt {Model.ScorePercent}%." : $"Chưa đạt ({Model.ScorePercent}%).")
+                </div>
+                <partial name="_SpeechAssessment" model="Model.Assessment" />
+            }
+    </div>
+</div>
+
+@section Scripts {
+    <script src="~/js/speech-mic.js" asp-append-version="true"></script>
+    <script>
+        AppSpeechMic({ button: "#startSpeech", input: "#heardText", form: "#speechForm" });
+        var ttsLang = "en-US";
+        function speakEnglish(text, rate) {
+            if (!text || !window.speechSynthesis) return;
+            window.speechSynthesis.cancel();
+            var utterance = new SpeechSynthesisUtterance(text);
+            utterance.lang = ttsLang;
+            utterance.rate = rate || 1;
+            window.speechSynthesis.speak(utterance);
+        }
+        document.querySelectorAll(".accent-btn").forEach(function (btn) {
+            btn.addEventListener("click", function () { ttsLang = this.getAttribute("data-lang") || "en-US"; });
+        });
+        document.getElementById("hearSample")?.addEventListener("click", function () {
+            speakEnglish(this.getAttribute("data-text") || "");
+        });
+        document.getElementById("shadowPlay")?.addEventListener("click", function () {
+            speakEnglish(document.getElementById("hearSample")?.getAttribute("data-text") || "", 0.7);
+        });
+        var chunks = [];
+        var recorder = null;
+        var recordBtn = document.getElementById("recordSelf");
+        var playBtn = document.getElementById("playSelf");
+        var playback = document.getElementById("selfPlayback");
+        recordBtn?.addEventListener("click", async function () {
+            if (recorder && recorder.state === "recording") {
+                recorder.stop();
+                recordBtn.textContent = "Ghi âm";
+                return;
+            }
+            try {
+                var stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+                chunks = [];
+                recorder = new MediaRecorder(stream);
+                recorder.ondataavailable = function (e) { if (e.data.size) chunks.push(e.data); };
+                recorder.onstop = function () {
+                    playback.src = URL.createObjectURL(new Blob(chunks, { type: "audio/webm" }));
+                    playback.classList.remove("d-none");
+                    playBtn.disabled = false;
+                    stream.getTracks().forEach(function (t) { t.stop(); });
+                };
+                recorder.start();
+                recordBtn.textContent = "Dừng";
+            } catch (err) {
+                document.getElementById("speechStatus").textContent = "Không mở được micro.";
+            }
+        });
+        playBtn?.addEventListener("click", function () { playback.play(); });
+    </script>
+}

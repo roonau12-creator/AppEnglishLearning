@@ -1,0 +1,51 @@
+@model AppLearningEnglish.Models.WordMeaning
+@{
+    var isCreate = Model.Id == 0;
+    ViewData["Title"] = isCreate ? "Thêm Meaning" : "Sửa Meaning";
+}
+<div class="admin-form-banner tone-cyan">
+    <div class="admin-form-icon"><i class="bi bi-translate"></i></div>
+    <div>
+        <h1 class="fw-bold">@(isCreate ? "Thêm Meaning" : "Chỉnh sửa Meaning")</h1>
+        <p>Một từ có thể có nhiều nghĩa, nhiều ngôn ngữ.</p>
+    </div>
+</div>
+<div class="row g-4">
+    <div class="col-xl-8">
+        <div class="card"><div class="card-body">
+            <form asp-area="Admin" asp-controller="WordMeaning" asp-action="Upsert" method="post">
+                @Html.AntiForgeryToken()
+                <input asp-for="Id" type="hidden" />
+                <div asp-validation-summary="ModelOnly" class="text-danger mb-3"></div>
+                <div class="mb-4">
+                    <label asp-for="WordId" class="form-label fw-semibold">Word</label>
+                    <select asp-for="WordId" asp-items="ViewBag.Words" class="form-select"><option value="">-- Chọn Word --</option></select>
+                    <span asp-validation-for="WordId" class="text-danger"></span>
+                </div>
+                <div class="mb-4">
+                    <label asp-for="Language" class="form-label fw-semibold">Language</label>
+                    <select asp-for="Language" class="form-select">
+                        <option value="">-- Chọn Language --</option>
+                        <option value="Vietnamese">Vietnamese</option>
+                        <option value="English">English</option>
+                        <option value="Japanese">Japanese</option>
+                        <option value="Korean">Korean</option>
+                        <option value="Chinese">Chinese</option>
+                    </select>
+                    <span asp-validation-for="Language" class="text-danger"></span>
+                </div>
+                <div class="mb-4">
+                    <label asp-for="Meaning" class="form-label fw-semibold">Meaning</label>
+                    <textarea asp-for="Meaning" class="form-control" rows="5"></textarea>
+                    <span asp-validation-for="Meaning" class="text-danger"></span>
+                </div>
+                <div class="d-flex justify-content-end gap-2">
+                    <a class="btn btn-outline-secondary" asp-area="Admin" asp-controller="WordMeaning" asp-action="Index">Quay lại</a>
+                    <button class="btn btn-primary" type="submit">@(isCreate ? "Thêm Meaning" : "Lưu thay đổi")</button>
+                </div>
+            </form>
+        </div></div>
+    </div>
+    <div class="col-xl-4"><aside class="admin-aside"><h3>Review</h3><p class="mb-0">Nghĩa tiếng Việt hiện khi học viên mở flashcard.</p></aside></div>
+</div>
+@section Scripts { <partial name="_ValidationScriptsPartial" /> }

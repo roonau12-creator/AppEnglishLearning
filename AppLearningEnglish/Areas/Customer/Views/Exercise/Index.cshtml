@@ -1,0 +1,112 @@
+@model IEnumerable<AppLearningEnglish.Models.Exercise>
+
+@{
+    ViewData["Title"] = "Exercises";
+    int lessonId = ViewBag.LessonId;
+}
+
+<div class="container py-5">
+
+    <div class="mb-4">
+
+        <a asp-area="Customer"
+           asp-controller="Lesson"
+           asp-action="Details"
+           asp-route-id="@lessonId"
+           class="text-decoration-none">
+            <i class="bi bi-arrow-left"></i>
+            Quay lại bài học
+        </a>
+
+        <h1 class="fw-bold mt-3">
+
+            <i class="bi bi-pencil-square"></i>
+
+            Exercises
+
+        </h1>
+
+        <p class="text-muted">
+            Chọn bài tập để bắt đầu
+        </p>
+
+    </div>
+
+    @if (!Model.Any())
+    {
+        <div class="alert alert-info">
+
+            Bài học này chưa có Exercise.
+
+        </div>
+    }
+    else
+    {
+        <div class="row g-4">
+
+            @foreach (var exercise in Model)
+            {
+                <div class="col-md-6 col-lg-4">
+
+                    <div class="card border-0 shadow-sm h-100">
+
+                        <div class="card-body">
+
+                            <div class="mb-3">
+
+                                <span class="badge bg-primary">
+
+                                    Exercise
+                                    @exercise.ExerciseOrder
+
+                                </span>
+
+                            </div>
+
+                            <h4 class="fw-bold">
+
+                                @exercise.Type
+
+                            </h4>
+
+                            <p class="text-muted">
+
+                                @exercise.Question
+
+                            </p>
+
+                            <a asp-area="Customer"
+                               asp-controller="Exercise"
+                               asp-action="Start"
+                               asp-route-id="@exercise.Id"
+                               class="btn btn-primary w-100">
+
+                                <i class="bi bi-play-fill"></i>
+
+                                Start Exercise
+
+                            </a>
+
+                            <a asp-area="Customer"
+                               asp-controller="Exercise"
+                               asp-action="History"
+                               asp-route-exerciseId="@exercise.Id"
+                               class="btn btn-outline-secondary w-100 mt-2">
+
+                                <i class="bi bi-clock-history"></i>
+
+                                History
+
+                            </a>
+
+                        </div>
+
+                    </div>
+
+                </div>
+            }
+
+        </div>
+    }
+
+</div>

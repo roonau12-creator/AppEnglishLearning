@@ -1,0 +1,22 @@
+@model AppLearningEnglish.Models.GrammarTopic
+@{
+    ViewData["Title"] = Model.Title;
+}
+
+<div class="container py-4" style="max-width:800px">
+    <a asp-action="Index">Lộ trình ngữ pháp</a>
+    <div class="d-flex gap-2 mt-3">
+        <span class="badge bg-primary">@Model.Level</span>
+        <span class="badge bg-light text-dark">Bước @Model.SortOrder</span>
+    </div>
+    <h1 class="fw-bold mt-2">@Model.Title</h1>
+    <article class="card border-0 shadow-sm my-4">
+        <div class="card-body p-4" style="white-space:pre-wrap; line-height:1.7">@Model.Explanation</div>
+    </article>
+    @if (!string.IsNullOrWhiteSpace(Model.Examples))
+    {
+        <h2 class="h5">Ví dụ</h2>
+        <pre class="bg-light p-3 rounded" style="white-space:pre-wrap">@Model.Examples</pre>
+    }
+    <a class="btn btn-primary" asp-action="TopicDrill" asp-route-id="@Model.Id">Luyện @Model.Items.Count câu</a>
+</div>

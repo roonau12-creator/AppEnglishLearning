@@ -1,0 +1,23 @@
+@{
+    Layout = "_Layout";
+    ViewData["Title"] = "Xóa tài khoản";
+}
+
+<div class="auth-form-card mx-auto" style="max-width:520px">
+    <h2>Xóa tài khoản</h2>
+    <p class="text-danger">Xóa vĩnh viễn hồ sơ, tiến độ, từ vựng và ghi chú. Không hoàn tác.</p>
+    <form method="post">
+        @Html.AntiForgeryToken()
+        <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+        <div class="mb-3">
+            <label class="form-label">Mật khẩu</label>
+            <input class="form-control" type="password" name="password" required />
+        </div>
+        <div class="mb-3">
+            <label class="form-label">Gõ XOA để xác nhận</label>
+            <input class="form-control" name="confirm" required />
+        </div>
+        <button class="btn btn-danger" type="submit">Xóa tài khoản</button>
+        <a class="btn btn-outline-secondary" asp-action="Profile">Hủy</a>
+    </form>
+</div>

@@ -1,0 +1,93 @@
+@model AppLearningEnglish.Models.Course
+@{
+    var isCreate = Model.Id == 0;
+    ViewData["Title"] = isCreate ? "Thêm Course" : "Sửa Course";
+    ViewData["Subtitle"] = isCreate ? "Tạo khóa học mới" : "Cập nhật khóa học";
+}
+
+<div class="admin-form-banner tone-sky">
+    <div class="admin-form-icon"><i class="bi bi-collection-play-fill"></i></div>
+    <div>
+        <h1 class="fw-bold">@(isCreate ? "Thêm Course" : "Chỉnh sửa Course")</h1>
+        <p>Ảnh bìa, trình độ và mô tả sẽ hiện trên trang học viên.</p>
+    </div>
+</div>
+
+<div class="row g-4">
+    <div class="col-xl-8">
+        <div class="card">
+            <div class="card-body">
+                <form asp-area="Admin" asp-controller="Course" asp-action="Upsert" method="post">
+                    @Html.AntiForgeryToken()
+                    <input asp-for="Id" type="hidden" />
+                    <div asp-validation-summary="ModelOnly" class="text-danger mb-3"></div>
+                    <div class="mb-4">
+                        <label asp-for="Name" class="form-label fw-semibold">Tên Course</label>
+                        <input asp-for="Name" class="form-control" placeholder="English Beginner..." />
+                        <span asp-validation-for="Name" class="text-danger"></span>
+                    </div>
+                    <div class="mb-4">
+                        <label asp-for="Description" class="form-label fw-semibold">Mô tả</label>
+                        <textarea asp-for="Description" class="form-control" rows="5" placeholder="Mô tả nội dung Course..."></textarea>
+                        <span asp-validation-for="Description" class="text-danger"></span>
+                    </div>
+                    <div class="mb-4">
+                        <label asp-for="ThumbnailUrl" class="form-label fw-semibold">Thumbnail URL</label>
+                        <input asp-for="ThumbnailUrl" id="thumbnailUrl" class="form-control" placeholder="https://..." />
+                        <span asp-validation-for="ThumbnailUrl" class="text-danger"></span>
+                        <img id="thumbnailPreview"
+                             src="@Model.ThumbnailUrl"
+                             class="rounded mt-3"
+                             style="width:180px;height:110px;object-fit:cover;display:@(string.IsNullOrEmpty(Model.ThumbnailUrl) ? "none" : "block")" />
+                    </div>
+                    <div class="mb-4">
+                        <label asp-for="Level" class="form-label fw-semibold">Level</label>
+                        <select asp-for="Level" class="form-select">
+                            <option value="">-- Chọn Level --</option>
+                            <option value="A1">A1 - Beginner</option>
+                            <option value="A2">A2 - Elementary</option>
+                            <option value="B1">B1 - Intermediate</option>
+                            <option value="B2">B2 - Upper Intermediate</option>
+                            <option value="C1">C1 - Advanced</option>
+                            <option value="C2">C2 - Proficient</option>
+                        </select>
+                        <span asp-validation-for="Level" class="text-danger"></span>
+                    </div>
+                    <div class="mb-4">
+                        <div class="form-check form-switch">
+                            <input asp-for="IsPublished" class="form-check-input" type="checkbox" />
+                            <label asp-for="IsPublished" class="form-check-label fw-semibold">Publish Course</label>
+                        </div>
+                        <small class="text-muted">Bật để Course hiện cho người học.</small>
+                    </div>
+                    <div class="d-flex justify-content-end gap-2">
+                        <a class="btn btn-outline-secondary" asp-area="Admin" asp-controller="Course" asp-action="Index">
+                            <i class="bi bi-arrow-left me-1"></i> Quay lại
+                        </a>
+                        <button type="submit" class="btn btn-primary">
+                            <i class="bi bi-check-circle me-1"></i>
+                            @(isCreate ? "Tạo Course" : "Lưu thay đổi")
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+    <div class="col-xl-4">
+        <aside class="admin-aside">
+            <h3><i class="bi bi-image me-1"></i> Ảnh bìa</h3>
+            <p class="mb-0">Dùng SVG/PNG ngang. Ảnh đẹp giúp trang Courses sống động hơn.</p>
+        </aside>
+    </div>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+    <script>
+        $("#thumbnailUrl").on("input", function () {
+            var url = $(this).val();
+            if (url) { $("#thumbnailPreview").attr("src", url).show(); }
+            else { $("#thumbnailPreview").hide(); }
+        });
+    </script>
+}

@@ -1,0 +1,129 @@
+@model AppLearningEnglish.Models.ViewModels.SpeakingPracticeViewModel
+@{
+    ViewData["Title"] = "Phát âm " + Model.Word.WordText;
+}
+
+<a asp-area="Customer" asp-controller="Speaking" asp-action="Index" class="page-back">
+    <i class="bi bi-arrow-left"></i>
+    Danh sách từ
+</a>
+
+<div class="speak-studio">
+    <span class="mode-chip mb-3">
+        <i class="bi bi-mic"></i> Luyện phát âm
+    </span>
+    <h1 class="speak-word-title">@Model.Word.WordText</h1>
+    <p class="text-muted fs-5 mb-2">@Model.Word.Pronunciation</p>
+    <p class="mb-4">@Model.Word.Definition</p>
+
+    @if (!string.IsNullOrWhiteSpace(Model.Word.AudioUrl))
+    {
+        <audio controls class="w-100 mb-3">
+            <source src="@Model.Word.AudioUrl" />
+        </audio>
+    }
+
+    <div class="speak-actions">
+        <button type="button" class="btn btn-outline-success" id="hearSample" data-text="@Model.Word.WordText">
+            <i class="bi bi-volume-up"></i>
+            Nghe mẫu
+        </button>
+        <div class="btn-group">
+            <button type="button" class="btn btn-sm btn-outline-secondary accent-btn" data-lang="en-US">US</button>
+            <button type="button" class="btn btn-sm btn-outline-secondary accent-btn" data-lang="en-GB">UK</button>
+        </div>
+        <button type="button" class="btn btn-outline-dark" id="recordSelf">Ghi âm</button>
+        <button type="button" class="btn btn-outline-dark" id="playSelf" disabled>Nghe lại giọng mình</button>
+        <button type="button" class="btn btn-outline-primary" id="shadowPlay">Shadowing</button>
+    </div>
+    <audio id="selfPlayback" class="w-100 mb-3 d-none" controls></audio>
+
+    <form asp-area="Customer" asp-controller="Speaking" asp-action="Practice" method="post" id="speechForm">
+        @Html.AntiForgeryToken()
+        <input type="hidden" name="wordId" value="@Model.Word.Id" />
+        <input type="hidden" name="durationMs" id="durationMs" value="@Model.DurationMs" />
+        <p class="mb-3 fw-semibold">Bấm mic, nói từ, trình duyệt chuyển giọng thành chữ (miễn phí).</p>
+        <div class="text-center mb-3">
+            <button type="button" class="btn btn-danger btn-mic" id="startSpeech" aria-label="Bắt đầu nói">
+                <i class="bi bi-mic-fill"></i>
+            </button>
+        </div>
+        <label class="form-label d-block" for="heardText">Bạn nói</label>
+        <input id="heardText"
+               name="heardText"
+               class="form-control mb-2 text-center"
+               value="@Model.HeardText"
+               placeholder="Transcript hiện ở đây — có thể sửa rồi chấm lại"
+               required />
+        <p class="small text-muted" id="speechStatus">
+            Chrome / Edge + cho phép micro. Không gọi AI trả phí.
+        </p>
+        <button type="submit" class="btn btn-primary w-100">Chấm phát âm</button>
+    </form>
+
+    @if (Model.ScorePercent.HasValue)
+    {
+        <hr />
+        <div class="alert @(Model.IsPassed == true ? "alert-success" : "alert-warning")">
+            @(Model.IsPassed == true ? $"Đạt. +{Model.PointsEarned} điểm." : "Chưa đạt. Từ đỏ là sai hoặc gần đúng.")
+        </div>
+        <partial name="_SpeechAssessment" model="Model.Assessment" />
+    }
+</div>
+
+@section Scripts {
+    <script src="~/js/speech-mic.js" asp-append-version="true"></script>
+    <script>
+        AppSpeechMic({ button: "#startSpeech", input: "#heardText", form: "#speechForm" });
+        var ttsLang = "en-US";
+        function speakEnglish(text, rate) {
+            if (!text || !window.speechSynthesis) return;
+            window.speechSynthesis.cancel();
+            var utterance = new SpeechSynthesisUtterance(text);
+            utterance.lang = ttsLang;
+            utterance.rate = rate || 1;
+            window.speechSynthesis.speak(utterance);
+        }
+        document.querySelectorAll(".accent-btn").forEach(function (btn) {
+            btn.addEventListener("click", function () {
+                ttsLang = this.getAttribute("data-lang") || "en-US";
+            });
+        });
+        document.getElementById("hearSample")?.addEventListener("click", function () {
+            speakEnglish(this.getAttribute("data-text") || "");
+        });
+        document.getElementById("shadowPlay")?.addEventListener("click", function () {
+            speakEnglish(document.getElementById("hearSample")?.getAttribute("data-text") || "", 0.75);
+        });
+
+        var chunks = [];
+        var recorder = null;
+        var recordBtn = document.getElementById("recordSelf");
+        var playBtn = document.getElementById("playSelf");
+        var playback = document.getElementById("selfPlayback");
+        recordBtn?.addEventListener("click", async function () {
+            if (recorder && recorder.state === "recording") {
+                recorder.stop();
+                recordBtn.textContent = "Ghi âm";
+                return;
+            }
+            try {
+                var stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+                chunks = [];
+                recorder = new MediaRecorder(stream);
+                recorder.ondataavailable = function (e) { if (e.data.size) chunks.push(e.data); };
+                recorder.onstop = function () {
+                    playback.src = URL.createObjectURL(new Blob(chunks, { type: "audio/webm" }));
+                    playback.classList.remove("d-none");
+                    playBtn.disabled = false;
+                    stream.getTracks().forEach(function (t) { t.stop(); });
+                };
+                recorder.start();
+                recordBtn.textContent = "Dừng";
+            } catch (err) {
+                document.getElementById("speechStatus").textContent = "Không mở được micro để ghi âm.";
+            }
+        });
+        playBtn?.addEventListener("click", function () { playback.play(); });
+    </script>
+}

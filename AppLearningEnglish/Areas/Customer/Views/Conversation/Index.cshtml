@@ -1,0 +1,25 @@
+@model IReadOnlyList<AppLearningEnglish.Models.ViewModels.ConversationScenario>
+@{
+    ViewData["Title"] = "Hội thoại";
+}
+<div class="container py-4">
+    <h1 class="fw-bold">Gia sư hội thoại</h1>
+    <p class="text-muted">Role play theo kịch bản. Hội thoại tự do dùng nhánh câu hỏi — không phải mô hình ngôn ngữ, cũng không chấm sóng âm.</p>
+    <a class="btn btn-outline-primary mb-4" asp-action="FreeTalk">AI hội thoại tự do (kịch bản)</a>
+    <div class="row g-3">
+        @foreach (var scene in Model)
+        {
+            <div class="col-md-6">
+                <div class="card h-100 border-0 shadow-sm">
+                    <div class="card-body">
+                        <span class="badge bg-primary">@scene.Level</span>
+                        <h2 class="h5 fw-bold mt-2">@scene.Title</h2>
+                        <p class="text-muted">@scene.Setting</p>
+                        <p class="small mb-3">@scene.Turns.Count lượt</p>
+                        <a class="btn btn-primary" asp-action="Play" asp-route-id="@scene.Id">Bắt đầu</a>
+                    </div>
+                </div>
+            </div>
+        }
+    </div>
+</div>

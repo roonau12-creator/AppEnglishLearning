@@ -1,0 +1,87 @@
+@model AppLearningEnglish.Models.UserPoint
+
+@{
+    ViewData["Title"] = "My Points";
+}
+
+<div class="container py-5">
+
+    <div class="text-center mb-5">
+
+        <div class="display-1">
+            ⭐
+        </div>
+
+        <h1 class="fw-bold">
+            My Points
+        </h1>
+
+        <p class="text-muted">
+            Điểm tích lũy trong quá trình học tiếng Anh.
+        </p>
+
+    </div>
+
+    <div class="row justify-content-center">
+
+        <div class="col-md-6 col-lg-5">
+
+            <div class="card border-0 shadow-sm">
+
+                <div class="card-body text-center p-5">
+
+                    <div class="display-2 fw-bold text-warning">
+                        @Model.Points
+                    </div>
+
+                    <h4 class="fw-bold mt-2">
+                        Points
+                    </h4>
+
+                    <p class="text-muted">
+
+                        Cập nhật lần cuối:
+
+                        <br />
+
+                        @Model.UpdatedAt.ToLocalTime()
+
+                    </p>
+
+                    <hr />
+
+                    <div class="d-grid gap-2">
+
+                        <a asp-area="Customer"
+                           asp-controller="Achievement"
+                           asp-action="Index"
+                           class="btn btn-primary">
+
+                            <i class="bi bi-trophy"></i>
+
+                            My Achievements
+
+                        </a>
+
+                        <a asp-area="Customer"
+                           asp-controller="Point"
+                           asp-action="Leaderboard"
+                           class="btn btn-outline-primary">
+
+                            <i class="bi bi-bar-chart"></i>
+
+                            Leaderboard
+
+                        </a>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</div>

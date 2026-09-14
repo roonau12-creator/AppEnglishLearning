@@ -1,0 +1,48 @@
+@model AppLearningEnglish.Models.Achievement
+@{
+    var isEdit = Model.Id != 0;
+    ViewData["Title"] = isEdit ? "Sửa Achievement" : "Thêm Achievement";
+}
+<div class="admin-form-banner tone-amber">
+    <div class="admin-form-icon"><i class="bi bi-trophy-fill"></i></div>
+    <div>
+        <h1 class="fw-bold">@(isEdit ? "Chỉnh sửa Achievement" : "Tạo Achievement")</h1>
+        <p>Huy hiệu hiện trên trang Achievements của học viên.</p>
+    </div>
+</div>
+<div class="row g-4">
+    <div class="col-xl-8">
+        <div class="card"><div class="card-body">
+            <form asp-area="Admin" asp-controller="Achievement" asp-action="Upsert" method="post">
+                @Html.AntiForgeryToken()
+                <input asp-for="Id" type="hidden" />
+                <div asp-validation-summary="ModelOnly" class="text-danger mb-3"></div>
+                <div class="mb-3">
+                    <label asp-for="Name" class="form-label fw-semibold">Name</label>
+                    <input asp-for="Name" class="form-control" placeholder="First Lesson" />
+                    <span asp-validation-for="Name" class="text-danger"></span>
+                </div>
+                <div class="mb-3">
+                    <label asp-for="Description" class="form-label fw-semibold">Description</label>
+                    <textarea asp-for="Description" class="form-control" rows="4"></textarea>
+                    <span asp-validation-for="Description" class="text-danger"></span>
+                </div>
+                <div class="mb-3">
+                    <label asp-for="IconUrl" class="form-label fw-semibold">Icon URL</label>
+                    <input asp-for="IconUrl" class="form-control" placeholder="/images/achievements/first.png" />
+                </div>
+                <div class="mb-4">
+                    <label asp-for="RequiredPoints" class="form-label fw-semibold">Required Points</label>
+                    <input asp-for="RequiredPoints" type="number" min="0" class="form-control" />
+                    <div class="form-text">Số điểm cần để mở khóa.</div>
+                </div>
+                <div class="d-flex justify-content-end gap-2">
+                    <a class="btn btn-outline-secondary" asp-area="Admin" asp-controller="Achievement" asp-action="Index">Quay lại</a>
+                    <button class="btn btn-primary" type="submit">@(isEdit ? "Cập nhật" : "Tạo mới")</button>
+                </div>
+            </form>
+        </div></div>
+    </div>
+    <div class="col-xl-4"><aside class="admin-aside"><h3>Điểm</h3><p class="mb-0">Học viên nhận điểm khi hoàn thành bài, ôn từ và luyện nói.</p></aside></div>
+</div>
+@section Scripts { <partial name="_ValidationScriptsPartial" /> }

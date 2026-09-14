@@ -1,0 +1,28 @@
+@model AppLearningEnglish.Models.ListeningLesson
+@{ ViewData["Title"] = "Listening"; }
+<div class="admin-form-banner tone-cyan">
+    <div class="admin-form-icon"><i class="bi bi-headphones"></i></div>
+    <div>
+        <h1 class="fw-bold">@(Model.Lesson?.Title ?? "Listening")</h1>
+        <p>Audio và transcript</p>
+    </div>
+</div>
+<div class="card"><div class="card-body">
+    @if (!string.IsNullOrWhiteSpace(Model.AudioUrl))
+    {
+        <audio controls class="w-100 mb-3"><source src="@Model.AudioUrl" /></audio>
+        <p class="small text-muted">@Model.AudioUrl</p>
+    }
+    else
+    {
+        <div class="alert alert-warning">Chưa có Audio.</div>
+    }
+    <div class="admin-detail-panel mb-4" style="white-space:pre-line">
+        @(string.IsNullOrWhiteSpace(Model.Transcript) ? "Chưa có Transcript." : Model.Transcript)
+    </div>
+    <div class="d-flex gap-2 flex-wrap">
+        <a class="btn btn-primary" asp-area="Admin" asp-controller="ListeningLesson" asp-action="Upsert" asp-route-id="@Model.Id">Sửa</a>
+        <a class="btn btn-outline-primary" asp-area="Admin" asp-controller="ListeningQuestion" asp-action="Index" asp-route-listeningLessonId="@Model.Id">Questions</a>
+        <a class="btn btn-outline-secondary" asp-area="Admin" asp-controller="ListeningLesson" asp-action="Index" asp-route-lessonId="@Model.LessonId">Quay lại</a>
+    </div>
+</div></div>

@@ -1,0 +1,137 @@
+@model IEnumerable<AppLearningEnglish.Models.UserLesson>
+
+@{
+    ViewData["Title"] = "My Progress";
+}
+
+<div class="container py-4">
+
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <div>
+            <h2 class="fw-bold">
+                <i class="bi bi-bar-chart"></i>
+                My Learning Progress
+            </h2>
+
+            <p class="text-muted mb-0">
+                Theo dõi tiến độ học tập của bạn
+            </p>
+        </div>
+
+        <div>
+            <a asp-area="Customer"
+               asp-controller="Progress"
+               asp-action="InProgress"
+               class="btn btn-primary">
+                <i class="bi bi-play-circle"></i>
+                Đang học
+            </a>
+
+            <a asp-area="Customer"
+               asp-controller="Progress"
+               asp-action="Completed"
+               class="btn btn-success">
+                <i class="bi bi-check-circle"></i>
+                Đã hoàn thành
+            </a>
+            <a asp-action="Skills" class="btn btn-outline-primary">Kỹ năng / từ yếu</a>
+            <a asp-action="ExportCsv" class="btn btn-outline-secondary">CSV</a>
+            <a asp-action="ExportPdf" class="btn btn-outline-secondary">PDF</a>
+        </div>
+    </div>
+
+    @if (!Model.Any())
+    {
+        <div class="alert alert-info">
+            Bạn chưa bắt đầu bài học nào.
+        </div>
+    }
+    else
+    {
+        <div class="row g-4">
+
+            @foreach (var item in Model)
+            {
+                <div class="col-md-6 col-lg-4">
+
+                    <div class="card shadow-sm h-100 border-0">
+
+                        <div class="card-body">
+
+                            <h5 class="fw-bold">
+                                @item.Lesson?.Title
+                            </h5>
+
+                            <p class="text-muted">
+                                @item.Lesson?.Description
+                            </p>
+
+                            <div class="d-flex justify-content-between mb-2">
+
+                                <span>
+                                    Tiến độ
+                                </span>
+
+                                <strong>
+                                    @item.Progress%
+                                </strong>
+
+                            </div>
+
+                            <div class="progress mb-3"
+                                 style="height: 10px;">
+
+                                <div class="progress-bar"
+                                     role="progressbar"
+                                     style="width:@item.Progress%">
+                                </div>
+
+                            </div>
+
+                            @if (item.IsCompleted)
+                            {
+                                <span class="badge bg-success mb-3">
+                                    <i class="bi bi-check-circle"></i>
+                                    Đã hoàn thành
+                                </span>
+                            }
+                            else if (item.Progress > 0)
+                            {
+                                <span class="badge bg-primary mb-3">
+                                    <i class="bi bi-play-circle"></i>
+                                    Đang học
+                                </span>
+                            }
+                            else
+                            {
+                                <span class="badge bg-secondary mb-3">
+                                    Chưa bắt đầu
+                                </span>
+                            }
+
+                            <div>
+
+                                <a asp-area="Customer"
+                                   asp-controller="Lesson"
+                                   asp-action="Details"
+                                   asp-route-id="@item.LessonId"
+                                   class="btn btn-outline-primary w-100">
+
+                                    @(item.IsCompleted
+                                        ? "Học lại"
+                                        : "Tiếp tục học")
+
+                                </a>
+
+                            </div>
+
+                        </div>
+
+                    </div>
+
+                </div>
+            }
+
+        </div>
+    }
+</div>

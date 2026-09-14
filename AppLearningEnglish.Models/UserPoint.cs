@@ -1,0 +1,23 @@
+using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
+using Microsoft.AspNetCore.Mvc.ModelBinding.Validation;
+
+namespace AppLearningEnglish.Models
+{
+    public class UserPoint
+    {
+        [Key]
+        public int Id { get; set; }
+
+        [Required]
+        public string UserId { get; set; } = string.Empty;
+
+        public int Points { get; set; }
+
+        public DateTime UpdatedAt { get; set; } = DateTime.UtcNow;
+
+        [ForeignKey("UserId")]
+        [ValidateNever]
+        public ApplicationUser? ApplicationUser { get; set; }
+    }
+}

@@ -1,0 +1,39 @@
+@model AppLearningEnglish.Models.ViewModels.GrammarPracticeViewModel
+@{
+    ViewData["Title"] = Model.Title;
+}
+<div class="container py-4" style="max-width:760px">
+    <a asp-action="Index">Ngữ pháp</a>
+    <h1 class="h3 fw-bold mt-2">@Model.Title</h1>
+    <form method="post">
+        @Html.AntiForgeryToken()
+        @foreach (var item in Model.Items)
+        {
+            <div class="card border-0 shadow-sm mb-3">
+                <div class="card-body">
+                    <p class="fw-semibold">@item.QuestionText</p>
+                    <input class="form-control" name="answers[@item.QuestionId]" value="@item.UserAnswer" />
+                    @if (item.IsCorrect != null)
+                    {
+                        <div class="mt-2 alert @(item.IsCorrect == true ? "alert-success" : "alert-warning") mb-0">
+                            @(item.IsCorrect == true ? "Đúng." : $"Sai. Đáp án: {item.Answer}")
+                            @if (!string.IsNullOrWhiteSpace(item.Explanation))
+                            {
+                                <div class="small mt-1">@item.Explanation</div>
+                            }
+                        </div>
+                    }
+                </div>
+            </div>
+        }
+        @if (!Model.CorrectCount.HasValue)
+        {
+            <button class="btn btn-primary" type="submit">Chấm điểm</button>
+        }
+        else
+        {
+            <div class="alert alert-info">Đúng @Model.CorrectCount / @Model.Items.Count</div>
+            <a class="btn btn-outline-primary" asp-action="Index">Chủ điểm khác</a>
+        }
+    </form>
+</div>

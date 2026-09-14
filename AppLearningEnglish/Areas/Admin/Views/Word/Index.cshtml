@@ -1,0 +1,68 @@
+@{
+    ViewData["Title"] = "Words";
+    ViewData["Subtitle"] = "Từ vựng, phát âm và định nghĩa";
+    ViewData["Icon"] = "bi-chat-square-quote-fill";
+    ViewData["Tone"] = "orange";
+    ViewData["ActionText"] = "Thêm Word";
+    ViewData["ActionController"] = "Word";
+}
+
+<partial name="_AdminPageHead" />
+
+<div class="admin-chip-row mb-3">
+    <a class="btn btn-sm btn-outline-primary" asp-area="Admin" asp-controller="WordMeaning" asp-action="Index">Meanings</a>
+    <a class="btn btn-sm btn-outline-primary" asp-area="Admin" asp-controller="WordExample" asp-action="Index">Examples</a>
+</div>
+
+<div class="admin-filter mb-4">
+    <div class="admin-filter-label"><i class="bi bi-funnel"></i> Bộ lọc</div>
+    <div class="row g-3">
+        <div class="col-md-6">
+            <label class="form-label fw-semibold">Tìm kiếm</label>
+            <input type="text" id="searchInput" class="form-control" placeholder="Từ vựng, định nghĩa..." />
+        </div>
+        <div class="col-md-4">
+            <label class="form-label fw-semibold">Part of Speech</label>
+            <select id="partOfSpeechFilter" class="form-select">
+                <option value="">Tất cả</option>
+                <option value="Noun">Noun</option>
+                <option value="Verb">Verb</option>
+                <option value="Adjective">Adjective</option>
+                <option value="Adverb">Adverb</option>
+                <option value="Pronoun">Pronoun</option>
+                <option value="Preposition">Preposition</option>
+                <option value="Conjunction">Conjunction</option>
+                <option value="Interjection">Interjection</option>
+            </select>
+        </div>
+        <div class="col-md-2 d-flex align-items-end">
+            <button type="button" id="btnFilter" class="btn btn-dark w-100"><i class="bi bi-search me-1"></i> Lọc</button>
+        </div>
+    </div>
+</div>
+
+<div class="card">
+    <div class="card-header"><h5 class="mb-0 fw-bold">Danh sách từ vựng</h5></div>
+    <div class="card-body">
+        <div class="table-responsive">
+            <table id="wordTable" class="table table-hover align-middle w-100">
+                <thead>
+                    <tr>
+                        <th>Image</th>
+                        <th>Word</th>
+                        <th>Pronunciation</th>
+                        <th>Part of Speech</th>
+                        <th>Definition</th>
+                        <th>Audio</th>
+                        <th class="text-end">Action</th>
+                    </tr>
+                </thead>
+                <tbody></tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script src="~/js/word.js"></script>
+}

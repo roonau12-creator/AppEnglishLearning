@@ -1,0 +1,176 @@
+@model IEnumerable<AppLearningEnglish.Models.UserCourse>
+
+@{
+    ViewData["Title"] = "My Courses";
+}
+
+<div class="container py-5">
+
+    <div class="d-flex justify-content-between align-items-center mb-4">
+
+        <div>
+
+            <h2 class="fw-bold">
+
+                <i class="bi bi-collection"></i>
+
+                My Courses
+
+            </h2>
+
+            <p class="text-muted">
+                Các khóa học bạn đã đăng ký
+            </p>
+
+        </div>
+
+        <a asp-area="Customer"
+           asp-controller="Course"
+           asp-action="Index"
+           class="btn btn-outline-primary">
+
+            Khám phá khóa học
+
+        </a>
+
+    </div>
+
+    @if (!Model.Any())
+    {
+        <div class="text-center py-5">
+
+            <i class="bi bi-book display-1 text-muted"></i>
+
+            <h3 class="mt-3">
+                Bạn chưa đăng ký khóa học nào
+            </h3>
+
+            <a asp-area="Customer"
+               asp-controller="Course"
+               asp-action="Index"
+               class="btn btn-primary">
+
+                Xem khóa học
+
+            </a>
+
+        </div>
+    }
+    else
+    {
+        <div class="row g-4">
+
+            @foreach (var item in Model)
+            {
+                <div class="col-md-6 col-lg-4">
+
+                    <div class="card border-0 shadow-sm h-100">
+
+                        @if (!string.IsNullOrEmpty(
+                            item.Course?.ThumbnailUrl))
+                        {
+                            <img src="@item.Course.ThumbnailUrl"
+                                 class="card-img-top"
+                                 style="height:200px;object-fit:cover;" />
+                        }
+
+                        <div class="card-body">
+
+                            <h4 class="fw-bold">
+
+                                @item.Course?.Name
+
+                            </h4>
+
+                            <p class="text-muted">
+
+                                @item.Course?.Description
+
+                            </p>
+
+                            <div class="d-flex justify-content-between mb-2">
+
+                                <span>
+                                    Progress
+                                </span>
+
+                                <strong>
+                                    @item.Progress%
+                                </strong>
+
+                            </div>
+
+                            <div class="progress mb-3">
+
+                                <div class="progress-bar"
+                                     style="width:@item.Progress%">
+                                </div>
+
+                            </div>
+
+                            @if (item.Progress >= 100)
+                            {
+                                <span class="badge bg-success mb-3">
+
+                                    <i class="bi bi-check-circle"></i>
+
+                                    Completed
+
+                                </span>
+                            }
+                            else
+                            {
+                                <span class="badge bg-primary mb-3">
+
+                                    <i class="bi bi-play-circle"></i>
+
+                                    Learning
+
+                                </span>
+                            }
+
+                            <a asp-area="Customer"
+                               asp-controller="Course"
+                               asp-action="Continue"
+                               asp-route-courseId="@item.CourseId"
+                               class="btn btn-primary w-100">
+
+                                @(item.Progress >= 100
+                                    ? "Học lại"
+                                    : "Tiếp tục học")
+
+                            </a>
+
+                            @if (item.Progress >= 100)
+                            {
+                                <a asp-area="Customer"
+                                   asp-controller="Certificate"
+                                   asp-action="Course"
+                                   asp-route-id="@item.CourseId"
+                                   class="btn btn-outline-success w-100 mt-2">
+                                    Xem chứng chỉ
+                                </a>
+                            }
+
+                            <form asp-area="Customer"
+                                  asp-controller="Course"
+                                  asp-action="RemoveEnrollment"
+                                  method="post"
+                                  class="mt-2"
+                                  onsubmit="return confirm('Hủy khóa học sẽ xóa tiến độ bài học. Tiếp tục?');">
+                                @Html.AntiForgeryToken()
+                                <input type="hidden" name="courseId" value="@item.CourseId" />
+                                <button type="submit" class="btn btn-outline-danger w-100">Hủy đăng ký</button>
+                            </form>
+
+                        </div>
+
+                    </div>
+
+                </div>
+            }
+
+        </div>
+    }
+
+</div>

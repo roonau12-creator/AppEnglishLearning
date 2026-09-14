@@ -1,0 +1,26 @@
+@model IEnumerable<AppLearningEnglish.Models.Word>
+@{
+    ViewData["Title"] = "Gợi ý từ";
+}
+<div class="container py-4">
+    <a asp-action="Index">AI hỗ trợ</a>
+    <h1 class="h3 fw-bold mt-2">Bộ từ gợi ý cho mục tiêu @ViewBag.Goal</h1>
+    <p class="text-muted">Khớp chủ đề theo mục tiêu hồ sơ (IELTS, công sở, giao tiếp...).</p>
+    <div class="row g-3">
+        @foreach (var word in Model)
+        {
+            <div class="col-md-4">
+                <div class="card border-0 shadow-sm h-100">
+                    <div class="card-body">
+                        <h2 class="h5">@word.WordText</h2>
+                        <p class="small text-muted mb-0">@word.Definition</p>
+                    </div>
+                </div>
+            </div>
+        }
+    </div>
+    @if (!Model.Any())
+    {
+        <div class="alert alert-info mt-3">Chưa có từ khớp chủ đề. Đổi mục tiêu ở hồ sơ hoặc thêm từ.</div>
+    }
+</div>

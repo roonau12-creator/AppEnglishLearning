@@ -1,0 +1,78 @@
+@{
+    ViewData["Title"] = "Quiz";
+}
+
+<div class="page-hero">
+    <div>
+        <p class="section-kicker mb-1">Luyện tập</p>
+        <h1 class="fw-bold">Quiz Hub</h1>
+        <p class="text-muted mb-0">Chọn loại bài, làm xong rồi ôn những câu sai.</p>
+    </div>
+</div>
+
+<div class="row g-3">
+    <div class="col-md-4">
+        <div class="hub-tile">
+            <span class="hub-tile-icon hub-mixed"><i class="bi bi-ui-checks-grid"></i></span>
+            <h2>Tổng hợp</h2>
+            <p>Trộn từ vựng và ngữ pháp trong một phiên.</p>
+            <a class="btn btn-primary" asp-action="Start" asp-route-kind="mixed">Bắt đầu</a>
+        </div>
+    </div>
+    <div class="col-md-4">
+        <div class="hub-tile">
+            <span class="hub-tile-icon hub-vocab"><i class="bi bi-book"></i></span>
+            <h2>Từ vựng</h2>
+            <p>Ôn từ đã học bằng câu hỏi chọn đáp án.</p>
+            <a class="btn btn-outline-primary" asp-action="Start" asp-route-kind="vocab">Làm quiz từ</a>
+        </div>
+    </div>
+    <div class="col-md-4">
+        <div class="hub-tile">
+            <span class="hub-tile-icon hub-grammar"><i class="bi bi-spellcheck"></i></span>
+            <h2>Ngữ pháp</h2>
+            <p>Củng cố mẫu câu và thì tiếng Anh.</p>
+            <a class="btn btn-outline-primary" asp-action="Start" asp-route-kind="grammar">Làm quiz ngữ pháp</a>
+        </div>
+    </div>
+    <div class="col-md-4">
+        <div class="hub-tile">
+            <span class="hub-tile-icon hub-speak"><i class="bi bi-mic"></i></span>
+            <h2>Phát âm</h2>
+            <p>Nói hoặc gõ từ. Chấm theo chữ, không phải sóng âm.</p>
+            <a class="btn btn-outline-primary" asp-action="Pronounce">Bắt đầu</a>
+        </div>
+    </div>
+    <div class="col-md-4">
+        <div class="hub-tile">
+            <span class="hub-tile-icon hub-scramble"><i class="bi bi-shuffle"></i></span>
+            <h2>Sắp xếp câu</h2>
+            <p>Ghép từ thành câu đúng trật tự.</p>
+            <a class="btn btn-outline-primary" asp-action="Start" asp-route-kind="scramble">Bắt đầu</a>
+        </div>
+    </div>
+    <div class="col-md-4">
+        <div class="hub-tile">
+            <span class="hub-tile-icon hub-challenge"><i class="bi bi-stopwatch"></i></span>
+            <h2>Thử thách 3 phút</h2>
+            <p>Làm nhanh có đồng hồ — giữ nhịp mỗi ngày.</p>
+            <a class="btn btn-outline-danger" asp-action="Start" asp-route-kind="challenge">Đếm giờ</a>
+        </div>
+    </div>
+    <div class="col-md-4">
+        <div class="hub-tile">
+            <span class="hub-tile-icon hub-exam"><i class="bi bi-clipboard2-check"></i></span>
+            <h2>Đề thi thử</h2>
+            <p>Quiz tổng hợp có giờ. Không phải đề TOEIC/IELTS chính thức.</p>
+            <a class="btn btn-outline-primary" asp-action="Start" asp-route-kind="exam">Làm đề</a>
+        </div>
+    </div>
+    <div class="col-md-4">
+        <div class="hub-tile">
+            <span class="hub-tile-icon hub-review"><i class="bi bi-exclamation-circle"></i></span>
+            <h2>Ôn câu sai</h2>
+            <p>Xem lại những chỗ bạn còn nhầm để nhớ lâu hơn.</p>
+            <a class="btn btn-outline-danger" asp-action="Review">Xem câu sai</a>
+        </div>
+    </div>
+</div>

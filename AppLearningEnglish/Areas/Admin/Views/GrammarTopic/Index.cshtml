@@ -1,0 +1,48 @@
+@model IEnumerable<AppLearningEnglish.Models.GrammarTopic>
+@{
+    ViewData["Title"] = "Chủ điểm ngữ pháp";
+    ViewData["Subtitle"] = "Giải thích rồi luyện theo lộ trình";
+    ViewData["Icon"] = "bi-spellcheck";
+    ViewData["Tone"] = "violet";
+    ViewData["ActionText"] = "Thêm chủ điểm";
+    ViewData["ActionController"] = "GrammarTopic";
+}
+<partial name="_AdminPageHead" />
+<div class="card"><div class="card-body">
+    <table id="grammarTable" class="table table-hover align-middle w-100">
+        <thead><tr><th>#</th><th>Chủ điểm</th><th>Trình độ</th><th>Thứ tự</th><th>Câu</th><th class="text-end">Action</th></tr></thead>
+        <tbody>
+        @{ var n = 1; }
+        @foreach (var item in Model)
+        {
+            <tr>
+                <td>@n</td>
+                <td><strong>@item.Title</strong></td>
+                <td><span class="badge text-bg-primary">@item.Level</span></td>
+                <td>@item.SortOrder</td>
+                <td>@item.Items.Count</td>
+                <td class="text-end">
+                    <a class="btn btn-sm btn-outline-secondary" asp-action="Details" asp-route-id="@item.Id"><i class="bi bi-list-check"></i></a>
+                    <a class="btn btn-sm btn-outline-primary" asp-action="Upsert" asp-route-id="@item.Id"><i class="bi bi-pencil"></i></a>
+                    <button type="button" class="btn btn-sm btn-outline-danger" onclick="deleteItem(@item.Id)"><i class="bi bi-trash"></i></button>
+                </td>
+            </tr>
+            n++;
+        }
+        </tbody>
+    </table>
+</div></div>
+@section Scripts {
+<script>
+    $("#grammarTable").DataTable({ language: { search: "Tìm kiếm:" } });
+    function deleteItem(id) {
+        Swal.fire({ title: "Xóa chủ điểm?", icon: "warning", showCancelButton: true, confirmButtonText: "Xóa" })
+            .then(function (r) {
+                if (!r.isConfirmed) return;
+                $.post("/Admin/GrammarTopic/Delete", { id: id, __RequestVerificationToken: $('input[name="__RequestVerificationToken"]').first().val() }, function (res) {
+                    Swal.fire({ icon: res.success ? "success" : "error", title: res.message }).then(function () { if (res.success) location.reload(); });
+                });
+            });
+    }
+</script>
+}

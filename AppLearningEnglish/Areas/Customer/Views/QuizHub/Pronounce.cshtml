@@ -1,0 +1,32 @@
+@model AppLearningEnglish.Models.ViewModels.SpeakingPromptViewModel
+@{
+    ViewData["Title"] = "Pronunciation quiz";
+}
+<div class="container py-4" style="max-width:640px">
+    <a asp-action="Index">Quiz Hub</a>
+    <h1 class="fw-bold">Đọc từ: @Model.Expected</h1>
+    <p class="text-muted">@Model.Pronunciation · @Model.Hint</p>
+    <form method="post" id="speechForm" class="text-center">
+        @Html.AntiForgeryToken()
+        <input type="hidden" name="expected" value="@Model.Expected" />
+        <input type="hidden" name="durationMs" id="durationMs" value="@Model.DurationMs" />
+        <button type="button" class="btn btn-danger btn-mic mb-3" id="startSpeech" aria-label="Bắt đầu nói">
+            <i class="bi bi-mic-fill"></i>
+        </button>
+        <input class="form-control mb-2" name="heardText" id="heardText" value="@Model.HeardText" placeholder="Nói hoặc gõ lại từ" required />
+        <p class="small text-muted" id="speechStatus">Web Speech API trên Chrome/Edge. Không gọi AI trả phí.</p>
+        <button class="btn btn-primary" type="submit">Chấm</button>
+    </form>
+    @if (Model.ScorePercent.HasValue)
+    {
+        <div class="alert @(Model.IsPassed == true ? "alert-success" : "alert-warning") mt-3">
+            @(Model.IsPassed == true ? "Đạt." : "Chưa đạt.") Từ xanh = đúng, đỏ = sai / gần đúng.
+        </div>
+        <partial name="_SpeechAssessment" model="Model.Assessment" />
+        <a class="btn btn-outline-primary" asp-action="Pronounce">Từ khác</a>
+    }
+</div>
+@section Scripts {
+    <script src="~/js/speech-mic.js" asp-append-version="true"></script>
+    <script>AppSpeechMic({ button: "#startSpeech", input: "#heardText", form: "#speechForm" });</script>
+}

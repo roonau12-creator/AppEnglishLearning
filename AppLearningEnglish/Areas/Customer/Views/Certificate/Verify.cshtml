@@ -1,0 +1,44 @@
+@{
+    ViewData["Title"] = "Xác thực chứng chỉ";
+    var enrollment = ViewBag.Enrollment as AppLearningEnglish.Models.UserCourse;
+    var code = ViewBag.Code as string;
+}
+<div class="mx-auto" style="max-width:640px">
+    <h1 class="fw-bold">Xác thực chứng chỉ</h1>
+    <p class="text-muted">Nhập mã chứng chỉ dạng ALE-XXXXXXXX để kiểm tra.</p>
+
+    <form method="get" class="input-group mb-4">
+        <input class="form-control" name="code" value="@code" placeholder="ALE-1A2B3C4D" />
+        <button class="btn btn-primary">Kiểm tra</button>
+    </form>
+
+    @if (!string.IsNullOrWhiteSpace(code))
+    {
+        @if (enrollment == null)
+        {
+            <div class="alert alert-danger">
+                Không tìm thấy chứng chỉ với mã <strong>@code</strong>.
+            </div>
+        }
+        else
+        {
+            <div class="alert alert-success">
+                <h2 class="h5">Chứng chỉ hợp lệ</h2>
+                <div>
+                    Học viên:
+                    <strong>
+                        @(enrollment.ApplicationUser?.FullName
+                            ?? enrollment.ApplicationUser?.Email)
+                    </strong>
+                </div>
+                <div>Khóa học: <strong>@enrollment.Course?.Name</strong></div>
+                <div>
+                    Ngày hoàn thành:
+                    <strong>
+                        @(enrollment.CompletedAt?.ToLocalTime().ToString("dd/MM/yyyy") ?? "—")
+                    </strong>
+                </div>
+            </div>
+        }
+    }
+</div>

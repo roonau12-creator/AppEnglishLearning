@@ -1,0 +1,63 @@
+@model AppLearningEnglish.Models.ViewModels.SkillReportViewModel
+@{
+    ViewData["Title"] = "Thống kê kỹ năng";
+}
+
+<div class="container py-4">
+    <h1 class="fw-bold">Thống kê kỹ năng</h1>
+    <div class="row g-3 my-2">
+        <div class="col-md-4">
+            <div class="today-card">
+                <span class="today-label">Từ vựng</span>
+                <strong>@Model.MasteredWords / @Model.TotalWords thuộc</strong>
+                <div class="small text-muted">@Model.VocabPercent% · @Model.DueWords đến hạn · @Model.WeakWords từ yếu</div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="today-card">
+                <span class="today-label">Nghe / bài</span>
+                <strong>@Model.ListeningDone bài đã nghe</strong>
+                <div class="small text-muted">@Model.LessonsStarted bài đã mở</div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="today-card">
+                <span class="today-label">Bài tập / streak</span>
+                <strong>TB @Model.ExerciseAverage%</strong>
+                <div class="small text-muted">@Model.ExerciseAttempts lần làm · @Model.CurrentStreak ngày</div>
+            </div>
+        </div>
+        <div class="col-md-4"><div class="today-card"><span class="today-label">Ngữ pháp</span><strong>@Model.GrammarPercent%</strong></div></div>
+        <div class="col-md-4"><div class="today-card"><span class="today-label">Nghe</span><strong>@Model.ListeningPercent%</strong></div></div>
+        <div class="col-md-4"><div class="today-card"><span class="today-label">Nói</span><strong>@Model.SpeakingPercent%</strong></div></div>
+        <div class="col-md-4"><div class="today-card"><span class="today-label">Đọc</span><strong>@Model.ReadingPercent%</strong></div></div>
+        <div class="col-md-4"><div class="today-card"><span class="today-label">Viết</span><strong>@Model.WritingPercent%</strong></div></div>
+    </div>
+    <a class="btn btn-outline-primary mt-3" asp-action="Charts">Xem biểu đồ ngày / tuần / tháng</a>
+
+    <h2 class="h5 mt-4">Từ yếu</h2>
+    @if (!Model.WeakList.Any())
+    {
+        <p class="text-muted">Chưa có từ yếu.</p>
+    }
+    else
+    {
+        <table class="table">
+            <thead>
+                <tr><th>Từ</th><th>Sai</th><th>Đúng</th><th>Quen</th></tr>
+            </thead>
+            <tbody>
+            @foreach (var item in Model.WeakList)
+            {
+                <tr>
+                    <td>@item.Word?.WordText</td>
+                    <td>@item.WrongCount</td>
+                    <td>@item.CorrectCount</td>
+                    <td>@item.Familiarity / 5</td>
+                </tr>
+            }
+            </tbody>
+        </table>
+        <a class="btn btn-outline-primary" asp-area="Customer" asp-controller="Vocabulary" asp-action="Quiz" asp-route-mode="type">Ôn các từ này</a>
+    }
+</div>

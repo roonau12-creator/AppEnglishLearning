@@ -1,0 +1,17 @@
+@model AppLearningEnglish.Models.Answer
+@{ ViewData["Title"] = "Answer"; }
+<div class="admin-form-banner tone-mint">
+    <div class="admin-form-icon"><i class="bi bi-check2-square"></i></div>
+    <div>
+        <h1 class="fw-bold">Đáp án</h1>
+        <p>@(Model.IsCorrect ? "Đáp án đúng" : "Đáp án nhiễu")</p>
+    </div>
+</div>
+<div class="card"><div class="card-body">
+    <div class="admin-detail-panel mb-3"><small class="text-muted">Question</small><h5 class="mt-1 mb-0">@(Model.Question?.QuestionText ?? "N/A")</h5></div>
+    <div class="admin-detail-panel mb-4"><small class="text-muted">Answer</small><h5 class="mt-1 mb-0">@Model.AnswerText</h5></div>
+    <div class="d-flex gap-2">
+        <a class="btn btn-primary" asp-area="Admin" asp-controller="Answer" asp-action="Upsert" asp-route-id="@Model.Id">Sửa</a>
+        <a class="btn btn-outline-secondary" asp-area="Admin" asp-controller="Answer" asp-action="Index" asp-route-questionId="@Model.QuestionId">Quay lại</a>
+    </div>
+</div></div>

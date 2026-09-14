@@ -1,0 +1,33 @@
+@model IReadOnlyList<AppLearningEnglish.Models.UserChallenge>
+@{
+    ViewData["Title"] = "Thử thách";
+    var player = ViewBag.Player as AppLearningEnglish.Models.ViewModels.PlayerStatsViewModel;
+}
+<div class="container py-4">
+    <h1 class="fw-bold">Gamification</h1>
+    @if (player != null)
+    {
+        <div class="row g-3 mb-4">
+            <div class="col-md-4"><div class="today-card"><span class="today-label">Level</span><strong>@player.PlayerLevel</strong></div></div>
+            <div class="col-md-4"><div class="today-card"><span class="today-label">XP</span><strong>@player.XpIntoLevel / @player.XpForNext</strong></div></div>
+            <div class="col-md-4"><div class="today-card"><span class="today-label">Coins</span><strong>@player.Coins</strong></div></div>
+        </div>
+    }
+    @foreach (var item in Model)
+    {
+        var target = item.Challenge?.Target ?? 1;
+        var percent = Math.Min(100, (int)Math.Round(100d * item.Progress / Math.Max(1, target)));
+        <div class="card border-0 shadow-sm mb-3">
+            <div class="card-body">
+                <span class="badge bg-light text-dark">@item.Challenge?.Period</span>
+                <h2 class="h5 mt-2">@item.Challenge?.Title</h2>
+                <div class="small text-muted">@item.Progress / @target · thưởng @item.Challenge?.RewardCoins xu</div>
+                <div class="chart-bar mt-2"><span style="width:@percent%"></span></div>
+                @if (item.IsCompleted)
+                {
+                    <div class="text-success small mt-2">Đã xong</div>
+                }
+            </div>
+        </div>
+    }
+</div>

@@ -1,0 +1,34 @@
+@model IReadOnlyList<AppLearningEnglish.Models.PracticeAttempt>
+@{
+    ViewData["Title"] = "Lịch sử nói";
+}
+
+<div class="container py-4">
+    <a asp-action="Index">Luyện nói</a>
+    <h1 class="fw-bold mt-2">Lịch sử nói</h1>
+    @if (!Model.Any())
+    {
+        <div class="alert alert-info">Chưa có lần chấm nào.</div>
+    }
+    else
+    {
+        <div class="list-group">
+            @foreach (var item in Model)
+            {
+                <div class="list-group-item">
+                    <div class="d-flex justify-content-between">
+                        <strong>@item.Title</strong>
+                        <span>@item.Score%</span>
+                    </div>
+                    <div class="small text-muted">@item.CreatedAt.ToLocalTime().ToString("dd/MM HH:mm")</div>
+                    <p class="mb-1">Bạn nói: @item.UserAnswer</p>
+                    @if (!string.IsNullOrWhiteSpace(item.Expected))
+                    {
+                        <p class="small mb-1 text-muted">Mẫu: @item.Expected</p>
+                    }
+                    <p class="small mb-0">@item.Feedback</p>
+                </div>
+            }
+        </div>
+    }
+</div>

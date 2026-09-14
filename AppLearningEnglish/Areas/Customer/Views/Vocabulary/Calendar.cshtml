@@ -1,0 +1,24 @@
+@model IEnumerable<IGrouping<DateTime, AppLearningEnglish.Models.UserVocabulary>>
+@{
+    ViewData["Title"] = "Lịch ôn từ";
+}
+<h1 class="fw-bold mb-3">Lịch ôn từ vựng</h1>
+<p class="text-muted">Các từ được nhóm theo ngày ôn tiếp theo (SRS).</p>
+<a class="btn btn-primary mb-4" asp-action="Review">Ôn ngay</a>
+@if (!Model.Any())
+{
+    <div class="alert alert-info">Chưa có lịch ôn.</div>
+}
+else
+{
+    foreach (var group in Model)
+    {
+        <h2 class="h5 mt-4">@group.Key.ToString("dd/MM/yyyy")</h2>
+        <ul>
+            @foreach (var item in group)
+            {
+                <li>@item.Word?.WordText — @item.Status</li>
+            }
+        </ul>
+    }
+}

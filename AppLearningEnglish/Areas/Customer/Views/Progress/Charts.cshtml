@@ -1,0 +1,44 @@
+@model AppLearningEnglish.Models.ViewModels.SkillReportViewModel
+@{
+    ViewData["Title"] = "Biểu đồ tiến độ";
+    int Max(IEnumerable<AppLearningEnglish.Models.ViewModels.ProgressPointViewModel> items) =>
+        Math.Max(1, items.Select(x => x.Minutes).DefaultIfEmpty(0).Max());
+}
+<div class="container py-4">
+    <h1 class="fw-bold">Biểu đồ 6 kỹ năng</h1>
+    <div class="row g-3 mb-4">
+        <div class="col-md-4"><div class="today-card"><span class="today-label">Từ vựng</span><strong>@Model.VocabPercent%</strong></div></div>
+        <div class="col-md-4"><div class="today-card"><span class="today-label">Ngữ pháp</span><strong>@Model.GrammarPercent%</strong></div></div>
+        <div class="col-md-4"><div class="today-card"><span class="today-label">Nghe</span><strong>@Model.ListeningPercent%</strong></div></div>
+        <div class="col-md-4"><div class="today-card"><span class="today-label">Nói</span><strong>@Model.SpeakingPercent%</strong></div></div>
+        <div class="col-md-4"><div class="today-card"><span class="today-label">Đọc</span><strong>@Model.ReadingPercent%</strong></div></div>
+        <div class="col-md-4"><div class="today-card"><span class="today-label">Viết</span><strong>@Model.WritingPercent%</strong></div></div>
+    </div>
+
+    <h2 class="h5">Theo ngày</h2>
+    @foreach (var point in Model.DailyPoints)
+    {
+        <div class="mb-2">
+            <div class="d-flex justify-content-between small"><span>@point.Label</span><span>@point.Minutes phút · @point.Xp XP</span></div>
+            <div class="chart-bar"><span style="width:@((point.Minutes * 100 / Max(Model.DailyPoints)))%"></span></div>
+        </div>
+    }
+
+    <h2 class="h5 mt-4">Theo tuần</h2>
+    @foreach (var point in Model.WeeklyPoints)
+    {
+        <div class="mb-2">
+            <div class="d-flex justify-content-between small"><span>@point.Label</span><span>@point.Minutes phút</span></div>
+            <div class="chart-bar"><span style="width:@((point.Minutes * 100 / Max(Model.WeeklyPoints)))%"></span></div>
+        </div>
+    }
+
+    <h2 class="h5 mt-4">Theo tháng</h2>
+    @foreach (var point in Model.MonthlyPoints)
+    {
+        <div class="mb-2">
+            <div class="d-flex justify-content-between small"><span>@point.Label</span><span>@point.Minutes phút</span></div>
+            <div class="chart-bar"><span style="width:@((point.Minutes * 100 / Max(Model.MonthlyPoints)))%"></span></div>
+        </div>
+    }
+</div>

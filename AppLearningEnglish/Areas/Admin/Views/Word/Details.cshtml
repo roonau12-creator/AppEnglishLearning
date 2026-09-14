@@ -1,0 +1,50 @@
+@model AppLearningEnglish.Models.Word
+@{
+    ViewData["Title"] = Model.WordText;
+    ViewData["Subtitle"] = "Chi tiết từ vựng";
+}
+
+<div class="admin-form-banner tone-orange">
+    <div class="admin-form-icon"><i class="bi bi-chat-square-quote-fill"></i></div>
+    <div>
+        <h1 class="fw-bold">@Model.WordText</h1>
+        <p>@Model.Pronunciation</p>
+    </div>
+</div>
+
+<div class="card">
+    <div class="card-body">
+        <div class="row g-4">
+            <div class="col-md-4">
+                @if (!string.IsNullOrWhiteSpace(Model.ImageUrl))
+                {
+                    <img src="@Model.ImageUrl" class="img-fluid rounded" style="width:100%;height:240px;object-fit:cover" />
+                }
+                else
+                {
+                    <div class="admin-preview d-flex align-items-center justify-content-center" style="height:240px">
+                        <i class="bi bi-image fs-1 text-muted"></i>
+                    </div>
+                }
+            </div>
+            <div class="col-md-8">
+                @if (!string.IsNullOrWhiteSpace(Model.PartOfSpeech))
+                {
+                    <span class="badge text-bg-primary mb-3">@Model.PartOfSpeech</span>
+                }
+                <h5 class="fw-bold">Definition</h5>
+                <p class="text-muted">@(Model.Definition ?? "Chưa có định nghĩa.")</p>
+                @if (!string.IsNullOrWhiteSpace(Model.AudioUrl))
+                {
+                    <audio controls class="w-100"><source src="@Model.AudioUrl" type="audio/mpeg" /></audio>
+                }
+                <div class="d-flex gap-2 mt-4">
+                    <a class="btn btn-primary" asp-area="Admin" asp-controller="Word" asp-action="Upsert" asp-route-id="@Model.Id">
+                        <i class="bi bi-pencil-square me-1"></i> Sửa
+                    </a>
+                    <a class="btn btn-outline-secondary" asp-area="Admin" asp-controller="Word" asp-action="Index">Quay lại</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

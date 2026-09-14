@@ -1,0 +1,218 @@
+@model IEnumerable<AppLearningEnglish.Models.UserVocabulary>
+
+@{
+    ViewData["Title"] = "Review Vocabulary";
+}
+
+<div class="container py-5">
+
+    <div class="text-center mb-5">
+
+        <h1 class="fw-bold">
+            <i class="bi bi-arrow-repeat"></i>
+            Vocabulary Review
+        </h1>
+
+        <p class="text-muted">
+            Ôn lại những từ bạn cần nhớ
+        </p>
+        <div class="d-flex justify-content-center flex-wrap gap-2 mb-2">
+            <a class="btn btn-outline-primary btn-sm" asp-action="Quiz" asp-route-mode="type">Gõ từ</a>
+            <a class="btn btn-outline-primary btn-sm" asp-action="Quiz" asp-route-mode="choice">Chọn nghĩa</a>
+            <a class="btn btn-outline-primary btn-sm" asp-action="Quiz" asp-route-mode="listen">Nghe rồi viết</a>
+            <a class="btn btn-outline-success btn-sm" asp-action="Flashcard" asp-route-mode="due">Flashcard SM-2</a>
+            <a class="btn btn-outline-success btn-sm" asp-action="QuickReview">Ôn nhanh</a>
+        </div>
+        @{
+            var dueCount = ViewBag.DueCount as int? ?? 0;
+            var reviewLimit = ViewBag.ReviewLimit as int? ?? 0;
+            var shownCount = Model.Count();
+        }
+        @if (dueCount > 0)
+        {
+            <p class="small text-muted mb-0">
+                Hôm nay ôn <strong>@shownCount</strong> / @dueCount từ đến hạn
+                (mục tiêu hồ sơ: @reviewLimit từ/ngày).
+            </p>
+        }
+
+    </div>
+
+    @if (!Model.Any())
+    {
+        <div class="text-center">
+
+            <div class="display-1">
+                🎉
+            </div>
+
+            <h3 class="fw-bold">
+                Không có từ nào cần ôn!
+            </h3>
+
+            <p class="text-muted">
+                Bạn đã hoàn thành tất cả bài ôn tập hôm nay.
+            </p>
+
+            <a asp-area="Customer"
+               asp-controller="Vocabulary"
+               asp-action="Index"
+               class="btn btn-primary">
+
+                My Vocabulary
+
+            </a>
+
+        </div>
+    }
+    else
+    {
+        <div class="row g-4">
+
+            @foreach (var item in Model)
+            {
+                <div class="col-md-6 col-lg-4">
+
+                    <div class="card shadow border-0 h-100">
+
+                        <div class="card-body text-center">
+
+                            <h1 class="fw-bold mb-3">
+
+                                @item.Word?.WordText
+
+                            </h1>
+
+                            <p class="text-muted">
+
+                                @item.Word?.Pronunciation
+
+                            </p>
+
+                            @if (!string.IsNullOrWhiteSpace(item.Word?.AudioUrl))
+                            {
+                                <audio controls class="w-100 mb-3">
+                                    <source src="@item.Word.AudioUrl" />
+                                </audio>
+                            }
+
+                            <details class="mb-3 text-start">
+                                <summary class="text-primary" style="cursor:pointer">
+                                    Xem nghĩa &amp; ví dụ
+                                </summary>
+                                <div class="mt-2">
+                                    <p>@item.Word?.Definition</p>
+                                    @if (item.Word?.Meanings != null)
+                                    {
+                                        foreach (var meaning in item.Word.Meanings)
+                                        {
+                                            <div>
+                                                <small class="text-muted text-uppercase">@meaning.Language</small>
+                                                <strong>@meaning.Meaning</strong>
+                                            </div>
+                                        }
+                                    }
+                                    @if (item.Word?.Examples != null)
+                                    {
+                                        foreach (var example in item.Word.Examples)
+                                        {
+                                            <p class="small mt-2 mb-0">
+                                                @example.EnglishSentence
+                                                <br />
+                                                <span class="text-muted">@example.VietnameseMeaning</span>
+                                            </p>
+                                        }
+                                    }
+                                </div>
+                            </details>
+
+                            <div class="mb-3">
+
+                                @for (int i = 0;
+                                      i < 5;
+                                      i++)
+                                {
+                                    if (i < item.Familiarity)
+                                    {
+                                        <span>⭐</span>
+                                    }
+                                    else
+                                    {
+                                        <span>☆</span>
+                                    }
+                                }
+
+                            </div>
+
+                            <p>
+
+                                Familiarity:
+                                <strong>
+                                    @item.Familiarity / 5
+                                </strong>
+
+                            </p>
+
+                            <hr />
+
+                            <div class="d-flex gap-2">
+
+                                <form asp-area="Customer"
+                                      asp-controller="Vocabulary"
+                                      asp-action="Wrong"
+                                      method="post"
+                                      class="w-50">
+
+                                    @Html.AntiForgeryToken()
+
+                                    <input type="hidden"
+                                           name="wordId"
+                                           value="@item.WordId" />
+
+                                    <button type="submit"
+                                            class="btn btn-danger w-100">
+
+                                        ❌
+
+                                        Không nhớ
+
+                                    </button>
+
+                                </form>
+
+                                <form asp-area="Customer"
+                                      asp-controller="Vocabulary"
+                                      asp-action="Correct"
+                                      method="post"
+                                      class="w-50">
+
+                                    @Html.AntiForgeryToken()
+
+                                    <input type="hidden"
+                                           name="wordId"
+                                           value="@item.WordId" />
+
+                                    <button type="submit"
+                                            class="btn btn-success w-100">
+
+                                        ✅
+
+                                        Nhớ
+
+                                    </button>
+
+                                </form>
+
+                            </div>
+
+                        </div>
+
+                    </div>
+
+                </div>
+            }
+
+        </div>
+    }
+
+</div>

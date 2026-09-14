@@ -1,0 +1,46 @@
+@model IEnumerable<AppLearningEnglish.Models.WritingPrompt>
+@{
+    ViewData["Title"] = "Đề viết";
+    ViewData["Subtitle"] = "Viết tự do theo đề, có ý cần có và câu mẫu";
+    ViewData["Icon"] = "bi-pencil";
+    ViewData["Tone"] = "violet";
+    ViewData["ActionText"] = "Thêm đề viết";
+    ViewData["ActionController"] = "WritingPrompt";
+}
+<partial name="_AdminPageHead" />
+<div class="card"><div class="card-body">
+    <table id="writingTable" class="table table-hover align-middle w-100">
+        <thead><tr><th>#</th><th>Đề</th><th>Trình độ</th><th>Từ tối thiểu</th><th class="text-end">Action</th></tr></thead>
+        <tbody>
+        @{ var n = 1; }
+        @foreach (var item in Model)
+        {
+            <tr>
+                <td>@n</td>
+                <td><strong>@item.Title</strong><div class="small text-muted">@item.Prompt</div></td>
+                <td><span class="badge text-bg-primary">@item.Level</span></td>
+                <td>@item.MinWords</td>
+                <td class="text-end">
+                    <a class="btn btn-sm btn-outline-primary" asp-action="Upsert" asp-route-id="@item.Id"><i class="bi bi-pencil"></i></a>
+                    <button type="button" class="btn btn-sm btn-outline-danger" onclick="deleteItem(@item.Id)"><i class="bi bi-trash"></i></button>
+                </td>
+            </tr>
+            n++;
+        }
+        </tbody>
+    </table>
+</div></div>
+@section Scripts {
+<script>
+    $("#writingTable").DataTable({ language: { search: "Tìm kiếm:" } });
+    function deleteItem(id) {
+        Swal.fire({ title: "Xóa đề viết?", icon: "warning", showCancelButton: true, confirmButtonText: "Xóa" })
+            .then(function (r) {
+                if (!r.isConfirmed) return;
+                $.post("/Admin/WritingPrompt/Delete", { id: id, __RequestVerificationToken: $('input[name="__RequestVerificationToken"]').first().val() }, function (res) {
+                    Swal.fire({ icon: res.success ? "success" : "error", title: res.message }).then(function () { if (res.success) location.reload(); });
+                });
+            });
+    }
+</script>
+}

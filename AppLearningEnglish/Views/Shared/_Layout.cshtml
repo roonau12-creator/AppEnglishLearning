@@ -1,0 +1,182 @@
+﻿@{
+    var appTheme = Context.Request.Cookies["app-theme"] == "dark" ? "dark" : "light";
+    var uiLang = AppUi.Lang(Context);
+}
+<!DOCTYPE html>
+<html lang="@uiLang" data-theme="@appTheme">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>@ViewData["Title"] - AppLearningEnglish</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+    <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" />
+    <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
+    <link rel="stylesheet" href="~/css/customer.css" asp-append-version="true" />
+    <link rel="stylesheet" href="~/AppLearningEnglish.styles.css" asp-append-version="true" />
+    <link rel="stylesheet" href="https://cdn.datatables.net/2.3.2/css/dataTables.bootstrap5.min.css" />
+</head>
+<body class="app-body">
+    <nav class="navbar navbar-expand-lg navbar-light site-navbar sticky-top">
+        <div class="container">
+            <a class="navbar-brand site-brand"
+               asp-area="Customer"
+               asp-controller="Home"
+               asp-action="Index">
+                <span class="site-brand-mark">
+                    <i class="bi bi-translate"></i>
+                </span>
+                English Learning
+            </a>
+
+            <button class="navbar-toggler"
+                    type="button"
+                    data-bs-toggle="collapse"
+                    data-bs-target="#customerNavbar"
+                    aria-controls="customerNavbar"
+                    aria-expanded="false"
+                    aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+
+            <div class="collapse navbar-collapse" id="customerNavbar">
+                <ul class="navbar-nav me-auto">
+                    <li class="nav-item">
+                        <a class="nav-link" asp-area="Customer" asp-controller="Home" asp-action="Index">@AppUi.T(Context, "nav.home")</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" asp-area="Customer" asp-controller="Course" asp-action="Index">@AppUi.T(Context, "nav.courses")</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" asp-area="Customer" asp-controller="Course" asp-action="MyCourses">@AppUi.T(Context, "nav.mine")</a>
+                    </li>
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle" href="#" data-bs-toggle="dropdown">@AppUi.T(Context, "nav.practice")</a>
+                        <ul class="dropdown-menu">
+                            <li><a class="dropdown-item" asp-area="Customer" asp-controller="Vocabulary" asp-action="Index"><i class="bi bi-book me-2"></i>@AppUi.T(Context, "nav.vocab")</a></li>
+                            <li><a class="dropdown-item" asp-area="Customer" asp-controller="Listening" asp-action="Index"><i class="bi bi-headphones me-2"></i>Nghe</a></li>
+                            <li><a class="dropdown-item" asp-area="Customer" asp-controller="Speaking" asp-action="Index"><i class="bi bi-mic me-2"></i>Nói</a></li>
+                            <li><a class="dropdown-item" asp-area="Customer" asp-controller="Reading" asp-action="Index"><i class="bi bi-journal-text me-2"></i>Đọc</a></li>
+                            <li><a class="dropdown-item" asp-area="Customer" asp-controller="Writing" asp-action="Index"><i class="bi bi-pencil me-2"></i>Viết</a></li>
+                            <li><a class="dropdown-item" asp-area="Customer" asp-controller="Grammar" asp-action="Index"><i class="bi bi-spellcheck me-2"></i>Ngữ pháp</a></li>
+                            <li><a class="dropdown-item" asp-area="Customer" asp-controller="Conversation" asp-action="Index"><i class="bi bi-chat-dots me-2"></i>Hội thoại</a></li>
+                            <li><a class="dropdown-item" asp-area="Customer" asp-controller="QuizHub" asp-action="Index"><i class="bi bi-ui-checks me-2"></i>@AppUi.T(Context, "nav.quiz")</a></li>
+                            <li><a class="dropdown-item" asp-area="Customer" asp-controller="Coach" asp-action="Index"><i class="bi bi-robot me-2"></i>@AppUi.T(Context, "nav.coach")</a></li>
+                        </ul>
+                    </li>
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle" href="#" data-bs-toggle="dropdown">@AppUi.T(Context, "nav.more")</a>
+                        <ul class="dropdown-menu">
+                            <li><a class="dropdown-item" asp-area="Customer" asp-controller="Topic" asp-action="Index">Chủ đề</a></li>
+                            <li><a class="dropdown-item" asp-area="Customer" asp-controller="Streak" asp-action="Index">Chuỗi ngày học</a></li>
+                            <li><a class="dropdown-item" asp-area="Customer" asp-controller="Progress" asp-action="Index">Tiến độ</a></li>
+                            <li><a class="dropdown-item" asp-area="Customer" asp-controller="Progress" asp-action="Skills">Kỹ năng / từ yếu</a></li>
+                            <li><a class="dropdown-item" asp-area="Customer" asp-controller="Notebook" asp-action="Index">Ghi chú</a></li>
+                            <li><a class="dropdown-item" asp-area="Customer" asp-controller="Reminder" asp-action="Index">Nhật ký nhắc</a></li>
+                            <li><a class="dropdown-item" asp-area="Customer" asp-controller="Placement" asp-action="Index">Bài xếp lớp</a></li>
+                            <li><a class="dropdown-item" asp-area="Customer" asp-controller="Achievement" asp-action="Index">Thành tích</a></li>
+                            <li><a class="dropdown-item" asp-area="Customer" asp-controller="Point" asp-action="Index">Điểm</a></li>
+                            <li><a class="dropdown-item" asp-area="Customer" asp-controller="Point" asp-action="Leaderboard">Bảng xếp hạng</a></li>
+                            <li><a class="dropdown-item" asp-area="Customer" asp-controller="Exercise" asp-action="MyHistory">Lịch sử bài tập</a></li>
+                            <li><a class="dropdown-item" asp-area="Customer" asp-controller="Vocabulary" asp-action="Calendar">Lịch ôn từ</a></li>
+                            <li><a class="dropdown-item" asp-area="Customer" asp-controller="Path" asp-action="Index">Lộ trình A1–C2</a></li>
+                            <li><a class="dropdown-item" asp-area="Customer" asp-controller="Challenge" asp-action="Index">Thử thách / xu</a></li>
+                            <li><a class="dropdown-item" asp-area="Customer" asp-controller="Progress" asp-action="Charts">Biểu đồ</a></li>
+                            <li><a class="dropdown-item" asp-area="Customer" asp-controller="Notification" asp-action="Index">Thông báo</a></li>
+                            <li><a class="dropdown-item" asp-area="Customer" asp-controller="Community" asp-action="Index">Cộng đồng</a></li>
+                            <li><a class="dropdown-item" asp-area="Customer" asp-controller="Help" asp-action="Index">Hướng dẫn / FAQ</a></li>
+                        </ul>
+                    </li>
+                    @if (User.IsInRole(AppRoles.Admin))
+                    {
+                        <li class="nav-item">
+                            <a class="nav-link" asp-area="Admin" asp-controller="Dashboard" asp-action="Index">Admin</a>
+                        </li>
+                    }
+                </ul>
+                <form class="d-flex me-3 my-2 my-lg-0" asp-area="Customer" asp-controller="Search" asp-action="Index" method="get">
+                    <input class="form-control form-control-sm site-search" type="search" name="q" placeholder="@AppUi.T(Context, "nav.search")" />
+                </form>
+                <ul class="navbar-nav align-items-center">
+                    <li class="nav-item me-2">
+                        <form asp-area="Customer" asp-controller="Language" asp-action="Set" method="post" class="d-inline">
+                            @Html.AntiForgeryToken()
+                            <input type="hidden" name="returnUrl" value="@($"{Context.Request.Path}{Context.Request.QueryString}")" />
+                            <input type="hidden" name="lang" value="@(uiLang == "en" ? "vi" : "en")" />
+                            <button type="submit" class="nav-icon-btn" title="Đổi ngôn ngữ">
+                                @(uiLang == "en" ? "VI" : "EN")
+                            </button>
+                        </form>
+                    </li>
+                    <li class="nav-item me-2">
+                        <form asp-area="Customer" asp-controller="Theme" asp-action="Toggle" method="post">
+                            @Html.AntiForgeryToken()
+                            <input type="hidden" name="returnUrl" value="@($"{Context.Request.Path}{Context.Request.QueryString}")" />
+                            <button type="submit" class="nav-icon-btn" title="Đổi Dark/Light">
+                                <i class="bi @(appTheme == "dark" ? "bi-sun" : "bi-moon")"></i>
+                            </button>
+                        </form>
+                    </li>
+                    @if (User.Identity?.IsAuthenticated == true)
+                    {
+                        @await Component.InvokeAsync("StudyReminder")
+                    }
+                </ul>
+                <partial name="_LoginPartial" />
+            </div>
+        </div>
+    </nav>
+
+    @if (ViewData["FullWidth"] as bool? == true)
+    {
+        <main role="main">
+            @RenderBody()
+        </main>
+    }
+    else
+    {
+        <div class="container py-4">
+            <main role="main">
+                @RenderBody()
+            </main>
+        </div>
+    }
+
+    <footer class="site-footer">
+        <div class="container">
+            <span>&copy; 2026 AppLearningEnglish</span>
+            <span>Học tiếng Anh mỗi ngày</span>
+        </div>
+    </footer>
+
+    <script src="~/lib/jquery/dist/jquery.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script src="https://cdn.datatables.net/2.3.2/js/dataTables.min.js"></script>
+    <script src="https://cdn.datatables.net/2.3.2/js/dataTables.bootstrap5.min.js"></script>
+    <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="~/js/site.js" asp-append-version="true"></script>
+    @if (TempData["success"] is string successMessage)
+    {
+        <script>
+            Swal.fire({
+                icon: "success",
+                title: @Html.Raw(System.Text.Json.JsonSerializer.Serialize(successMessage)),
+                timer: 1800,
+                showConfirmButton: false
+            });
+        </script>
+    }
+    @if (TempData["error"] is string errorMessage)
+    {
+        <script>
+            Swal.fire({
+                icon: "error",
+                title: @Html.Raw(System.Text.Json.JsonSerializer.Serialize(errorMessage))
+            });
+        </script>
+    }
+    @await RenderSectionAsync("Scripts", required: false)
+</body>
+</html>

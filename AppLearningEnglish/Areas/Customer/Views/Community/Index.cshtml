@@ -1,0 +1,22 @@
+@model IEnumerable<AppLearningEnglish.Models.ForumPost>
+@{
+    ViewData["Title"] = "Cộng đồng";
+}
+<div class="container py-4">
+    <div class="d-flex justify-content-between align-items-center">
+        <h1 class="fw-bold">Diễn đàn</h1>
+        <a class="btn btn-primary" asp-action="Create">Viết bài</a>
+    </div>
+    @foreach (var post in Model)
+    {
+        <div class="card border-0 shadow-sm my-3">
+            <div class="card-body">
+                <a class="h5" asp-action="Details" asp-route-id="@post.Id">@post.Title</a>
+                <div class="small text-muted">
+                    @(post.ApplicationUser?.FullName ?? post.ApplicationUser?.Email) · @post.CreatedAt.ToLocalTime().ToString("dd/MM HH:mm")
+                    · @post.Comments.Count bình luận · @post.LikeCount thích
+                </div>
+            </div>
+        </div>
+    }
+</div>

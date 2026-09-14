@@ -1,0 +1,213 @@
+@model IEnumerable<AppLearningEnglish.Models.Achievement>
+
+@{
+    ViewData["Title"] = "My Achievements";
+
+    int points = ViewBag.Points ?? 0;
+
+    int unlockedCount =
+        ViewBag.UnlockedCount ?? 0;
+
+    int totalCount =
+        ViewBag.TotalCount ?? 0;
+
+    var unlockedIds =
+        ViewBag.UnlockedIds
+        as HashSet<int>
+        ?? new HashSet<int>();
+}
+
+<div class="container py-5">
+
+    <div class="text-center mb-5">
+
+        <div class="display-2">
+            🏆
+        </div>
+
+        <h1 class="fw-bold">
+            My Achievements
+        </h1>
+
+        <p class="text-muted">
+            Theo dõi những thành tựu bạn đã đạt được.
+        </p>
+
+    </div>
+
+    <div class="row justify-content-center mb-5">
+
+        <div class="col-md-4">
+
+            <div class="card border-0 shadow-sm text-center">
+
+                <div class="card-body p-4">
+
+                    <div class="fs-1">
+                        ⭐
+                    </div>
+
+                    <h2 class="fw-bold">
+                        @points
+                    </h2>
+
+                    <p class="text-muted mb-0">
+                        Total Points
+                    </p>
+
+                </div>
+
+            </div>
+
+        </div>
+
+        <div class="col-md-4">
+
+            <div class="card border-0 shadow-sm text-center">
+
+                <div class="card-body p-4">
+
+                    <div class="fs-1">
+                        🏆
+                    </div>
+
+                    <h2 class="fw-bold">
+                        @unlockedCount / @totalCount
+                    </h2>
+
+                    <p class="text-muted mb-0">
+                        Achievements
+                    </p>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+    <div class="row g-4">
+
+        @foreach (var item in Model)
+        {
+            bool unlocked =
+                unlockedIds.Contains(item.Id);
+
+            int progress = 0;
+
+            if (item.RequiredPoints > 0)
+            {
+                progress =
+                    (int)Math.Min(
+                        100,
+                        Math.Round(
+                            (decimal)points
+                            / item.RequiredPoints
+                            * 100));
+            }
+            else
+            {
+                progress = 100;
+            }
+
+            <div class="col-md-6 col-lg-4">
+
+                <div class="card border-0 shadow-sm h-100
+                            @(unlocked
+                                ? ""
+                                : "opacity-75")">
+
+                    <div class="card-body p-4 text-center">
+
+                        @if (!string.IsNullOrEmpty(
+                            item.IconUrl))
+                        {
+                            <img src="@item.IconUrl"
+                                 width="90"
+                                 height="90"
+                                 class="rounded-circle mb-3"
+                                 style="object-fit:cover;" />
+                        }
+                        else
+                        {
+                            <div class="display-2 mb-3">
+
+                                @(unlocked ? "🏆" : "🔒")
+
+                            </div>
+                        }
+
+                        <h4 class="fw-bold">
+
+                            @item.Name
+
+                        </h4>
+
+                        <p class="text-muted">
+
+                            @item.Description
+
+                        </p>
+
+                        @if (unlocked)
+                        {
+                            <div class="badge bg-success fs-6 mb-3">
+
+                                <i class="bi bi-check-circle"></i>
+
+                                Unlocked
+
+                            </div>
+                        }
+                        else
+                        {
+                            <div class="mb-3">
+
+                                <div class="d-flex
+                                            justify-content-between
+                                            small mb-1">
+
+                                    <span>
+                                        @points /
+                                        @item.RequiredPoints
+                                        points
+                                    </span>
+
+                                    <span>
+                                        @progress%
+                                    </span>
+
+                                </div>
+
+                                <div class="progress">
+
+                                    <div class="progress-bar"
+                                         style="width:@progress%">
+                                    </div>
+
+                                </div>
+
+                            </div>
+                        }
+
+                        <a asp-area="Customer"
+                           asp-controller="Achievement"
+                           asp-action="Details"
+                           asp-route-id="@item.Id"
+                           class="btn btn-outline-primary">
+
+                            View Details
+
+                        </a>
+
+                    </div>
+
+                </div>
+
+            </div>
+        }
+
+    </div>
+
+</div>

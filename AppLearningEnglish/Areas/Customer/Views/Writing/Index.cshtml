@@ -1,0 +1,66 @@
+@model AppLearningEnglish.Models.ViewModels.WritingHubViewModel
+@{
+    ViewData["Title"] = "Luyện viết";
+}
+
+<div class="container py-4">
+    <div class="d-flex justify-content-between align-items-center">
+        <div>
+            <h1 class="fw-bold">Luyện viết</h1>
+            <p class="text-muted">Viết tự do theo đề (có nhận xét ngữ pháp) hoặc viết lại câu mẫu.</p>
+        </div>
+        <a class="btn btn-outline-secondary" asp-action="History">Lịch sử</a>
+    </div>
+
+    <div class="mb-3 d-flex flex-wrap gap-2">
+        <a class="btn btn-sm @(string.IsNullOrEmpty(Model.Genre) ? "btn-dark" : "btn-outline-dark")" asp-action="Index">Tất cả</a>
+        <a class="btn btn-sm @(Model.Genre == "sentence" ? "btn-dark" : "btn-outline-dark")" asp-action="Index" asp-route-genre="sentence">Câu</a>
+        <a class="btn btn-sm @(Model.Genre == "paragraph" ? "btn-dark" : "btn-outline-dark")" asp-action="Index" asp-route-genre="paragraph">Đoạn</a>
+        <a class="btn btn-sm @(Model.Genre == "email" ? "btn-dark" : "btn-outline-dark")" asp-action="Index" asp-route-genre="email">Email</a>
+        <a class="btn btn-sm @(Model.Genre == "essay" ? "btn-dark" : "btn-outline-dark")" asp-action="Index" asp-route-genre="essay">Essay</a>
+    </div>
+    <h2 class="h5 mt-4">Viết theo đề</h2>
+    @if (!Model.Prompts.Any())
+    {
+        <div class="alert alert-info">Chưa có đề viết tự do.</div>
+    }
+    else
+    {
+        <div class="row g-3 mb-4">
+            @foreach (var item in Model.Prompts)
+            {
+                <div class="col-md-6">
+                    <div class="card border-0 shadow-sm h-100">
+                        <div class="card-body">
+                            <span class="badge bg-primary">@item.Level</span>
+                            <span class="badge bg-light text-dark">@item.Genre</span>
+                            <h3 class="h5 mt-2">@item.Title</h3>
+                            <p class="small text-muted">@item.Prompt</p>
+                            <a class="btn btn-outline-primary" asp-action="Prompt" asp-route-id="@item.Id">Viết bài</a>
+                        </div>
+                    </div>
+                </div>
+            }
+        </div>
+    }
+
+    <h2 class="h5">Viết lại câu</h2>
+    @if (!Model.RewriteItems.Any())
+    {
+        <div class="alert alert-info">Chưa có câu mẫu.</div>
+    }
+    else
+    {
+        <div class="list-group">
+            @foreach (var item in Model.RewriteItems)
+            {
+                <a class="list-group-item list-group-item-action"
+                   asp-action="Practice"
+                   asp-route-id="@item.Id">
+                    <strong>@item.VietnameseMeaning</strong>
+                    <div class="small text-muted">@item.Word?.WordText</div>
+                </a>
+            }
+        </div>
+    }
+</div>

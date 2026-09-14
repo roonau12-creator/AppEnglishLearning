@@ -1,0 +1,24 @@
+@{
+    ViewData["Title"] = "Xác nhận email";
+}
+<div class="auth-form-card mx-auto" style="max-width:640px">
+    <h2>Kiểm tra email</h2>
+    <p>
+        Tài khoản <strong>@ViewBag.Email</strong> đã được tạo.
+        Hãy xác nhận email trước khi đăng nhập.
+    </p>
+    @if (ViewBag.ConfirmUrl is string confirmUrl)
+    {
+        <div class="alert alert-info">
+            SMTP chưa cấu hình nên email không gửi được.
+            <a href="@confirmUrl">Mở liên kết xác nhận email</a>
+        </div>
+    }
+    else
+    {
+        <div class="alert alert-success">
+            Đã gửi email xác nhận. Liên kết hết hạn sau một thời gian.
+        </div>
+    }
+    <a class="btn btn-primary" asp-action="Login">Về đăng nhập</a>
+</div>

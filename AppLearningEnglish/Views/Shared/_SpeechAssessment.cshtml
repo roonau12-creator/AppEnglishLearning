@@ -1,0 +1,40 @@
+@model AppLearningEnglish.Models.ViewModels.SpeechAssessment?
+
+@if (Model != null)
+{
+    <div class="speech-feedback mt-4 text-start">
+        <div class="d-flex justify-content-between align-items-end mb-1">
+            <span class="small text-muted">Điểm phát âm</span>
+            <strong class="fs-4">@Model.Overall%</strong>
+        </div>
+        <div class="progress speech-score-bar mb-3" role="progressbar" aria-valuenow="@Model.Overall" aria-valuemin="0" aria-valuemax="100">
+            <div class="progress-bar @(Model.Overall >= 70 ? "bg-success" : "bg-danger")" style="width:@Model.Overall%"></div>
+        </div>
+        <div class="speech-words mb-3">
+            @foreach (var word in Model.Words)
+            {
+                var css = word.Status == "match" ? "speech-word is-ok" : "speech-word is-bad";
+                var label = word.Status switch
+                {
+                    "extra" => "+" + word.Heard,
+                    "near" => $"{word.Expected} → {word.Heard}",
+                    "wrong" => $"{word.Expected} → {word.Heard}",
+                    "missing" => word.Expected,
+                    _ => word.Expected
+                };
+                <span class="@css" title="@((word.PhoneticHint ?? word.Status) + " · " + word.Similarity + "%")">@label</span>
+            }
+        </div>
+        <div class="row g-2 text-center small mb-3">
+            <div class="col"><div class="speech-metric"><div class="text-muted">Đúng từ</div><strong>@Model.Accuracy%</strong></div></div>
+            <div class="col"><div class="speech-metric"><div class="text-muted">Đủ ý</div><strong>@Model.Completeness%</strong></div></div>
+            <div class="col"><div class="speech-metric"><div class="text-muted">Nhịp</div><strong>@Model.Fluency%</strong></div></div>
+        </div>
+        <ul class="small mb-0">
+            @foreach (var tip in Model.Tips)
+            {
+                <li>@tip</li>
+            }
+        </ul>
+    </div>
+}

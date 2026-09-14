@@ -1,0 +1,43 @@
+@model AppLearningEnglish.Models.ViewModels.WritingReview?
+
+@if (Model != null)
+{
+    <div class="writing-feedback mt-4">
+        <div class="row g-2 text-center mb-3">
+            <div class="col"><div class="small text-muted">Tổng</div><strong>@Model.Overall</strong></div>
+            <div class="col"><div class="small text-muted">Ngữ pháp</div><strong>@Model.Grammar</strong></div>
+            <div class="col"><div class="small text-muted">Nghĩa</div><strong>@Model.Meaning</strong></div>
+            <div class="col"><div class="small text-muted">Đủ ý</div><strong>@Model.Coverage</strong></div>
+        </div>
+        @if (Model.Diff.Any())
+        {
+            <p class="small mb-2">So với câu mẫu:</p>
+            <p class="mb-3">
+                @foreach (var word in Model.Diff)
+                {
+                    var css = word.Status switch
+                    {
+                        "match" => "text-success",
+                        "wrong" => "text-warning text-decoration-underline",
+                        "missing" => "text-danger text-decoration-line-through",
+                        _ => "text-secondary"
+                    };
+                    <span class="@css" title="@word.Expected">@word.Text</span>
+                }
+            </p>
+        }
+        <ul class="small">
+            @foreach (var comment in Model.Comments)
+            {
+                <li>@comment</li>
+            }
+        </ul>
+        @if (!string.IsNullOrWhiteSpace(Model.SuggestedRewrite))
+        {
+            <div class="alert alert-light border">
+                <div class="small text-muted mb-1">Câu mẫu / gợi ý sửa</div>
+                <strong>@Model.SuggestedRewrite</strong>
+            </div>
+        }
+    </div>
+}

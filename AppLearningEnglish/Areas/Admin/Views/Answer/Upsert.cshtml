@@ -1,0 +1,58 @@
+@model AppLearningEnglish.Models.Answer
+@{
+    var isCreate = Model.Id == 0;
+    ViewData["Title"] = isCreate ? "Thêm Answer" : "Sửa Answer";
+}
+<div class="admin-form-banner tone-mint">
+    <div class="admin-form-icon"><i class="bi bi-check2-square"></i></div>
+    <div>
+        <h1 class="fw-bold">@(isCreate ? "Thêm Answer" : "Chỉnh sửa Answer")</h1>
+        <p>Chỉ một đáp án đúng cho mỗi câu hỏi trắc nghiệm.</p>
+    </div>
+</div>
+<div class="row g-4">
+    <div class="col-xl-8">
+        <div class="card"><div class="card-body">
+            <form asp-area="Admin" asp-controller="Answer" asp-action="Upsert" method="post">
+                @Html.AntiForgeryToken()
+                <input asp-for="Id" type="hidden" />
+                <div asp-validation-summary="ModelOnly" class="text-danger mb-3"></div>
+                <div class="mb-4">
+                    <label asp-for="QuestionId" class="form-label fw-semibold">Question</label>
+                    <select asp-for="QuestionId" asp-items="ViewBag.Questions" class="form-select"><option value="">-- Chọn Question --</option></select>
+                    <span asp-validation-for="QuestionId" class="text-danger"></span>
+                </div>
+                <div class="mb-4">
+                    <label asp-for="AnswerText" class="form-label fw-semibold">Answer Text</label>
+                    <textarea asp-for="AnswerText" class="form-control" rows="4"></textarea>
+                    <span asp-validation-for="AnswerText" class="text-danger"></span>
+                </div>
+                <div class="mb-4">
+                    <div class="form-check form-switch">
+                        <input asp-for="IsCorrect" class="form-check-input" type="checkbox" />
+                        <label asp-for="IsCorrect" class="form-check-label fw-semibold">Đây là đáp án đúng</label>
+                    </div>
+                </div>
+                <div class="admin-preview mb-4">
+                    <span class="badge bg-secondary" id="statusPreview">Incorrect</span>
+                    <span id="answerPreview" class="ms-2">Answer...</span>
+                </div>
+                <div class="d-flex justify-content-end gap-2">
+                    <a class="btn btn-outline-secondary" asp-area="Admin" asp-controller="Answer" asp-action="Index">Quay lại</a>
+                    <button class="btn btn-primary" type="submit">@(isCreate ? "Thêm Answer" : "Lưu thay đổi")</button>
+                </div>
+            </form>
+        </div></div>
+    </div>
+    <div class="col-xl-4"><aside class="admin-aside"><h3>Chấm bài</h3><p class="mb-0">Học viên thấy đáp án đúng sau khi nộp.</p></aside></div>
+</div>
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+    <script>
+        $("#AnswerText").on("input", function () { $("#answerPreview").text($(this).val() || "Answer..."); });
+        $("#IsCorrect").on("change", function () {
+            $("#statusPreview").text(this.checked ? "Correct" : "Incorrect")
+                .toggleClass("bg-success", this.checked).toggleClass("bg-secondary", !this.checked);
+        });
+    </script>
+}

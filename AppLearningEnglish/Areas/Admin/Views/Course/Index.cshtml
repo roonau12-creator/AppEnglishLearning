@@ -1,0 +1,70 @@
+@{
+    ViewData["Title"] = "Courses";
+    ViewData["Subtitle"] = "Khóa học, level và trạng thái xuất bản";
+    ViewData["Icon"] = "bi-collection-play-fill";
+    ViewData["Tone"] = "sky";
+    ViewData["ActionText"] = "Thêm Course";
+    ViewData["ActionController"] = "Course";
+}
+
+<partial name="_AdminPageHead" />
+
+<div class="admin-filter mb-4">
+    <div class="admin-filter-label"><i class="bi bi-funnel"></i> Bộ lọc</div>
+    <div class="row g-3">
+        <div class="col-md-5">
+            <label class="form-label fw-semibold">Tìm kiếm</label>
+            <input type="text" id="searchInput" class="form-control" placeholder="Nhập tên Course..." />
+        </div>
+        <div class="col-md-3">
+            <label class="form-label fw-semibold">Level</label>
+            <select id="levelFilter" class="form-select">
+                <option value="">Tất cả Level</option>
+                <option value="A1">A1</option>
+                <option value="A2">A2</option>
+                <option value="B1">B1</option>
+                <option value="B2">B2</option>
+                <option value="C1">C1</option>
+                <option value="C2">C2</option>
+            </select>
+        </div>
+        <div class="col-md-3">
+            <label class="form-label fw-semibold">Trạng thái</label>
+            <select id="statusFilter" class="form-select">
+                <option value="">Tất cả</option>
+                <option value="true">Published</option>
+                <option value="false">Draft</option>
+            </select>
+        </div>
+        <div class="col-md-1 d-flex align-items-end">
+            <button type="button" id="btnFilter" class="btn btn-dark w-100" title="Lọc">
+                <i class="bi bi-search"></i>
+            </button>
+        </div>
+    </div>
+</div>
+
+<div class="card">
+    <div class="card-header"><h5 class="mb-0 fw-bold">Danh sách Course</h5></div>
+    <div class="card-body">
+        <div class="table-responsive">
+            <table id="courseTable" class="table table-hover align-middle w-100">
+                <thead>
+                    <tr>
+                        <th>Thumbnail</th>
+                        <th>Name</th>
+                        <th>Level</th>
+                        <th>Status</th>
+                        <th>Created At</th>
+                        <th class="text-end">Action</th>
+                    </tr>
+                </thead>
+                <tbody></tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script src="~/js/course.js"></script>
+}

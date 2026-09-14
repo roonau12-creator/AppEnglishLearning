@@ -1,0 +1,76 @@
+@model IEnumerable<AppLearningEnglish.Models.UserLesson>
+
+@{
+    ViewData["Title"] = "Bài đang học";
+}
+
+<div class="container py-4">
+
+    <h2 class="fw-bold mb-4">
+        <i class="bi bi-play-circle"></i>
+        Bài đang học
+    </h2>
+
+    @if (!Model.Any())
+    {
+        <div class="alert alert-info">
+            Hiện tại bạn không có bài học nào đang học.
+        </div>
+    }
+    else
+    {
+        <div class="row g-4">
+
+            @foreach (var item in Model)
+            {
+                <div class="col-md-6 col-lg-4">
+
+                    <div class="card shadow-sm border-0">
+
+                        <div class="card-body">
+
+                            <h5 class="fw-bold">
+                                @item.Lesson?.Title
+                            </h5>
+
+                            <p class="text-muted">
+                                @item.Lesson?.Description
+                            </p>
+
+                            <div class="progress mb-2"
+                                 style="height:10px">
+
+                                <div class="progress-bar"
+                                     style="width:@item.Progress%">
+                                </div>
+
+                            </div>
+
+                            <div class="text-end mb-3">
+                                <strong>
+                                    @item.Progress%
+                                </strong>
+                            </div>
+
+                            <a asp-area="Customer"
+                               asp-controller="Lesson"
+                               asp-action="Details"
+                               asp-route-id="@item.LessonId"
+                               class="btn btn-primary w-100">
+
+                                <i class="bi bi-play-fill"></i>
+                                Tiếp tục học
+
+                            </a>
+
+                        </div>
+
+                    </div>
+
+                </div>
+            }
+
+        </div>
+    }
+
+</div>

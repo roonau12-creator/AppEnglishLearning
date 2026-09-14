@@ -1,0 +1,59 @@
+@model IEnumerable<AppLearningEnglish.Models.ReadingPassage>
+@{
+    ViewData["Title"] = "Bài đọc hiểu";
+    ViewData["Subtitle"] = "Đoạn đọc và câu hỏi ý chính / T-F-NG";
+    ViewData["Icon"] = "bi-journal-text";
+    ViewData["Tone"] = "violet";
+    ViewData["ActionText"] = "Thêm bài đọc";
+    ViewData["ActionController"] = "ReadingPassage";
+}
+<partial name="_AdminPageHead" />
+<div class="card">
+    <div class="card-body">
+        <table id="readingTable" class="table table-hover align-middle w-100">
+            <thead>
+                <tr>
+                    <th>#</th>
+                    <th>Tiêu đề</th>
+                    <th>Trình độ</th>
+                    <th>Chủ đề</th>
+                    <th>Câu hỏi</th>
+                    <th class="text-end">Action</th>
+                </tr>
+            </thead>
+            <tbody>
+                @{ var number = 1; }
+                @foreach (var item in Model)
+                {
+                    <tr>
+                        <td>@number</td>
+                        <td><strong>@item.Title</strong></td>
+                        <td><span class="badge text-bg-primary">@item.Level</span></td>
+                        <td>@item.Topic</td>
+                        <td>@item.Questions.Count</td>
+                        <td class="text-end">
+                            <a class="btn btn-sm btn-outline-secondary" asp-action="Details" asp-route-id="@item.Id"><i class="bi bi-list-check"></i></a>
+                            <a class="btn btn-sm btn-outline-primary" asp-action="Upsert" asp-route-id="@item.Id"><i class="bi bi-pencil"></i></a>
+                            <button type="button" class="btn btn-sm btn-outline-danger" onclick="deleteItem(@item.Id)"><i class="bi bi-trash"></i></button>
+                        </td>
+                    </tr>
+                    number++;
+                }
+            </tbody>
+        </table>
+    </div>
+</div>
+@section Scripts {
+<script>
+    $("#readingTable").DataTable({ language: { search: "Tìm kiếm:" } });
+    function deleteItem(id) {
+        Swal.fire({ title: "Xóa bài đọc?", icon: "warning", showCancelButton: true, confirmButtonText: "Xóa" })
+            .then(function (r) {
+                if (!r.isConfirmed) return;
+                $.post("/Admin/ReadingPassage/Delete", { id: id, __RequestVerificationToken: $('input[name="__RequestVerificationToken"]').first().val() }, function (res) {
+                    Swal.fire({ icon: res.success ? "success" : "error", title: res.message }).then(function () { if (res.success) location.reload(); });
+                });
+            });
+    }
+</script>
+}

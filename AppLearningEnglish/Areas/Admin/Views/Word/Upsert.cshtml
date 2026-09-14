@@ -1,0 +1,109 @@
+@model AppLearningEnglish.Models.Word
+@{
+    var isCreate = Model.Id == 0;
+    ViewData["Title"] = isCreate ? "Thêm Word" : "Sửa Word";
+    ViewData["Subtitle"] = "Từ, phiên âm, audio và ảnh";
+}
+
+<div class="admin-form-banner tone-orange">
+    <div class="admin-form-icon"><i class="bi bi-chat-square-quote-fill"></i></div>
+    <div>
+        <h1 class="fw-bold">@(isCreate ? "Thêm từ vựng" : "Chỉnh sửa từ vựng")</h1>
+        <p>Gắn vào Lesson để hiện trong bước Vocabulary.</p>
+    </div>
+</div>
+
+<div class="row g-4">
+    <div class="col-xl-8">
+        <div class="card">
+            <div class="card-body">
+                <form asp-area="Admin" asp-controller="Word" asp-action="Upsert" method="post">
+                    @Html.AntiForgeryToken()
+                    <input asp-for="Id" type="hidden" />
+                    <div asp-validation-summary="ModelOnly" class="text-danger mb-3"></div>
+                    <div class="row">
+                        <div class="col-md-6 mb-4">
+                            <label asp-for="WordText" class="form-label fw-semibold">Word</label>
+                            <input asp-for="WordText" class="form-control" placeholder="beautiful" />
+                            <span asp-validation-for="WordText" class="text-danger"></span>
+                        </div>
+                        <div class="col-md-6 mb-4">
+                            <label asp-for="Pronunciation" class="form-label fw-semibold">Pronunciation</label>
+                            <input asp-for="Pronunciation" class="form-control" placeholder="/ˈbjuːtɪfəl/" />
+                        </div>
+                    </div>
+                    <div class="mb-4">
+                        <label asp-for="PartOfSpeech" class="form-label fw-semibold">Part of Speech</label>
+                        <select asp-for="PartOfSpeech" class="form-select">
+                            <option value="">-- Chọn loại từ --</option>
+                            <option value="Noun">Noun</option>
+                            <option value="Verb">Verb</option>
+                            <option value="Adjective">Adjective</option>
+                            <option value="Adverb">Adverb</option>
+                            <option value="Pronoun">Pronoun</option>
+                            <option value="Preposition">Preposition</option>
+                            <option value="Conjunction">Conjunction</option>
+                            <option value="Interjection">Interjection</option>
+                        </select>
+                    </div>
+                    <div class="mb-4">
+                        <label asp-for="Definition" class="form-label fw-semibold">Definition</label>
+                        <textarea asp-for="Definition" class="form-control" rows="4"></textarea>
+                    </div>
+                    <div class="mb-4">
+                        <label asp-for="LessonId" class="form-label fw-semibold">Lesson</label>
+                        <select asp-for="LessonId" asp-items="ViewBag.Lessons" class="form-select">
+                            <option value="">-- Không gắn bài học --</option>
+                        </select>
+                    </div>
+                    <div class="mb-4">
+                        <label asp-for="AudioUrl" class="form-label fw-semibold">Audio URL</label>
+                        <input asp-for="AudioUrl" id="audioUrl" class="form-control" />
+                        <div id="audioPreview" class="mt-3">
+                            @if (!string.IsNullOrWhiteSpace(Model.AudioUrl))
+                            {
+                                <audio controls class="w-100"><source src="@Model.AudioUrl" type="audio/mpeg" /></audio>
+                            }
+                        </div>
+                    </div>
+                    <div class="mb-4">
+                        <label asp-for="ImageUrl" class="form-label fw-semibold">Image URL</label>
+                        <input asp-for="ImageUrl" id="imageUrl" class="form-control" />
+                        <img id="imagePreview" src="@Model.ImageUrl" class="rounded mt-3"
+                             style="width:220px;height:150px;object-fit:cover;display:@(string.IsNullOrWhiteSpace(Model.ImageUrl) ? "none" : "block")" />
+                    </div>
+                    <div class="d-flex justify-content-end gap-2">
+                        <a class="btn btn-outline-secondary" asp-area="Admin" asp-controller="Word" asp-action="Index">
+                            <i class="bi bi-arrow-left me-1"></i> Quay lại
+                        </a>
+                        <button type="submit" class="btn btn-primary">
+                            <i class="bi bi-check-circle me-1"></i>
+                            @(isCreate ? "Tạo Word" : "Lưu thay đổi")
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+    <div class="col-xl-4">
+        <aside class="admin-aside">
+            <h3><i class="bi bi-mic me-1"></i> Media</h3>
+            <p class="mb-0">Audio MP3 và ảnh giúp trang Vocabulary / Speaking sống động.</p>
+        </aside>
+    </div>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+    <script>
+        $("#imageUrl").on("input", function () {
+            var url = $(this).val();
+            if (url) { $("#imagePreview").attr("src", url).show(); }
+            else { $("#imagePreview").hide(); }
+        });
+        $("#audioUrl").on("input", function () {
+            var url = $(this).val();
+            $("#audioPreview").html(url ? `<audio controls class="w-100"><source src="${url}" type="audio/mpeg"></audio>` : "");
+        });
+    </script>
+}

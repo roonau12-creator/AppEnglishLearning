@@ -1,0 +1,17 @@
+@model AppLearningEnglish.Models.WordExample
+@{ ViewData["Title"] = "Example"; }
+<div class="admin-form-banner tone-amber">
+    <div class="admin-form-icon"><i class="bi bi-quote"></i></div>
+    <div>
+        <h1 class="fw-bold">@(Model.Word?.WordText ?? "Example")</h1>
+        <p>Câu ví dụ</p>
+    </div>
+</div>
+<div class="card"><div class="card-body">
+    <div class="admin-detail-panel mb-3"><small class="text-muted">English</small><h4 class="mt-1 mb-0">@Model.EnglishSentence</h4></div>
+    <div class="admin-detail-panel mb-4"><small class="text-muted">Tiếng Việt</small><h5 class="mt-1 mb-0">@Model.VietnameseMeaning</h5></div>
+    <div class="d-flex gap-2">
+        <a class="btn btn-primary" asp-area="Admin" asp-controller="WordExample" asp-action="Upsert" asp-route-id="@Model.Id">Sửa</a>
+        <a class="btn btn-outline-secondary" asp-area="Admin" asp-controller="WordExample" asp-action="Index" asp-route-wordId="@Model.WordId">Quay lại</a>
+    </div>
+</div></div>

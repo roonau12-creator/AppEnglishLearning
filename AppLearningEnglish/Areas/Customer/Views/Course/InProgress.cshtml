@@ -1,0 +1,85 @@
+@model IEnumerable<AppLearningEnglish.Models.UserCourse>
+
+@{
+    ViewData["Title"] = "Courses In Progress";
+}
+
+<div class="container py-5">
+
+    <h2 class="fw-bold mb-4">
+
+        <i class="bi bi-play-circle"></i>
+
+        Courses In Progress
+
+    </h2>
+
+    @if (!Model.Any())
+    {
+        <div class="alert alert-info">
+
+            Bạn chưa có khóa học đang học.
+
+        </div>
+    }
+    else
+    {
+        <div class="row g-4">
+
+            @foreach (var item in Model)
+            {
+                <div class="col-md-6 col-lg-4">
+
+                    <div class="card border-0 shadow-sm">
+
+                        <div class="card-body">
+
+                            <h4 class="fw-bold">
+
+                                @item.Course?.Name
+
+                            </h4>
+
+                            <div class="d-flex justify-content-between mb-2">
+
+                                <span>
+                                    Progress
+                                </span>
+
+                                <strong>
+                                    @item.Progress%
+                                </strong>
+
+                            </div>
+
+                            <div class="progress mb-3">
+
+                                <div class="progress-bar"
+                                     style="width:@item.Progress%">
+                                </div>
+
+                            </div>
+
+                            <a asp-area="Customer"
+                               asp-controller="Course"
+                               asp-action="Continue"
+                               asp-route-courseId="@item.CourseId"
+                               class="btn btn-primary w-100">
+
+                                <i class="bi bi-play-fill"></i>
+
+                                Continue Learning
+
+                            </a>
+
+                        </div>
+
+                    </div>
+
+                </div>
+            }
+
+        </div>
+    }
+
+</div>

@@ -1,0 +1,74 @@
+@{
+    ViewData["Title"] = "Exercises";
+    ViewData["Subtitle"] = "Bài tập theo lesson và dạng câu hỏi";
+    ViewData["Icon"] = "bi-ui-checks";
+    ViewData["Tone"] = "grape";
+    ViewData["ActionText"] = "Thêm Exercise";
+    ViewData["ActionController"] = "Exercise";
+}
+
+<partial name="_AdminPageHead" />
+
+<div class="admin-chip-row mb-3">
+    <a class="btn btn-sm btn-outline-primary" asp-area="Admin" asp-controller="Question" asp-action="Index">Questions</a>
+    <a class="btn btn-sm btn-outline-primary" asp-area="Admin" asp-controller="Answer" asp-action="Index">Answers</a>
+</div>
+
+<div class="admin-filter mb-4">
+    <div class="admin-filter-label"><i class="bi bi-funnel"></i> Bộ lọc</div>
+    <div class="row g-3">
+        <div class="col-lg-4 col-md-6">
+            <label class="form-label fw-semibold">Tìm kiếm</label>
+            <input type="text" id="searchInput" class="form-control" placeholder="Question, Type, Lesson..." />
+        </div>
+        <div class="col-lg-3 col-md-6">
+            <label class="form-label fw-semibold">Lesson</label>
+            <select id="lessonFilter" class="form-select">
+                <option value="">Tất cả Lesson</option>
+                @foreach (var lesson in ViewBag.Lessons)
+                {
+                    <option value="@lesson.Value">@lesson.Text</option>
+                }
+            </select>
+        </div>
+        <div class="col-lg-3 col-md-6">
+            <label class="form-label fw-semibold">Type</label>
+            <select id="typeFilter" class="form-select">
+                <option value="">Tất cả</option>
+                <option value="MultipleChoice">Multiple Choice</option>
+                <option value="FillBlank">Fill in the Blank</option>
+                <option value="TrueFalse">True / False</option>
+                <option value="Matching">Matching</option>
+                <option value="Listening">Listening</option>
+                <option value="Reading">Reading</option>
+            </select>
+        </div>
+        <div class="col-lg-2 d-flex align-items-end">
+            <button type="button" id="btnFilter" class="btn btn-dark w-100"><i class="bi bi-search me-1"></i> Lọc</button>
+        </div>
+    </div>
+</div>
+
+<div class="card">
+    <div class="card-header"><h5 class="mb-0 fw-bold">Danh sách Exercise</h5></div>
+    <div class="card-body">
+        <div class="table-responsive">
+            <table id="exerciseTable" class="table table-hover align-middle w-100">
+                <thead>
+                    <tr>
+                        <th>Order</th>
+                        <th>Lesson</th>
+                        <th>Type</th>
+                        <th>Question</th>
+                        <th class="text-end">Action</th>
+                    </tr>
+                </thead>
+                <tbody></tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script src="~/js/exercise.js"></script>
+}

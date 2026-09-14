@@ -1,0 +1,248 @@
+@model IEnumerable<AppLearningEnglish.Models.UserVocabulary>
+
+@{
+    ViewData["Title"] = "Từ của bạn";
+}
+
+<div class="page-hero">
+    <div>
+        <p class="section-kicker mb-1">Từ vựng</p>
+        <h2 class="fw-bold">
+            <i class="bi bi-translate"></i>
+            Từ của bạn
+        </h2>
+        <p class="text-muted mb-0">
+            Ôn đúng lúc cần nhớ — gõ, chọn nghĩa hoặc nghe rồi viết.
+        </p>
+    </div>
+    <div class="toolbar-cluster">
+        <a asp-action="Create" class="btn btn-outline-primary">Thêm từ</a>
+        <a asp-action="Import" class="btn btn-outline-primary">Nhập CSV</a>
+        <a asp-action="Export" class="btn btn-outline-primary">Xuất CSV</a>
+        <a asp-action="Flashcard" asp-route-mode="due" class="btn btn-outline-success">Flashcard</a>
+        <a asp-action="QuickReview" class="btn btn-outline-success">Ôn nhanh</a>
+        <form asp-action="ShareDeck" method="post">
+            @Html.AntiForgeryToken()
+            <button class="btn btn-outline-secondary" type="submit">Chia sẻ bộ từ</button>
+        </form>
+        <a asp-area="Customer" asp-controller="Vocabulary" asp-action="Learning" class="btn btn-outline-secondary">Đang học</a>
+        <a asp-area="Customer" asp-controller="Vocabulary" asp-action="Mastered" class="btn btn-outline-success">Đã thuộc</a>
+        <a asp-area="Customer" asp-controller="Vocabulary" asp-action="Review" class="btn btn-primary">
+            <i class="bi bi-arrow-repeat"></i>
+            Ôn tập (@ViewBag.ReviewWords)
+        </a>
+    </div>
+</div>
+
+<form method="get" class="row g-2 mb-3">
+    <div class="col-md-4">
+        <input class="form-control" name="q" value="@ViewBag.Query" placeholder="Tìm từ, nghĩa, đồng nghĩa..." />
+    </div>
+    <div class="col-md-2">
+        <select class="form-select" name="level">
+            <option value="">A1–C2</option>
+            @foreach (var level in new[] { "A1", "A2", "B1", "B2", "C1", "C2" })
+            {
+                <option value="@level" selected="@(string.Equals((string?)ViewBag.Level, level, StringComparison.OrdinalIgnoreCase) ? "selected" : null)">@level</option>
+            }
+        </select>
+    </div>
+    <div class="col-md-3">
+        <select class="form-select" name="topic">
+            <option value="">Chủ đề</option>
+            @foreach (var topic in AppLearningEnglish.Business.VocabTopics.All)
+            {
+                <option value="@topic.Slug" selected="@(string.Equals((string?)ViewBag.Topic, topic.Slug, StringComparison.OrdinalIgnoreCase) ? "selected" : null)">@topic.Name</option>
+            }
+        </select>
+    </div>
+    <div class="col-md-3">
+        <button class="btn btn-primary" type="submit">Lọc</button>
+        <a class="btn btn-outline-secondary" asp-action="Index">Xóa</a>
+    </div>
+</form>
+
+<div class="mb-4 filter-row">
+    <a class="filter-chip @(ViewBag.Tab == null ? "is-on" : null)" asp-action="Index">Tất cả</a>
+    <a class="filter-chip @(ViewBag.Tab == "new" ? "is-on" : null)" asp-action="Index" asp-route-tab="new">Từ mới</a>
+    <a class="filter-chip @(ViewBag.Tab == "learned" ? "is-on" : null)" asp-action="Index" asp-route-tab="learned">Đã học</a>
+    <a class="filter-chip @(ViewBag.Tab == "fav" ? "is-on" : null)" asp-action="Index" asp-route-tab="fav">Yêu thích ⭐</a>
+    <a class="filter-chip @(ViewBag.Tab == "hard" ? "is-on" : null)" asp-action="Index" asp-route-tab="hard">Từ khó</a>
+</div>
+
+<div class="row g-3 mb-4">
+    <div class="col-md-4">
+        <div class="stat-card">
+            <span class="stat-label">Tổng số từ</span>
+            <strong>@ViewBag.TotalWords</strong>
+        </div>
+    </div>
+    <div class="col-md-4">
+        <div class="stat-card">
+            <span class="stat-label">Cần ôn</span>
+            <strong class="text-warning">@ViewBag.ReviewWords</strong>
+        </div>
+    </div>
+    <div class="col-md-4">
+        <div class="stat-card">
+            <span class="stat-label">Đã thuộc</span>
+            <strong class="text-success">@ViewBag.MasteredWords</strong>
+        </div>
+    </div>
+</div>
+
+@if (!Model.Any())
+{
+    <div class="empty-state">
+        <i class="bi bi-journal-plus"></i>
+        <h3>Chưa có từ vựng</h3>
+        <p>Thêm từ mới hoặc nhập CSV để bắt đầu ôn.</p>
+        <a asp-action="Create" class="btn btn-primary mt-3">Thêm từ đầu tiên</a>
+    </div>
+}
+else
+{
+    <div class="row g-4">
+        @foreach (var item in Model)
+        {
+            var statusClass = item.Status == "Mastered" ? "mastered" : item.Status == "Reviewing" ? "reviewing" : "learning";
+            var statusLabel = item.Status == "Mastered" ? "Đã thuộc" : item.Status == "Reviewing" ? "Đang ôn" : "Đang học";
+            <div class="col-md-6 col-lg-4">
+                <div class="word-card h-100">
+                    <div class="card-body p-4">
+                        <div class="d-flex justify-content-between align-items-start gap-2">
+                            <h4 class="fw-bold mb-1">
+                                @item.Word?.WordText
+                                <button type="button" class="btn btn-sm btn-link speak-word p-0" data-text="@item.Word?.WordText" aria-label="Phát âm">
+                                    <i class="bi bi-volume-up"></i>
+                                </button>
+                            </h4>
+                            <span class="status-pill @statusClass">@statusLabel</span>
+                        </div>
+
+                        <p class="text-muted mb-2">@item.Word?.Pronunciation</p>
+
+                        @if (!string.IsNullOrWhiteSpace(item.Word?.ImageUrl))
+                        {
+                            <img src="@item.Word.ImageUrl" class="rounded-4 mb-2 w-100" style="max-height:140px;object-fit:cover" alt="" />
+                        }
+
+                        @if (!string.IsNullOrWhiteSpace(item.Word?.AudioUrl))
+                        {
+                            <audio controls class="w-100 mb-2">
+                                <source src="@item.Word.AudioUrl" />
+                            </audio>
+                        }
+
+                        <div class="d-flex gap-2 mb-2">
+                            @if (!string.IsNullOrWhiteSpace(item.Word?.Level))
+                            {
+                                <span class="badge bg-light text-dark">@item.Word.Level</span>
+                            }
+                            @if (!string.IsNullOrWhiteSpace(item.Word?.TopicSlug))
+                            {
+                                <span class="badge bg-light text-dark">@AppLearningEnglish.Business.VocabTopics.Name(item.Word.TopicSlug)</span>
+                            }
+                        </div>
+                        @if (!string.IsNullOrWhiteSpace(item.Word?.Definition))
+                        {
+                            <p class="mb-2">@item.Word.Definition</p>
+                        }
+                        @if (!string.IsNullOrWhiteSpace(item.Word?.Synonyms))
+                        {
+                            <div class="small">Đồng nghĩa: @item.Word.Synonyms</div>
+                        }
+                        @if (!string.IsNullOrWhiteSpace(item.Word?.Antonyms))
+                        {
+                            <div class="small">Trái nghĩa: @item.Word.Antonyms</div>
+                        }
+                        @if (!string.IsNullOrWhiteSpace(item.Word?.WordFamily))
+                        {
+                            <div class="small text-muted">Họ từ: @item.Word.WordFamily</div>
+                        }
+
+                        @if (item.Word?.Meanings != null)
+                        {
+                            foreach (var meaning in item.Word.Meanings)
+                            {
+                                <div class="small mb-1">
+                                    <span class="text-muted text-uppercase">@meaning.Language</span>
+                                    <strong>@meaning.Meaning</strong>
+                                </div>
+                            }
+                        }
+
+                        @if (item.Word?.Examples != null && item.Word.Examples.Any())
+                        {
+                            var example = item.Word.Examples.First();
+                            <p class="small text-muted">
+                                @example.EnglishSentence
+                                <br />
+                                @example.VietnameseMeaning
+                            </p>
+                        }
+
+                        <hr />
+
+                        <div class="mb-2">
+                            <small>Độ quen</small>
+                            <strong class="float-end">@item.Familiarity / 5</strong>
+                        </div>
+                        <div class="progress mb-3">
+                            <div class="progress-bar" style="width:@(item.Familiarity * 20)%"></div>
+                        </div>
+
+                        <div class="small text-muted mb-3">
+                            @{
+                                var attempts = item.CorrectCount + item.WrongCount;
+                                var recall = attempts == 0 ? 0 : (int)Math.Round(100d * item.CorrectCount / attempts);
+                            }
+                            <div>Đúng: @item.CorrectCount</div>
+                            <div>Sai: @item.WrongCount</div>
+                            <div>Tỷ lệ nhớ: @recall%</div>
+                        </div>
+
+                        <div class="d-flex gap-2 mb-2">
+                            <form asp-action="ToggleFavorite" method="post">
+                                @Html.AntiForgeryToken()
+                                <input type="hidden" name="wordId" value="@item.WordId" />
+                                <button class="btn btn-sm @(item.IsFavorite ? "btn-warning" : "btn-outline-warning")" type="submit">⭐</button>
+                            </form>
+                            <form asp-action="ToggleHard" method="post">
+                                @Html.AntiForgeryToken()
+                                <input type="hidden" name="wordId" value="@item.WordId" />
+                                <button class="btn btn-sm @(item.IsHard ? "btn-danger" : "btn-outline-danger")" type="submit">Khó</button>
+                            </form>
+                            <form asp-action="Reset" method="post">
+                                @Html.AntiForgeryToken()
+                                <input type="hidden" name="wordId" value="@item.WordId" />
+                                <button class="btn btn-sm btn-outline-secondary" type="submit">Reset ôn</button>
+                            </form>
+                        </div>
+                        <form asp-area="Customer" asp-controller="Vocabulary" asp-action="Remove" method="post">
+                            @Html.AntiForgeryToken()
+                            <input type="hidden" name="wordId" value="@item.WordId" />
+                            <button type="submit" class="btn btn-outline-danger w-100">
+                                <i class="bi bi-trash"></i>
+                                Xóa khỏi sổ
+                            </button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        }
+    </div>
+}
+
+@section Scripts {
+    <script>
+        document.querySelectorAll(".speak-word").forEach(function (btn) {
+            btn.addEventListener("click", function () {
+                if (!window.speechSynthesis) return;
+                var u = new SpeechSynthesisUtterance(this.getAttribute("data-text") || "");
+                u.lang = "en-US";
+                speechSynthesis.speak(u);
+            });
+        });
+    </script>
+}

@@ -1,0 +1,29 @@
+@{
+    var icon = ViewData["Icon"] as string ?? "bi-grid-fill";
+    var tone = ViewData["Tone"] as string ?? "violet";
+    var actionText = ViewData["ActionText"] as string;
+    var actionController = ViewData["ActionController"] as string;
+    var actionAction = ViewData["ActionAction"] as string ?? "Upsert";
+}
+
+<div class="admin-page-head">
+    <div class="admin-page-copy">
+        <div class="admin-page-icon tone-@tone">
+            <i class="bi @icon"></i>
+        </div>
+        <div>
+            <h1 class="fw-bold">@ViewData["Title"]</h1>
+            <p>@(ViewData["Subtitle"] ?? "Quản trị nội dung học")</p>
+        </div>
+    </div>
+    @if (!string.IsNullOrWhiteSpace(actionText) && !string.IsNullOrWhiteSpace(actionController))
+    {
+        <a class="btn btn-primary"
+           asp-area="Admin"
+           asp-controller="@actionController"
+           asp-action="@actionAction">
+            <i class="bi bi-plus-circle me-1"></i>
+            @actionText
+        </a>
+    }
+</div>

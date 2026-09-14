@@ -1,0 +1,31 @@
+@model IReadOnlyList<AppLearningEnglish.Models.QuizMistake>
+@{
+    ViewData["Title"] = "Review mistakes";
+}
+<div class="container py-4">
+    <a asp-action="Index">Quiz Hub</a>
+    <h1 class="fw-bold">Câu sai</h1>
+    @if (!Model.Any())
+    {
+        <p class="text-muted">Chưa có câu sai.</p>
+    }
+    else
+    {
+        @foreach (var item in Model)
+        {
+            <div class="card border-0 shadow-sm mb-3">
+                <div class="card-body">
+                    <span class="badge bg-light text-dark">@item.Kind</span>
+                    <p class="mb-1">@item.Prompt</p>
+                    <div class="small text-danger">Bạn chọn: @item.UserAnswer</div>
+                    <div class="small text-success">Đáp án: @item.Expected</div>
+                    <form asp-action="MarkReviewed" method="post" class="mt-2">
+                        @Html.AntiForgeryToken()
+                        <input type="hidden" name="id" value="@item.Id" />
+                        <button class="btn btn-sm btn-outline-secondary" type="submit">Đã ôn</button>
+                    </form>
+                </div>
+            </div>
+        }
+    }
+</div>

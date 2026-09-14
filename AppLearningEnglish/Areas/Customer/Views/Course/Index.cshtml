@@ -1,0 +1,78 @@
+@model IEnumerable<AppLearningEnglish.Models.ViewModels.CourseCatalogItemViewModel>
+
+@{
+    ViewData["Title"] = "Courses";
+    var userLevel = ViewBag.UserLevel as string;
+}
+
+<div class="container py-5">
+
+    <div class="page-hero text-center flex-column align-items-center">
+        <p class="section-kicker mb-2">Catalog</p>
+        <h1 class="fw-bold">
+            <i class="bi bi-mortarboard"></i>
+            Khóa học tiếng Anh
+        </h1>
+        <p class="text-muted mb-0">
+            @(string.IsNullOrWhiteSpace(userLevel)
+                ? "Làm bài xếp lớp để được gợi khóa và khóa bài quá khó."
+                : $"Trình độ {userLevel} — khóa cao hơn đang bị khóa.")
+        </p>
+        @if (string.IsNullOrWhiteSpace(userLevel) && User.Identity?.IsAuthenticated == true)
+        {
+            <a class="btn btn-outline-primary mt-3" asp-area="Customer" asp-controller="Placement" asp-action="Index">Làm bài xếp lớp</a>
+        }
+    </div>
+
+    <div class="row g-4">
+
+        @foreach (var item in Model)
+        {
+            var course = item.Course;
+            <div class="col-md-6 col-lg-4">
+
+                <div class="card border-0 shadow-sm h-100 @(item.IsLocked ? "opacity-75" : null)">
+
+                    @if (!string.IsNullOrEmpty(course.ThumbnailUrl))
+                    {
+                        <img src="@course.ThumbnailUrl"
+                             class="card-img-top"
+                             style="height:220px; object-fit:cover;"
+                             alt="@course.Name" />
+                    }
+                    else
+                    {
+                        <div class="bg-light d-flex align-items-center justify-content-center"
+                             style="height:220px">
+                            <i class="bi bi-book display-1 text-muted"></i>
+                        </div>
+                    }
+
+                    <div class="card-body">
+                        <h4 class="fw-bold">@course.Name</h4>
+                        <p class="text-muted">@course.Description</p>
+                        <span class="badge bg-primary mb-2">@course.Level</span>
+                        @if (item.IsRecommended)
+                        {
+                            <span class="badge bg-success mb-2">Phù hợp</span>
+                        }
+                        @if (item.IsLocked)
+                        {
+                            <span class="badge bg-secondary mb-2">Đang khóa</span>
+                        }
+
+                        <a asp-area="Customer"
+                           asp-controller="Course"
+                           asp-action="Details"
+                           asp-route-id="@course.Id"
+                           class="btn btn-primary w-100">
+                            @(item.IsLocked ? "Xem trước" : "Xem khóa học")
+                        </a>
+                    </div>
+                </div>
+            </div>
+        }
+
+    </div>
+
+</div>

@@ -1,0 +1,30 @@
+@model AppLearningEnglish.Models.ViewModels.WritingPracticeViewModel
+@{
+    ViewData["Title"] = Model.IsFreeWrite ? "Viết theo đề" : "Viết câu";
+}
+
+<div class="container py-4" style="max-width:760px">
+    <a asp-action="Index">Danh sách đề</a>
+    <h1 class="h3 fw-bold mt-2">@(Model.IsFreeWrite ? Model.FreePrompt!.Title : "Viết câu tiếng Anh")</h1>
+    <p class="lead">@Model.Prompt</p>
+
+    @if (Model.IsFreeWrite && !string.IsNullOrWhiteSpace(Model.FreePrompt!.KeyPoints))
+    {
+        <p class="small text-muted">Gợi ý ý cần có: @Model.FreePrompt.KeyPoints.Replace("|", " · ")</p>
+    }
+
+    <form method="post">
+        @Html.AntiForgeryToken()
+        <textarea class="form-control mb-3" name="userAnswer" rows="@(Model.IsFreeWrite ? 8 : 4)" required>@Model.UserAnswer</textarea>
+        <button class="btn btn-primary" type="submit">Chấm bài</button>
+    </form>
+
+    @if (Model.ScorePercent.HasValue)
+    {
+        <hr />
+        <div class="alert @(Model.IsPassed == true ? "alert-success" : "alert-warning")">
+            @(Model.IsPassed == true ? $"Đạt {Model.ScorePercent}%." : $"Chưa đạt ({Model.ScorePercent}%). Đọc nhận xét bên dưới.")
+        </div>
+        <partial name="_WritingReview" model="Model.Review" />
+    }
+</div>

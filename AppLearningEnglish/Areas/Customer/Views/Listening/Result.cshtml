@@ -1,0 +1,65 @@
+@model AppLearningEnglish.Models.ViewModels.ListeningResultViewModel
+
+@{
+    ViewData["Title"] = "Listening Result";
+    var score = Model.TotalQuestions == 0
+        ? 0
+        : Math.Round((decimal)Model.CorrectCount / Model.TotalQuestions * 100, 0);
+}
+
+<div class="container py-5">
+    <div class="text-center mb-4">
+        <h1 class="fw-bold">Listening Completed</h1>
+        <p class="text-muted">Bạn nhận @Model.PointsEarned điểm cho bài nghe này.</p>
+        <div class="display-4 fw-bold text-success">@score%</div>
+        <div class="text-muted">@Model.CorrectCount / @Model.TotalQuestions câu đúng</div>
+    </div>
+
+    <div class="row justify-content-center">
+        <div class="col-lg-8">
+            @foreach (var item in Model.Results)
+            {
+                <div class="card border-0 shadow-sm mb-3">
+                    <div class="card-body">
+                        <div class="d-flex justify-content-between">
+                            <strong>@item.Question</strong>
+                            @if (item.IsCorrect)
+                            {
+                                <span class="badge bg-success">Đúng</span>
+                            }
+                            else
+                            {
+                                <span class="badge bg-danger">Sai</span>
+                            }
+                        </div>
+                        <p class="mb-1 mt-2">
+                            Câu của bạn: <strong>@(string.IsNullOrWhiteSpace(item.UserAnswer) ? "(trống)" : item.UserAnswer)</strong>
+                        </p>
+                        <p class="mb-0 text-muted">Đáp án: @item.ExpectedAnswer</p>
+                        @if (item.AccuracyPercent.HasValue)
+                        {
+                            <p class="small mb-0 mt-1">Độ khớp chính tả: @item.AccuracyPercent%</p>
+                        }
+                    </div>
+                </div>
+            }
+
+            <div class="d-flex gap-2">
+                <a asp-area="Customer"
+                   asp-controller="Listening"
+                   asp-action="Play"
+                   asp-route-lessonId="@Model.Lesson.Id"
+                   class="btn btn-outline-success">
+                    Nghe lại
+                </a>
+                <a asp-area="Customer"
+                   asp-controller="Lesson"
+                   asp-action="Details"
+                   asp-route-id="@Model.Lesson.Id"
+                   class="btn btn-primary">
+                    Về bài học
+                </a>
+            </div>
+        </div>
+    </div>
+</div>

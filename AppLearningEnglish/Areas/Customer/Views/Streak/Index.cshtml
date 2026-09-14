@@ -1,0 +1,744 @@
+@model AppLearningEnglish.Models.ViewModels.DailyStreakVM
+
+@{
+    ViewData["Title"] = "Learning Streak";
+
+    string monthName =
+        new DateTime(
+            Model.CalendarYear,
+            Model.CalendarMonth,
+            1)
+        .ToString("MMMM yyyy");
+
+    DateTime firstDay =
+        new DateTime(
+            Model.CalendarYear,
+            Model.CalendarMonth,
+            1);
+
+    int daysInMonth =
+        DateTime.DaysInMonth(
+            Model.CalendarYear,
+            Model.CalendarMonth);
+
+    int startDay =
+        ((int)firstDay.DayOfWeek + 6) % 7;
+}
+
+<link rel="stylesheet"
+      href="~/css/customer-streak.css"
+      asp-append-version="true" />
+
+
+<div class="container py-5">
+
+    <!-- ====================================== -->
+    <!-- HEADER -->
+    <!-- ====================================== -->
+
+    <div class="streak-header">
+
+        <div>
+
+            <span class="section-label">
+                LEARNING HABIT
+            </span>
+
+            <h1 class="fw-bold mt-2">
+
+                🔥 Learning Streak
+
+            </h1>
+
+            <p class="text-muted">
+
+                Học mỗi ngày và duy trì thói quen
+                học tiếng Anh.
+
+            </p>
+
+        </div>
+
+        <a asp-area="Customer"
+           asp-controller="Streak"
+           asp-action="History"
+           class="btn btn-outline-primary">
+
+            <i class="bi bi-clock-history"></i>
+
+            Study History
+
+        </a>
+
+    </div>
+
+
+    <!-- ====================================== -->
+    <!-- STREAK HERO -->
+    <!-- ====================================== -->
+
+    <div class="streak-hero mb-5">
+
+        <div class="row align-items-center">
+
+            <div class="col-lg-5">
+
+                <div class="fire-big">
+                    🔥
+                </div>
+
+                <div class="streak-number">
+
+                    @Model.CurrentStreak
+
+                </div>
+
+                <div class="streak-days">
+
+                    DAYS STREAK
+
+                </div>
+
+                @if (Model.CurrentStreak == 0)
+                {
+                    <p class="streak-message">
+
+                        Hãy học hôm nay để bắt đầu
+                        Streak của bạn! 🚀
+
+                    </p>
+                }
+                else if (Model.StudiedToday)
+                {
+                    <p class="streak-message">
+
+                        Tuyệt vời! Bạn đã học hôm nay. 🔥
+
+                    </p>
+                }
+                else
+                {
+                    <p class="streak-message">
+
+                        Hãy học hôm nay để duy trì
+                        Streak nhé! 💪
+
+                    </p>
+                }
+
+            </div>
+
+
+            <div class="col-lg-7">
+
+                <div class="row g-3">
+
+                    <div class="col-6">
+
+                        <div class="streak-stat">
+
+                            <div class="stat-icon">
+                                🏆
+                            </div>
+
+                            <span>
+                                Longest Streak
+                            </span>
+
+                            <strong>
+                                @Model.LongestStreak days
+                            </strong>
+
+                        </div>
+
+                    </div>
+
+
+                    <div class="col-6">
+
+                        <div class="streak-stat">
+
+                            <div class="stat-icon">
+                                📅
+                            </div>
+
+                            <span>
+                                Study Days
+                            </span>
+
+                            <strong>
+                                @Model.TotalStudyDays days
+                            </strong>
+
+                        </div>
+
+                    </div>
+
+
+                    <div class="col-6">
+
+                        <div class="streak-stat">
+
+                            <div class="stat-icon">
+                                ⏱️
+                            </div>
+
+                            <span>
+                                Study Time
+                            </span>
+
+                            <strong>
+                                @Model.TotalStudyMinutes min
+                            </strong>
+
+                        </div>
+
+                    </div>
+
+
+                    <div class="col-6">
+
+                        <div class="streak-stat">
+
+                            <div class="stat-icon">
+                                ⭐
+                            </div>
+
+                            <span>
+                                Streak Points
+                            </span>
+
+                            <strong>
+                                @Model.TotalPoints
+                            </strong>
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+
+    <!-- ====================================== -->
+    <!-- TODAY -->
+    <!-- ====================================== -->
+
+    <div class="row g-4 mb-5">
+
+        <div class="col-lg-8">
+
+            <div class="card custom-card h-100">
+
+                <div class="card-body p-4">
+
+                    <div class="d-flex
+                                justify-content-between
+                                align-items-center">
+
+                        <div>
+
+                            <span class="section-label">
+                                TODAY
+                            </span>
+
+                            <h3 class="fw-bold mt-1">
+
+                                Today's Learning
+
+                            </h3>
+
+                        </div>
+
+                        @if (Model.StudiedToday)
+                        {
+                            <span class="badge
+                                         bg-success
+                                         fs-6">
+
+                                ✓ Studied
+
+                            </span>
+                        }
+                        else
+                        {
+                            <span class="badge
+                                         bg-secondary
+                                         fs-6">
+
+                                Not started
+
+                            </span>
+                        }
+
+                    </div>
+
+
+                    <div class="row g-4 mt-2">
+
+                        <div class="col-md-6">
+
+                            <div class="today-stat">
+
+                                <span>
+                                    ⏱️
+                                </span>
+
+                                <div>
+
+                                    <small>
+                                        Study Time
+                                    </small>
+
+                                    <strong>
+                                        @Model.TodayMinutes minutes
+                                    </strong>
+
+                                </div>
+
+                            </div>
+
+                        </div>
+
+
+                        <div class="col-md-6">
+
+                            <div class="today-stat">
+
+                                <span>
+                                    ⭐
+                                </span>
+
+                                <div>
+
+                                    <small>
+                                        Points Earned
+                                    </small>
+
+                                    <strong>
+                                        @Model.TodayPoints points
+                                    </strong>
+
+                                </div>
+
+                            </div>
+
+                        </div>
+
+                    </div>
+
+
+                    <!-- DAILY GOAL -->
+
+                    <div class="daily-goal mt-4">
+
+                        <div class="d-flex
+                                    justify-content-between
+                                    mb-2">
+
+                            <strong>
+                                Daily Goal
+                            </strong>
+
+                            <span>
+
+                                @Model.TodayMinutes /
+                                @Model.DailyGoalMinutes min
+
+                            </span>
+
+                        </div>
+
+                        <div class="progress"
+                             style="height: 12px;">
+
+                            <div class="progress-bar"
+                                 style="width:@Model.DailyGoalProgress%">
+                            </div>
+
+                        </div>
+
+                        @if (Model.DailyGoalProgress >= 100)
+                        {
+                            <div class="goal-complete mt-3">
+
+                                🎉 Daily Goal Completed!
+
+                            </div>
+                        }
+                        else
+                        {
+                            int remaining =
+                                Model.DailyGoalMinutes
+                                - Model.TodayMinutes;
+
+                            <p class="text-muted mt-2 mb-0">
+
+                                Còn
+                                <strong>@remaining phút</strong>
+                                để hoàn thành mục tiêu hôm nay.
+
+                            </p>
+                        }
+
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div>
+
+
+        <!-- QUICK ACTION -->
+
+        <div class="col-lg-4">
+
+            <div class="card quick-card h-100">
+
+                <div class="card-body p-4">
+
+                    <div class="quick-icon">
+                        🚀
+                    </div>
+
+                    <h3 class="fw-bold">
+                        Keep Learning
+                    </h3>
+
+                    <p>
+                        Chỉ cần học một chút mỗi ngày
+                        để duy trì Streak.
+                    </p>
+
+                    <a asp-area="Customer"
+                       asp-controller="Course"
+                       asp-action="Index"
+                       class="btn btn-light w-100">
+
+                        <i class="bi bi-book"></i>
+
+                        Start Learning
+
+                    </a>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+
+    <!-- ====================================== -->
+    <!-- CALENDAR -->
+    <!-- ====================================== -->
+
+    <div class="card custom-card mb-5">
+
+        <div class="card-body p-4">
+
+            <div class="calendar-header">
+
+                <div>
+
+                    <span class="section-label">
+                        ACTIVITY
+                    </span>
+
+                    <h3 class="fw-bold mt-1">
+
+                        Learning Calendar
+
+                    </h3>
+
+                </div>
+
+
+                <div class="calendar-navigation">
+
+                    <a asp-area="Customer"
+                       asp-controller="Streak"
+                       asp-action="Index"
+                       asp-route-year="@(Model.CalendarMonth == 1
+                           ? Model.CalendarYear - 1
+                           : Model.CalendarYear)"
+                       asp-route-month="@(Model.CalendarMonth == 1
+                           ? 12
+                           : Model.CalendarMonth - 1)"
+                       class="btn btn-light">
+
+                        <i class="bi bi-chevron-left"></i>
+
+                    </a>
+
+                    <strong>
+                        @monthName
+                    </strong>
+
+                    <a asp-area="Customer"
+                       asp-controller="Streak"
+                       asp-action="Index"
+                       asp-route-year="@(Model.CalendarMonth == 12
+                           ? Model.CalendarYear + 1
+                           : Model.CalendarYear)"
+                       asp-route-month="@(Model.CalendarMonth == 12
+                           ? 1
+                           : Model.CalendarMonth + 1)"
+                       class="btn btn-light">
+
+                        <i class="bi bi-chevron-right"></i>
+
+                    </a>
+
+                </div>
+
+            </div>
+
+
+            <!-- WEEK -->
+
+            <div class="calendar-grid calendar-week">
+
+                <div>Mon</div>
+                <div>Tue</div>
+                <div>Wed</div>
+                <div>Thu</div>
+                <div>Fri</div>
+                <div>Sat</div>
+                <div>Sun</div>
+
+            </div>
+
+
+            <!-- DAYS -->
+
+            <div class="calendar-grid">
+
+                @for (int i = 0;
+                     i < startDay;
+                     i++)
+                {
+                    <div class="calendar-empty"></div>
+                }
+
+
+                @for (int day = 1;
+                     day <= daysInMonth;
+                     day++)
+                {
+                    DateOnly date =
+                        new DateOnly(
+                            Model.CalendarYear,
+                            Model.CalendarMonth,
+                            day);
+
+                    CalendarDayVM? record = null;
+
+                    foreach (var item
+                        in Model.CalendarDays)
+                    {
+                        if (item.Date == date)
+                        {
+                            record = item;
+                            break;
+                        }
+                    }
+
+                    bool isToday =
+                        date == Model.Today;
+
+                    <div class="calendar-day
+                        @(record != null
+                            ? "studied"
+                            : "")
+                        @(isToday
+                            ? "today"
+                            : "")">
+
+                        <span class="day-number">
+                            @day
+                        </span>
+
+                        @if (record != null)
+                        {
+                            <span class="day-check">
+                                ✓
+                            </span>
+
+                            <small>
+                                @record.MinutesStudied min
+                            </small>
+                        }
+
+                    </div>
+                }
+
+            </div>
+
+
+            <!-- LEGEND -->
+
+            <div class="calendar-legend">
+
+                <span>
+                    <i class="legend-dot empty"></i>
+                    No study
+                </span>
+
+                <span>
+                    <i class="legend-dot studied"></i>
+                    Studied
+                </span>
+
+                <span>
+                    <i class="legend-dot today"></i>
+                    Today
+                </span>
+
+            </div>
+
+        </div>
+
+    </div>
+
+
+    <!-- ====================================== -->
+    <!-- RECENT HISTORY -->
+    <!-- ====================================== -->
+
+    <div class="card custom-card">
+
+        <div class="card-body p-4">
+
+            <div class="section-header">
+
+                <div>
+
+                    <span class="section-label">
+                        HISTORY
+                    </span>
+
+                    <h3 class="fw-bold mt-1">
+                        Recent Study
+                    </h3>
+
+                </div>
+
+                <a asp-area="Customer"
+                   asp-controller="Streak"
+                   asp-action="History"
+                   class="view-all">
+
+                    View all
+
+                    <i class="bi bi-arrow-right"></i>
+
+                </a>
+
+            </div>
+
+
+            @if (!Model.History.Any())
+            {
+                <div class="empty-history">
+
+                    <div>
+                        📚
+                    </div>
+
+                    <h4>
+                        No study history
+                    </h4>
+
+                    <p>
+                        Hãy bắt đầu học ngay hôm nay.
+                    </p>
+
+                </div>
+            }
+            else
+            {
+                <div class="history-list">
+
+                    @{
+                        int count = 0;
+                    }
+
+                    @foreach (var item
+                        in Model.History)
+                    {
+                        if (count >= 7)
+                        {
+                            break;
+                        }
+
+                        <div class="history-item">
+
+                            <div class="history-date">
+
+                                <div class="history-day">
+                                    @item.StudyDate.Day
+                                </div>
+
+                                <small>
+                                    @item.StudyDate.ToString("MMM")
+                                </small>
+
+                            </div>
+
+
+                            <div class="history-info">
+
+                                <strong>
+                                    Learning Session
+                                </strong>
+
+                                <span>
+
+                                    @item.StudyDate.ToString("dd/MM/yyyy")
+
+                                </span>
+
+                            </div>
+
+
+                            <div class="history-time">
+
+                                <span>
+                                    ⏱️
+                                </span>
+
+                                <strong>
+                                    @item.MinutesStudied min
+                                </strong>
+
+                            </div>
+
+
+                            <div class="history-points">
+
+                                ⭐
+                                @item.PointsEarned
+
+                            </div>
+
+                        </div>
+
+                        count++;
+                    }
+
+                </div>
+            }
+
+        </div>
+
+    </div>
+
+</div>

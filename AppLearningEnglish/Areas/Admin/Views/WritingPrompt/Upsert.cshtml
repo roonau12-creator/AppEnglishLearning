@@ -1,0 +1,63 @@
+@model AppLearningEnglish.Models.WritingPrompt
+@{
+    var isEdit = Model.Id != 0;
+    ViewData["Title"] = isEdit ? "Sửa đề viết" : "Thêm đề viết";
+}
+<div class="admin-form-banner tone-violet">
+    <div class="admin-form-icon"><i class="bi bi-pencil"></i></div>
+    <div>
+        <h1 class="fw-bold">@(isEdit ? "Chỉnh sửa đề viết" : "Tạo đề viết")</h1>
+        <p>Key points cách nhau bởi dấu | để chấm đủ ý.</p>
+    </div>
+</div>
+<div class="card"><div class="card-body">
+    <form asp-action="Upsert" method="post">
+        @Html.AntiForgeryToken()
+        <input asp-for="Id" type="hidden" />
+        <div class="mb-3">
+            <label asp-for="Title" class="form-label">Tiêu đề</label>
+            <input asp-for="Title" class="form-control" />
+        </div>
+        <div class="row">
+            <div class="col-md-6 mb-3">
+                <label asp-for="Level" class="form-label">Trình độ</label>
+                <select asp-for="Level" class="form-select">
+                    <option>Beginner</option>
+                    <option>Elementary</option>
+                    <option>Intermediate</option>
+                    <option>Advanced</option>
+                </select>
+            </div>
+            <div class="col-md-6 mb-3">
+                <label asp-for="MinWords" class="form-label">Số từ tối thiểu</label>
+                <input asp-for="MinWords" type="number" class="form-control" />
+            </div>
+            <div class="col-md-6 mb-3">
+                <label asp-for="Genre" class="form-label">Thể loại</label>
+                <select asp-for="Genre" class="form-select">
+                    <option value="sentence">Câu</option>
+                    <option value="paragraph">Đoạn</option>
+                    <option value="email">Email</option>
+                    <option value="essay">Essay</option>
+                </select>
+            </div>
+        </div>
+        <div class="mb-3">
+            <label asp-for="Prompt" class="form-label">Đề bài</label>
+            <textarea asp-for="Prompt" class="form-control" rows="4"></textarea>
+        </div>
+        <div class="mb-3">
+            <label asp-for="KeyPoints" class="form-label">Ý cần có</label>
+            <input asp-for="KeyPoints" class="form-control" placeholder="name|student|like" />
+        </div>
+        <div class="mb-3">
+            <label asp-for="SampleAnswer" class="form-label">Câu mẫu</label>
+            <textarea asp-for="SampleAnswer" class="form-control" rows="4"></textarea>
+        </div>
+        <div class="d-flex justify-content-end gap-2">
+            <a class="btn btn-outline-secondary" asp-action="Index">Quay lại</a>
+            <button class="btn btn-primary" type="submit">@(isEdit ? "Cập nhật" : "Tạo mới")</button>
+        </div>
+    </form>
+</div></div>
+@section Scripts { <partial name="_ValidationScriptsPartial" /> }

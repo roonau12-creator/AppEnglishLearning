@@ -1,0 +1,99 @@
+@model IEnumerable<AppLearningEnglish.Models.UserCourse>
+
+@{
+    ViewData["Title"] = "Completed Courses";
+}
+
+<div class="container py-5">
+
+    <div class="text-center mb-5">
+
+        <div class="display-3">
+            🎉
+        </div>
+
+        <h2 class="fw-bold">
+            Completed Courses
+        </h2>
+
+        <p class="text-muted">
+            Những khóa học bạn đã hoàn thành
+        </p>
+
+    </div>
+
+    @if (!Model.Any())
+    {
+        <div class="alert alert-info">
+
+            Bạn chưa hoàn thành khóa học nào.
+
+        </div>
+    }
+    else
+    {
+        <div class="row g-4">
+
+            @foreach (var item in Model)
+            {
+                <div class="col-md-6 col-lg-4">
+
+                    <div class="card border-0 shadow-sm">
+
+                        <div class="card-body">
+
+                            <div class="d-flex justify-content-between">
+
+                                <h4 class="fw-bold">
+
+                                    @item.Course?.Name
+
+                                </h4>
+
+                                <span class="badge bg-success">
+
+                                    100%
+
+                                </span>
+
+                            </div>
+
+                            <p class="text-muted">
+
+                                @item.Course?.Description
+
+                            </p>
+
+                            @if (item.CompletedAt.HasValue)
+                            {
+                                <p class="small text-muted">
+
+                                    <i class="bi bi-calendar-check"></i>
+
+                                    Completed:
+                                    @item.CompletedAt.Value.ToLocalTime()
+
+                                </p>
+                            }
+
+                            <a asp-area="Customer"
+                               asp-controller="Course"
+                               asp-action="Details"
+                               asp-route-id="@item.CourseId"
+                               class="btn btn-outline-success w-100">
+
+                                Xem khóa học
+
+                            </a>
+
+                        </div>
+
+                    </div>
+
+                </div>
+            }
+
+        </div>
+    }
+
+</div>

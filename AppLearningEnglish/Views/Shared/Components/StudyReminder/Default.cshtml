@@ -1,0 +1,62 @@
+@model AppLearningEnglish.Models.ViewModels.StudyReminderInboxViewModel
+
+<li class="nav-item dropdown">
+    <a class="nav-link position-relative nav-bell"
+       href="#"
+       data-bs-toggle="dropdown"
+       aria-expanded="false"
+       title="Nhắc học">
+        <i class="bi bi-bell-fill"></i>
+        @if (Model.ItemCount > 0)
+        {
+            <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger">
+                @Model.ItemCount
+            </span>
+        }
+    </a>
+    <ul class="dropdown-menu dropdown-menu-end" style="min-width:280px">
+        <li class="dropdown-header">Nhắc học</li>
+        @if (Model.DueWordCount > 0)
+        {
+            <li>
+                <a class="dropdown-item"
+                   asp-area="Customer"
+                   asp-controller="Vocabulary"
+                   asp-action="Review">
+                    @Model.DueWordCount từ đến hạn ôn
+                    <div class="small text-muted">Hôm nay ôn tối đa @Model.ReviewLimit từ</div>
+                </a>
+            </li>
+        }
+        @if (Model.StreakAtRisk)
+        {
+            <li>
+                <a class="dropdown-item"
+                   asp-area="Customer"
+                   asp-controller="Streak"
+                   asp-action="Index">
+                    Chuỗi @Model.CurrentStreak ngày sắp gãy
+                    <div class="small text-muted">Học hôm nay để giữ streak</div>
+                </a>
+            </li>
+        }
+        @if (Model.ItemCount == 0)
+        {
+            <li>
+                <span class="dropdown-item-text text-muted">
+                    Không có nhắc nào.
+                    @if (Model.StudiedToday)
+                    {
+                        <text>Bạn đã học hôm nay.</text>
+                    }
+                </span>
+            </li>
+        }
+        <li><hr class="dropdown-divider" /></li>
+        <li>
+            <a class="dropdown-item" asp-area="Customer" asp-controller="Reminder" asp-action="Index">
+                Nhật ký đã nhắc / đã đọc
+            </a>
+        </li>
+    </ul>
+</li>

@@ -1,0 +1,28 @@
+@model IReadOnlyList<AppLearningEnglish.Models.InAppNotification>
+@{
+    ViewData["Title"] = "Thông báo";
+}
+<div class="container py-4">
+    <div class="d-flex justify-content-between">
+        <h1 class="fw-bold">Thông báo</h1>
+        <form asp-action="Read" method="post">
+            @Html.AntiForgeryToken()
+            <button class="btn btn-outline-secondary" type="submit">Đánh dấu đã đọc</button>
+        </form>
+    </div>
+    @foreach (var item in Model)
+    {
+        <div class="card border-0 shadow-sm my-2 @(item.IsRead ? "opacity-75" : null)">
+            <div class="card-body">
+                <span class="badge bg-light text-dark">@item.Kind</span>
+                <strong class="ms-2">@item.Title</strong>
+                <p class="mb-1">@item.Body</p>
+                <div class="small text-muted">@item.CreatedAt.ToLocalTime().ToString("dd/MM HH:mm")</div>
+                @if (!string.IsNullOrWhiteSpace(item.Link))
+                {
+                    <a href="@item.Link">Mở</a>
+                }
+            </div>
+        </div>
+    }
+</div>

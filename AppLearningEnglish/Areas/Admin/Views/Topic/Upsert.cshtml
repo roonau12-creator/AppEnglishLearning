@@ -1,0 +1,78 @@
+@model AppLearningEnglish.Models.Topic
+@{
+    var isCreate = Model.Id == 0;
+    ViewData["Title"] = isCreate ? "Thêm Topic" : "Sửa Topic";
+    ViewData["Subtitle"] = isCreate ? "Tạo chủ đề mới cho catalog" : "Cập nhật thông tin chủ đề";
+}
+
+<div class="admin-form-banner tone-violet">
+    <div class="admin-form-icon"><i class="bi bi-bookmark-star-fill"></i></div>
+    <div>
+        <h1 class="fw-bold">@(isCreate ? "Thêm Topic" : "Chỉnh sửa Topic")</h1>
+        <p>@(isCreate ? "Một chủ đề giúp học viên chọn đúng nhóm bài." : "Giữ tên ngắn, mô tả rõ ràng.")</p>
+    </div>
+</div>
+
+<div class="row g-4">
+    <div class="col-xl-8">
+        <div class="card">
+            <div class="card-body">
+                <form asp-area="Admin" asp-controller="Topic" asp-action="Upsert" method="post">
+                    @Html.AntiForgeryToken()
+                    <input asp-for="Id" type="hidden" />
+                    <div asp-validation-summary="ModelOnly" class="text-danger mb-3"></div>
+                    <div class="mb-4">
+                        <label asp-for="Name" class="form-label fw-semibold">Tên Topic</label>
+                        <input asp-for="Name" class="form-control" placeholder="Ví dụ: Daily Conversation" />
+                        <span asp-validation-for="Name" class="text-danger"></span>
+                    </div>
+                    <div class="mb-4">
+                        <label asp-for="Description" class="form-label fw-semibold">Mô tả</label>
+                        <textarea asp-for="Description" hidden class="form-control" rows="5" placeholder="Nhập mô tả cho Topic..."></textarea>
+                            <div id="quill-editor" style="height: 200px;"></div>
+                        <span asp-validation-for="Description" class="text-danger"></span>
+                    </div>
+                    <div class="d-flex justify-content-end gap-2">
+                        <a class="btn btn-outline-secondary" asp-area="Admin" asp-controller="Topic" asp-action="Index">
+                            <i class="bi bi-arrow-left me-1"></i> Quay lại
+                        </a>
+                        <button type="submit" class="btn btn-primary">
+                            <i class="bi bi-check-circle me-1"></i>
+                            @(isCreate ? "Tạo Topic" : "Lưu thay đổi")
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+    <div class="col-xl-4">
+        <aside class="admin-aside">
+            <h3><i class="bi bi-lightbulb me-1"></i> Gợi ý</h3>
+            <ul class="mb-0 ps-3">
+                <li>Tên 2–4 từ, dễ nhớ.</li>
+                <li>Mô tả nói học viên sẽ nói được gì sau chủ đề này.</li>
+                <li>Topic gắn vào Lesson, không gắn trực tiếp Course.</li>
+            </ul>
+        </aside>
+    </div>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+    <link href="https://cdn.jsdelivr.net/npm/quill@2.0.3/dist/quill.snow.css" rel="stylesheet" />
+    <script src="https://cdn.jsdelivr.net/npm/quill@2.0.3/dist/quill.js"></script>
+<!-- Create the editor container -->
+<script>
+  const quill = new Quill('#quill-editor', {
+    theme: 'snow'
+  });
+  const textAreaDesc = document.querySelector('textarea[name = "Description"]');
+
+  if (textAreaDesc.value)
+  {
+    quill.root.innerHTML = textAreaDesc.value;
+  }
+  quill.on('text-change',()=> textAreaDesc.value = quill.root.innerHTML);
+
+</script>
+}

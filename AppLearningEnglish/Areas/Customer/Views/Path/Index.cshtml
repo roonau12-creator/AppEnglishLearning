@@ -1,0 +1,33 @@
+@model AppLearningEnglish.Areas.Customer.Controllers.PathHubViewModel
+@{
+    ViewData["Title"] = "Lộ trình A1–C2";
+}
+<div class="container py-4">
+    <h1 class="fw-bold">Lộ trình CEFR</h1>
+    <p class="text-muted">Trình độ hiện tại: @Model.UserLevel</p>
+    <div class="d-flex flex-column gap-3">
+        @foreach (var level in Model.Levels)
+        {
+            <div class="card border-0 shadow-sm">
+                <div class="card-body d-flex flex-wrap justify-content-between align-items-center gap-3">
+                    <div>
+                        <h2 class="h4 mb-1">@level.Level @(level.IsCurrent ? "· đang học" : "")</h2>
+                        <div class="small text-muted">@level.TopicCount chủ điểm · @level.Progress%</div>
+                        <div class="chart-bar mt-2" style="width:220px"><span style="width:@level.Progress%"></span></div>
+                    </div>
+                    <div class="d-flex gap-2">
+                        @if (level.IsLocked)
+                        {
+                            <span class="text-muted">Khóa</span>
+                        }
+                        else
+                        {
+                            <a class="btn btn-outline-primary" asp-action="Level" asp-route-id="@level.Level">Học level</a>
+                            <a class="btn btn-primary" asp-action="FinalTest" asp-route-id="@level.Level">Final Test</a>
+                        }
+                    </div>
+                </div>
+            </div>
+        }
+    </div>
+</div>

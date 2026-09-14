@@ -1,0 +1,150 @@
+@model AppLearningEnglish.Models.ViewModels.RegisterViewModel
+
+@{
+    ViewData["Title"] = "Đăng ký";
+    var returnUrl = ViewData["ReturnUrl"] as string;
+}
+
+<div class="auth-split">
+    <section class="auth-visual">
+        <a class="auth-logo" asp-area="Customer" asp-controller="Home" asp-action="Index">
+            <span class="auth-logo-mark">
+                <i class="bi bi-translate"></i>
+            </span>
+            AppLearningEnglish
+        </a>
+
+        <div class="auth-visual-copy">
+            <span class="auth-badge">Bắt đầu học hôm nay</span>
+            <h1>Tạo tài khoản và bắt đầu học</h1>
+            <p>
+                Một tài khoản để học từ vựng, luyện nghe và làm bài tập theo lộ trình của bạn.
+            </p>
+        </div>
+
+        <ul class="auth-highlights">
+            <li>
+                <i class="bi bi-lightning-charge"></i>
+                <span>Bắt đầu miễn phí chỉ trong vài bước</span>
+            </li>
+            <li>
+                <i class="bi bi-graph-up-arrow"></i>
+                <span>Theo dõi tiến độ học tập mỗi ngày</span>
+            </li>
+            <li>
+                <i class="bi bi-stars"></i>
+                <span>Chọn trình độ phù hợp với bạn</span>
+            </li>
+        </ul>
+    </section>
+
+    <section class="auth-form-panel">
+        <div class="auth-form-card">
+            <p class="auth-kicker">Tạo tài khoản</p>
+            <h2>Đăng ký</h2>
+            <p class="auth-subtitle">Tài khoản đăng ký sẽ có quyền học viên (User). Quản trị viên được cấp riêng.</p>
+
+            <form asp-area="Identity"
+                  asp-controller="Account"
+                  asp-action="Register"
+                  asp-route-returnUrl="@returnUrl"
+                  method="post">
+
+                @Html.AntiForgeryToken()
+
+                <div asp-validation-summary="ModelOnly" class="auth-alert"></div>
+
+                <div class="auth-grid">
+                    <div class="auth-field">
+                        <label asp-for="FullName">Họ tên</label>
+                        <div class="auth-input">
+                            <i class="bi bi-person"></i>
+                            <input asp-for="FullName"
+                                   placeholder="Nguyễn Văn A"
+                                   autocomplete="name" />
+                        </div>
+                        <span asp-validation-for="FullName" class="text-danger"></span>
+                    </div>
+
+                    <div class="auth-field">
+                        <label asp-for="Email">Email</label>
+                        <div class="auth-input">
+                            <i class="bi bi-envelope"></i>
+                            <input asp-for="Email"
+                                   placeholder="you@example.com"
+                                   autocomplete="username" />
+                        </div>
+                        <span asp-validation-for="Email" class="text-danger"></span>
+                    </div>
+                </div>
+
+                <div class="auth-field">
+                    <label asp-for="EnglishLevel">Trình độ tiếng Anh</label>
+                    <div class="auth-input">
+                        <i class="bi bi-bar-chart"></i>
+                        <select asp-for="EnglishLevel">
+                            <option value="">Chọn trình độ (không bắt buộc)</option>
+                            <option value="A1">A1</option>
+                            <option value="A2">A2</option>
+                            <option value="B1">B1</option>
+                            <option value="B2">B2</option>
+                            <option value="C1">C1</option>
+                            <option value="C2">C2</option>
+                        </select>
+                    </div>
+                    <span asp-validation-for="EnglishLevel" class="text-danger"></span>
+                </div>
+
+                <div class="auth-grid">
+                    <div class="auth-field">
+                        <label asp-for="Password">Mật khẩu</label>
+                        <div class="auth-input">
+                            <i class="bi bi-lock"></i>
+                            <input asp-for="Password"
+                                   placeholder="Ít nhất 6 ký tự, có số"
+                                   autocomplete="new-password" />
+                            <button type="button" class="auth-toggle-password" data-password-toggle aria-label="Hiện mật khẩu">
+                                <i class="bi bi-eye"></i>
+                            </button>
+                        </div>
+                        <span asp-validation-for="Password" class="text-danger"></span>
+                    </div>
+
+                    <div class="auth-field">
+                        <label asp-for="ConfirmPassword">Xác nhận mật khẩu</label>
+                        <div class="auth-input">
+                            <i class="bi bi-shield-check"></i>
+                            <input asp-for="ConfirmPassword"
+                                   placeholder="Nhập lại mật khẩu"
+                                   autocomplete="new-password" />
+                            <button type="button" class="auth-toggle-password" data-password-toggle aria-label="Hiện mật khẩu">
+                                <i class="bi bi-eye"></i>
+                            </button>
+                        </div>
+                        <span asp-validation-for="ConfirmPassword" class="text-danger"></span>
+                    </div>
+                </div>
+
+                <button type="submit" class="auth-submit">
+                    Tạo tài khoản
+                    <i class="bi bi-arrow-right"></i>
+                </button>
+            </form>
+            <partial name="_ExternalLogins" />
+
+            <p class="auth-switch">
+                Đã có tài khoản?
+                <a asp-area="Identity"
+                   asp-controller="Account"
+                   asp-action="Login"
+                   asp-route-returnUrl="@returnUrl">
+                    Đăng nhập
+                </a>
+            </p>
+        </div>
+    </section>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

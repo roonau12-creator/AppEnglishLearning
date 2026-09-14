@@ -1,0 +1,63 @@
+@model IReadOnlyList<AppLearningEnglish.Models.UserNote>
+@{
+    ViewData["Title"] = "Ghi chú";
+    var bookmarks = ViewBag.Bookmarks as IReadOnlyList<AppLearningEnglish.Models.UserBookmark>
+        ?? new List<AppLearningEnglish.Models.UserBookmark>();
+}
+
+<div class="container py-4">
+    <h1 class="fw-bold">Ghi chú và đánh dấu</h1>
+
+    <div class="row g-4 mt-1">
+        <div class="col-lg-6">
+            <h2 class="h5">Bài đã đánh dấu</h2>
+            @if (!bookmarks.Any())
+            {
+                <p class="text-muted">Chưa đánh dấu bài nào. Mở bài học rồi bấm bookmark.</p>
+            }
+            else
+            {
+                <div class="list-group">
+                    @foreach (var item in bookmarks)
+                    {
+                        <a class="list-group-item list-group-item-action"
+                           asp-area="Customer"
+                           asp-controller="Lesson"
+                           asp-action="Details"
+                           asp-route-id="@item.LessonId">
+                            @item.Lesson?.Title
+                            <div class="small text-muted">@item.Lesson?.Course?.Name</div>
+                        </a>
+                    }
+                </div>
+            }
+        </div>
+        <div class="col-lg-6">
+            <h2 class="h5">Ghi chú</h2>
+            @if (!Model.Any())
+            {
+                <p class="text-muted">Chưa có ghi chú.</p>
+            }
+            else
+            {
+                @foreach (var note in Model)
+                {
+                    <div class="card border-0 shadow-sm mb-3">
+                        <div class="card-body">
+                            <div class="d-flex justify-content-between">
+                                <strong>@(note.Lesson?.Title ?? "Ghi chú")</strong>
+                                <form method="post" asp-action="DeleteNote">
+                                    @Html.AntiForgeryToken()
+                                    <input type="hidden" name="id" value="@note.Id" />
+                                    <button class="btn btn-sm btn-outline-danger" type="submit">Xóa</button>
+                                </form>
+                            </div>
+                            <p class="mb-1">@note.Body</p>
+                            <small class="text-muted">@note.CreatedAt.ToLocalTime().ToString("dd/MM/yyyy")</small>
+                        </div>
+                    </div>
+                }
+            }
+        </div>
+    </div>
+</div>

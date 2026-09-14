@@ -1,0 +1,62 @@
+@model AppLearningEnglish.Models.ReadingPassage
+@{
+    ViewData["Title"] = Model.Title;
+}
+<div class="d-flex justify-content-between mb-3">
+    <div>
+        <a asp-action="Index">Bài đọc</a>
+        <h1 class="h3 fw-bold">@Model.Title</h1>
+        <span class="badge bg-primary">@Model.Level</span>
+    </div>
+    <a class="btn btn-outline-primary" asp-action="Upsert" asp-route-id="@Model.Id">Sửa đoạn</a>
+</div>
+<pre class="bg-light p-3 rounded" style="white-space:pre-wrap">@Model.Body</pre>
+<h2 class="h5 mt-4">Câu hỏi</h2>
+<table class="table">
+    <thead><tr><th>Loại</th><th>Câu hỏi</th><th>Đáp án</th><th></th></tr></thead>
+    <tbody>
+    @foreach (var q in Model.Questions)
+    {
+        <tr>
+            <td>@q.Type</td>
+            <td>@q.Prompt</td>
+            <td>@q.Answer</td>
+            <td class="text-end">
+                <button type="button" class="btn btn-sm btn-outline-danger" onclick="deleteQuestion(@q.Id)"><i class="bi bi-trash"></i></button>
+            </td>
+        </tr>
+    }
+    </tbody>
+</table>
+<div class="card mt-3"><div class="card-body">
+    <h3 class="h6">Thêm câu hỏi</h3>
+    <form asp-action="AddQuestion" method="post">
+        @Html.AntiForgeryToken()
+        <input type="hidden" name="ReadingPassageId" value="@Model.Id" />
+        <div class="row g-2">
+            <div class="col-md-3">
+                <select name="Type" class="form-select">
+                    <option>MainIdea</option>
+                    <option>Detail</option>
+                    <option>Inference</option>
+                    <option>TrueFalseNotGiven</option>
+                </select>
+            </div>
+            <div class="col-md-9"><input name="Prompt" class="form-control" placeholder="Câu hỏi" required /></div>
+            <div class="col-md-6"><input name="Options" class="form-control" placeholder="Lựa chọn cách nhau bởi |" /></div>
+            <div class="col-md-3"><input name="Answer" class="form-control" placeholder="Đáp án" required /></div>
+            <div class="col-md-3"><input name="Explanation" class="form-control" placeholder="Giải thích" /></div>
+        </div>
+        <button class="btn btn-primary mt-2" type="submit">Thêm</button>
+    </form>
+</div></div>
+@section Scripts {
+<script>
+    function deleteQuestion(id) {
+        $.post("/Admin/ReadingPassage/DeleteQuestion", { id: id, __RequestVerificationToken: $('input[name="__RequestVerificationToken"]').first().val() }, function (res) {
+            if (res.success) location.reload();
+            else Swal.fire({ icon: "error", title: res.message });
+        });
+    }
+</script>
+}

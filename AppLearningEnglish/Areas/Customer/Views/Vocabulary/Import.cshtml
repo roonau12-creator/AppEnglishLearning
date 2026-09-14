@@ -1,0 +1,14 @@
+@{
+    ViewData["Title"] = "Nhập CSV";
+}
+<div class="container py-4" style="max-width:640px">
+    <a asp-action="Index">My Vocabulary</a>
+    <h1 class="h3 fw-bold mt-2">Import từ Excel/CSV</h1>
+    <p class="text-muted">File CSV cột: <code>Word,Meaning,Example,Level,Topic</code>. Excel: lưu thành CSV UTF-8 rồi tải lên.</p>
+    <form method="post" enctype="multipart/form-data">
+        @Html.AntiForgeryToken()
+        <input class="form-control mb-3" type="file" name="file" accept=".csv,.txt" required />
+        <button class="btn btn-primary" type="submit">Nhập</button>
+        <a class="btn btn-outline-secondary" asp-action="Export">Xuất bộ từ hiện tại</a>
+    </form>
+</div>

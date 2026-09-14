@@ -1,0 +1,65 @@
+@{
+    ViewData["Title"] = "Học viên";
+    ViewData["Subtitle"] = "Khóa, mở khóa và phân quyền tài khoản";
+}
+
+<div class="d-flex justify-content-between align-items-end flex-wrap gap-3 mb-4">
+    <div>
+        <h1 class="fw-bold mb-1">Học viên</h1>
+        <p class="text-muted mb-0">Theo dõi tài khoản, trạng thái khóa và vai trò.</p>
+    </div>
+</div>
+
+<div class="card">
+    <div class="card-body">
+        <table id="userTable" class="table table-hover align-middle w-100">
+            <thead>
+                <tr>
+                    <th>Tên</th>
+                    <th>Email</th>
+                    <th>Trình độ</th>
+                    <th>Vai trò</th>
+                    <th>Khóa</th>
+                    <th></th>
+                </tr>
+            </thead>
+        </table>
+    </div>
+</div>
+
+@section Scripts {
+<script>
+$("#userTable").DataTable({
+    ajax: "/Admin/User/GetAll",
+    columns: [
+        { data: "fullName" },
+        { data: "email" },
+        { data: "englishLevel" },
+        { data: "roles" },
+        { data: "locked", render: d => d
+            ? '<span class="badge text-bg-danger">Đang khóa</span>'
+            : '<span class="badge text-bg-success">Mở</span>' },
+        { data: "id", orderable: false, render: (id, t, row) => {
+            const lockBtn = row.locked
+                ? `<button class="btn btn-sm btn-success" onclick="postUser('/Admin/User/Unlock','${id}')">Mở khóa</button>`
+                : `<button class="btn btn-sm btn-warning" onclick="postUser('/Admin/User/Lock','${id}')">Khóa</button>`;
+            return `<div class="d-flex flex-wrap gap-1 justify-content-end">
+                <a class="btn btn-sm btn-primary" href="/Admin/User/Details/${id}">Chi tiết</a>
+                ${lockBtn}
+                <button class="btn btn-sm btn-outline-primary" onclick="postUser('/Admin/User/SetRole','${id}','Admin')">Admin</button>
+                <button class="btn btn-sm btn-outline-secondary" onclick="postUser('/Admin/User/SetRole','${id}','User')">User</button>
+            </div>`;
+        }}
+    ]
+});
+function postUser(url, id, role) {
+    const token = document.querySelector('input[name="__RequestVerificationToken"]')?.value;
+    const data = role ? { id, role } : { id };
+    if (token) data.__RequestVerificationToken = token;
+    $.post(url, data).done(res => {
+        Swal.fire(res.success ? "OK" : "Lỗi", res.message, res.success ? "success" : "error");
+        $("#userTable").DataTable().ajax.reload();
+    });
+}
+</script>
+}

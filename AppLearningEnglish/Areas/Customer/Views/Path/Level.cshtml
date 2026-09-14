@@ -1,0 +1,27 @@
+@model AppLearningEnglish.Areas.Customer.Controllers.PathLevelDetailViewModel
+@{
+    ViewData["Title"] = $"Level {Model.Level}";
+}
+<div class="container py-4">
+    <a asp-action="Index">Lộ trình</a>
+    <h1 class="fw-bold">Level @Model.Level</h1>
+    <p>Vocabulary · Grammar · Listening · Speaking · Reading · Writing · Final Test</p>
+    <div class="d-flex flex-wrap gap-2 mb-4">
+        <a class="btn btn-outline-primary" asp-controller="Vocabulary" asp-action="Index" asp-route-level="@Model.Level">Vocabulary</a>
+        <a class="btn btn-outline-primary" asp-controller="Grammar" asp-action="Index">Grammar</a>
+        <a class="btn btn-outline-primary" asp-controller="Listening" asp-action="Index">Listening</a>
+        <a class="btn btn-outline-primary" asp-controller="Speaking" asp-action="Index">Speaking</a>
+        <a class="btn btn-outline-primary" asp-controller="Reading" asp-action="Index">Reading</a>
+        <a class="btn btn-outline-primary" asp-controller="Writing" asp-action="Index">Writing</a>
+        <a class="btn btn-primary" asp-action="FinalTest" asp-route-id="@Model.Level">Final Test</a>
+    </div>
+    @foreach (var topic in Model.Topics)
+    {
+        <div class="card border-0 shadow-sm mb-2">
+            <div class="card-body d-flex justify-content-between">
+                <strong>@topic.Title</strong>
+                <a asp-controller="Grammar" asp-action="Study" asp-route-id="@topic.Id">Học</a>
+            </div>
+        </div>
+    }
+</div>

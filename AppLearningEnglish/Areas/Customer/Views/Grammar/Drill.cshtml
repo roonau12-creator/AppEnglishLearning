@@ -1,0 +1,71 @@
+@model AppLearningEnglish.Models.ViewModels.GrammarDrillViewModel
+@{
+    ViewData["Title"] = "Drill " + Model.Lesson.Title;
+}
+
+<div class="container py-4" style="max-width:860px">
+    <a asp-action="Index">Danh sách ngữ pháp</a>
+    <h1 class="fw-bold mt-2">@Model.Lesson.Title</h1>
+    <section class="lesson-grammar mb-4">
+        <h2 class="h5">Ghi chú</h2>
+        <p class="mb-0">@Model.Lesson.GrammarNotes</p>
+    </section>
+
+    @if (Model.CorrectCount.HasValue)
+    {
+        <div class="alert alert-info">Đúng @Model.CorrectCount / @Model.Items.Count.</div>
+    }
+
+    @if (!Model.Items.Any())
+    {
+        <div class="alert alert-warning">Bài này chưa có câu hỏi để drill. Hãy làm Exercise của bài.</div>
+        <a class="btn btn-outline-primary"
+           asp-area="Customer"
+           asp-controller="Exercise"
+           asp-action="Index"
+           asp-route-lessonId="@Model.Lesson.Id">Mở bài tập</a>
+    }
+    else if (!Model.CorrectCount.HasValue)
+    {
+        <form method="post">
+            @Html.AntiForgeryToken()
+            @foreach (var item in Model.Items)
+            {
+                <div class="mb-4">
+                    <p class="fw-semibold">@item.QuestionText</p>
+                    @if (item.Options.Any())
+                    {
+                        @foreach (var option in item.Options)
+                        {
+                            <div class="form-check">
+                                <input class="form-check-input" type="radio" name="answers[@item.QuestionId]" value="@option" id="g-@item.QuestionId-@option.GetHashCode()" required />
+                                <label class="form-check-label" for="g-@item.QuestionId-@option.GetHashCode()">@option</label>
+                            </div>
+                        }
+                    }
+                    else
+                    {
+                        <input class="form-control" name="answers[@item.QuestionId]" required />
+                    }
+                </div>
+            }
+            <button class="btn btn-primary" type="submit">Chấm</button>
+        </form>
+    }
+    else
+    {
+        @foreach (var item in Model.Items)
+        {
+            <p>
+                <strong>@item.QuestionText</strong>
+                <span class="@(item.IsCorrect == true ? "text-success" : "text-danger")">
+                    @(item.IsCorrect == true ? "Đúng" : $"Sai — {item.Answer}")
+                </span>
+                @if (!string.IsNullOrWhiteSpace(item.Explanation))
+                {
+                    <div class="small text-muted">@item.Explanation</div>
+                }
+            </p>
+        }
+    }
+</div>

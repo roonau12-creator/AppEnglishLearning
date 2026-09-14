@@ -1,0 +1,31 @@
+@model IEnumerable<AppLearningEnglish.Models.Lesson>
+@{
+    var topic = ViewBag.Topic as AppLearningEnglish.Models.Topic;
+    ViewData["Title"] = topic?.Name ?? "Topic";
+}
+<a asp-action="Index">← Tất cả chủ đề</a>
+<h1 class="fw-bold mt-3">@topic?.Name</h1>
+<p class="text-muted">@topic?.Description</p>
+@if (!Model.Any())
+{
+    <div class="alert alert-info">Chưa có bài học công khai.</div>
+}
+else
+{
+    <div class="list-group">
+        @foreach (var lesson in Model)
+        {
+            <div class="list-group-item d-flex justify-content-between align-items-center">
+                <div>
+                    <strong>@lesson.Title</strong>
+                    <div class="text-muted small">@lesson.Course?.Name · @lesson.Description</div>
+                </div>
+                <a class="btn btn-sm btn-outline-primary"
+                   asp-area="Customer"
+                   asp-controller="Lesson"
+                   asp-action="Details"
+                   asp-route-id="@lesson.Id">Học bài</a>
+            </div>
+        }
+    </div>
+}

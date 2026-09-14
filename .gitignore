@@ -1,0 +1,69 @@
+## Build
+bin/
+obj/
+out/
+publish/
+[Bb]uild/
+[Dd]ebug/
+[Rr]elease/
+x64/
+x86/
+[Aa]rtifacts/
+
+## .NET / NuGet
+*.user
+*.userosscache
+*.suo
+*.cache
+project.lock.json
+project.fragment.lock.json
+artifacts/
+**/[Pp]ackages/*
+!**/[Pp]ackages/build/
+*.nupkg
+*.snupkg
+.nuget/
+
+## Secrets & local config
+appsettings.*.local.json
+secrets.json
+**/Properties/launchSettings.json.user
+*.pfx
+*.p12
+.env
+.env.*
+!.env.example
+
+## ASP.NET
+email-outbox/
+wwwroot/avatars/*
+!wwwroot/avatars/.gitkeep
+**/refs/*.dll
+
+## IDE
+.vs/
+.vscode/*
+!.vscode/extensions.json
+!.vscode/settings.json
+.idea/
+*.swp
+*~
+
+## OS
+.DS_Store
+Thumbs.db
+Desktop.ini
+
+## Test / coverage
+TestResults/
+[Cc]overage/
+*.coverage
+*.coveragexml
+
+## Logs
+*.log
+logs/
+
+## Jenkins / CI local
+.jenkins/
+workspace/

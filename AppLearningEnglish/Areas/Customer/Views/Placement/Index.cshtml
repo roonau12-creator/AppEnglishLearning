@@ -1,0 +1,29 @@
+@model IReadOnlyList<AppLearningEnglish.Models.ViewModels.PlacementQuestion>
+@{
+    ViewData["Title"] = "Bài xếp lớp";
+}
+
+<div class="container py-4" style="max-width:760px">
+    <h1 class="fw-bold">Bài xếp lớp</h1>
+    <p class="text-muted">Trả lời hết câu. Kết quả ghi vào trình độ trong hồ sơ.</p>
+
+    <form method="post">
+        @Html.AntiForgeryToken()
+        @foreach (var question in Model)
+        {
+            <div class="card border-0 shadow-sm mb-3">
+                <div class="card-body">
+                    <p class="fw-semibold mb-2">@question.Id. @question.Text</p>
+                    @foreach (var option in question.Options)
+                    {
+                        <div class="form-check">
+                            <input class="form-check-input" type="radio" name="answers[@question.Id]" value="@option" id="p-@question.Id-@option.GetHashCode()" required />
+                            <label class="form-check-label" for="p-@question.Id-@option.GetHashCode()">@option</label>
+                        </div>
+                    }
+                </div>
+            </div>
+        }
+        <button class="btn btn-primary" type="submit">Nộp và lưu trình độ</button>
+    </form>
+</div>

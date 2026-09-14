@@ -1,0 +1,29 @@
+@{
+    ViewData["Title"] = "Listening";
+    ViewData["Subtitle"] = "Audio và transcript theo bài học";
+    ViewData["Icon"] = "bi-headphones";
+    ViewData["Tone"] = "cyan";
+    ViewData["ActionText"] = "Thêm Listening";
+    ViewData["ActionController"] = "ListeningLesson";
+}
+<partial name="_AdminPageHead" />
+<div class="admin-chip-row mb-3">
+    <a class="btn btn-sm btn-outline-primary" asp-area="Admin" asp-controller="ListeningQuestion" asp-action="Index">Listening Questions</a>
+</div>
+<div class="admin-filter mb-4">
+    <div class="admin-filter-label"><i class="bi bi-funnel"></i> Bộ lọc</div>
+    <div class="row g-3">
+        <div class="col-lg-5"><label class="form-label fw-semibold">Tìm kiếm</label><input id="searchInput" class="form-control" placeholder="Lesson hoặc transcript..." /></div>
+        <div class="col-lg-5">
+            <label class="form-label fw-semibold">Lesson</label>
+            <select id="lessonFilter" class="form-select">
+                <option value="">Tất cả Lesson</option>
+                @foreach (var lesson in ViewBag.Lessons) { <option value="@lesson.Value">@lesson.Text</option> }
+            </select>
+        </div>
+        <div class="col-lg-2 d-flex align-items-end"><button id="btnFilter" type="button" class="btn btn-dark w-100"><i class="bi bi-search"></i></button></div>
+    </div>
+</div>
+<div class="card"><div class="card-header"><h5 class="mb-0 fw-bold">Danh sách Listening</h5></div>
+<div class="card-body"><table id="listeningTable" class="table table-hover align-middle w-100"><thead><tr><th>Lesson</th><th>Audio</th><th>Transcript</th><th class="text-end">Action</th></tr></thead><tbody></tbody></table></div></div>
+@section Scripts { <script src="~/js/listeningLesson.js"></script> }

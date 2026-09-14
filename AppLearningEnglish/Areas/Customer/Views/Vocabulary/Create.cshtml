@@ -1,0 +1,58 @@
+@model AppLearningEnglish.Models.Word
+@{
+    ViewData["Title"] = "Thêm từ cá nhân";
+}
+<div class="container py-4" style="max-width:640px">
+    <a asp-action="Index">My Vocabulary</a>
+    <h1 class="h3 fw-bold mt-2">Thêm từ vựng cá nhân</h1>
+    <form method="post">
+        @Html.AntiForgeryToken()
+        <div class="mb-3">
+            <label class="form-label" asp-for="WordText">Từ</label>
+            <input class="form-control" asp-for="WordText" required />
+        </div>
+        <div class="mb-3">
+            <label class="form-label" asp-for="Pronunciation">IPA</label>
+            <input class="form-control" asp-for="Pronunciation" placeholder="/ˈæpl/" />
+        </div>
+        <div class="mb-3">
+            <label class="form-label">Nghĩa (VI)</label>
+            <input class="form-control" name="meaningVi" />
+        </div>
+        <div class="mb-3">
+            <label class="form-label" asp-for="Definition">Định nghĩa (EN)</label>
+            <input class="form-control" asp-for="Definition" />
+        </div>
+        <div class="mb-3">
+            <label class="form-label">Câu ví dụ (EN)</label>
+            <input class="form-control" name="exampleEn" />
+        </div>
+        <div class="mb-3">
+            <label class="form-label">Dịch câu (VI)</label>
+            <input class="form-control" name="exampleVi" />
+        </div>
+        <div class="mb-3">
+            <label class="form-label" asp-for="ImageUrl">Ảnh minh họa (URL)</label>
+            <input class="form-control" asp-for="ImageUrl" />
+        </div>
+        <div class="row g-2 mb-3">
+            <div class="col-6">
+                <label class="form-label" asp-for="Level">Trình độ</label>
+                <select class="form-select" asp-for="Level">
+                    <option>A1</option><option>A2</option><option>B1</option>
+                    <option>B2</option><option>C1</option><option>C2</option>
+                </select>
+            </div>
+            <div class="col-6">
+                <label class="form-label" asp-for="TopicSlug">Chủ đề</label>
+                <select class="form-select" asp-for="TopicSlug">
+                    @foreach (var topic in AppLearningEnglish.Business.VocabTopics.All)
+                    {
+                        <option value="@topic.Slug">@topic.Name</option>
+                    }
+                </select>
+            </div>
+        </div>
+        <button class="btn btn-primary" type="submit">Lưu từ</button>
+    </form>
+</div>

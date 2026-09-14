@@ -1,0 +1,334 @@
+﻿@using AppLearningEnglish.Models.ViewModels
+@model HomePageViewModel
+
+@{
+    ViewData["Title"] = Model.IsSignedIn ? "Hôm nay" : "Trang chủ";
+    ViewData["FullWidth"] = true;
+    var courses = Model.FeaturedCourses ?? new List<AppLearningEnglish.Models.Course>();
+    var today = Model.Today;
+}
+
+<div class="customer-home">
+@if (Model.IsSignedIn && today != null)
+{
+    <section class="today-section">
+        <div class="container">
+            <div class="today-hero reveal mb-4">
+                <div class="d-flex flex-wrap justify-content-between align-items-end gap-3 position-relative" style="z-index:1">
+                    <div>
+                        <p class="today-chip mb-3"><i class="bi bi-stars"></i> Lộ trình hôm nay</p>
+                        <h1 class="fw-bold mb-2" style="letter-spacing:-0.04em">Xin chào, @today.DisplayName</h1>
+                        <p class="mb-0" style="color:rgba(255,255,255,.82)">
+                            @(string.IsNullOrWhiteSpace(today.EnglishLevel) ? "Chưa xếp lớp — làm bài test 2 phút" : today.EnglishLevel)
+                            · Lv.@today.PlayerLevel
+                            · @today.Coins xu
+                            · streak @today.CurrentStreak ngày
+                            @if (today.LearningGoalKind == "ielts" && today.IeltsBandTarget != null)
+                            {
+                                <text>· IELTS @today.IeltsBandTarget</text>
+                            }
+                        </p>
+                    </div>
+                    <div class="d-flex flex-wrap gap-2">
+                        <a class="btn btn-light" asp-area="Customer" asp-controller="Placement" asp-action="Index">Bài xếp lớp</a>
+                        <a class="btn btn-outline-light" asp-area="Customer" asp-controller="Reminder" asp-action="Index">
+                            Nhật ký nhắc
+                            @if (today.UnreadReminders > 0)
+                            {
+                                <span class="badge text-bg-danger">@today.UnreadReminders</span>
+                            }
+                        </a>
+                    </div>
+                </div>
+            </div>
+
+            <div class="row g-3 mb-4">
+                <div class="col-md-3 reveal reveal-delay-1">
+                    <div class="today-card today-card-goal">
+                        <span class="today-icon today-icon-goal"><i class="bi bi-stopwatch"></i></span>
+                        <span class="today-label">Mục tiêu ngày</span>
+                        <strong>@today.MinutesToday / @today.DailyGoalMinutes phút</strong>
+                        <div class="progress mt-3" style="height:8px">
+                            <div class="progress-bar" style="width:@today.GoalPercent%"></div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-3 reveal">
+                    <div class="today-card">
+                        <span class="today-icon today-icon-vocab"><i class="bi bi-journal-bookmark"></i></span>
+                        <span class="today-label">Từ vựng</span>
+                        <strong>@today.WordsLearned / @today.VocabGoalTotal</strong>
+                        <span class="small text-muted">Điểm TB quiz @today.AverageScore%</span>
+                    </div>
+                </div>
+                <div class="col-md-3 reveal reveal-delay-2">
+                    <a class="today-card today-card-link today-card-words" asp-area="Customer" asp-controller="Vocabulary" asp-action="Quiz" asp-route-mode="type">
+                        <span class="today-icon today-icon-words"><i class="bi bi-lightning-charge"></i></span>
+                        <span class="today-label">Từ đến hạn</span>
+                        <strong>@today.DueWordCount từ</strong>
+                        <span class="small text-muted">Ôn tối đa @today.ReviewLimit từ · gõ / chọn / nghe</span>
+                    </a>
+                </div>
+                <div class="col-md-3 reveal reveal-delay-3">
+                    <div class="today-card today-card-streak @(today.StreakAtRisk ? "today-card-warn" : "")">
+                        <span class="today-icon today-icon-streak"><i class="bi bi-fire"></i></span>
+                        <span class="today-label">Chuỗi ngày</span>
+                        <strong>@today.CurrentStreak ngày</strong>
+                        <span class="small">
+                            @(today.StreakAtRisk ? "Sắp gãy nếu hôm nay chưa học." : today.StudiedToday ? "Đã học hôm nay — giữ nhịp thật tốt." : "Hãy học một bài ngắn.")
+                        </span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card border-0 mb-4">
+                <div class="card-body p-4">
+                    <p class="section-kicker mb-1">Lịch học</p>
+                    <h2 class="h5 fw-bold">Bài học hôm nay</h2>
+                    <div class="d-flex flex-wrap gap-2 mt-3">
+                        @foreach (var step in today.TodayPlan)
+                        {
+                            <a class="plan-chip"
+                               asp-area="Customer"
+                               asp-controller="@step.Controller"
+                               asp-action="@step.Action"
+                               asp-route-mode="@step.RouteMode">
+                                <i class="bi @step.Icon"></i> @step.Title
+                            </a>
+                        }
+                    </div>
+                </div>
+            </div>
+
+            <div class="row g-3">
+                <div class="col-lg-7 reveal reveal-delay-2">
+                    <div class="card border-0 h-100 continue-panel">
+                        <div class="card-body p-4">
+                                <p class="section-kicker mb-1">Tiếp tục</p>
+                                <h2 class="h5 fw-bold">Bài đang học</h2>
+                            @if (today.ContinueLesson?.Lesson != null)
+                            {
+                                <p class="mb-1 fw-semibold fs-5">@today.ContinueLesson.Lesson.Title</p>
+                                <p class="text-muted small">@today.ContinueLesson.Lesson.Course?.Name</p>
+                                <div class="continue-progress mb-3">
+                                    <span style="width:@today.ContinueLesson.Progress%"></span>
+                                </div>
+                                <a class="btn btn-primary"
+                                   asp-area="Customer"
+                                   asp-controller="Lesson"
+                                   asp-action="Details"
+                                   asp-route-id="@today.ContinueLesson.LessonId">
+                                    Tiếp tục học
+                                    <i class="bi bi-arrow-right"></i>
+                                </a>
+                            }
+                            else
+                            {
+                                <p class="text-muted mb-3">Chưa có bài đang học. Mở một khóa để bắt đầu.</p>
+                                <a class="btn btn-outline-primary" asp-area="Customer" asp-controller="Course" asp-action="MyCourses">Khóa của tôi</a>
+                            }
+
+                            @if (today.ActiveCourses.Any())
+                            {
+                                <hr />
+                                <h3 class="h6 fw-bold">Khóa đang học</h3>
+                                <ul class="list-unstyled mb-0">
+                                    @foreach (var course in today.ActiveCourses)
+                                    {
+                                        <li class="d-flex justify-content-between py-2">
+                                            <a asp-area="Customer" asp-controller="Course" asp-action="Details" asp-route-id="@course.CourseId">
+                                                @(course.Course?.Name ?? "Khóa học")
+                                            </a>
+                                            <span class="text-muted">@course.Progress%</span>
+                                        </li>
+                                    }
+                                </ul>
+                            }
+                        </div>
+                    </div>
+                </div>
+                <div class="col-lg-5 reveal reveal-delay-3">
+                    <div class="card border-0 h-100">
+                        <div class="card-body p-4">
+                            <p class="section-kicker mb-1">Cộng đồng</p>
+                            <h2 class="h5 fw-bold">Bảng xếp hạng</h2>
+                            @if (today.Leaderboard.Any())
+                            {
+                                <ol class="rank-list">
+                                    @foreach (var row in today.Leaderboard)
+                                    {
+                                        <li class="rank-row @(row.IsMe ? "is-me" : null)">
+                                            <span>@row.Name</span>
+                                            <span>@row.Points điểm</span>
+                                        </li>
+                                    }
+                                </ol>
+                                <a class="small" asp-area="Customer" asp-controller="Point" asp-action="Leaderboard">Xem đủ BXH</a>
+                                <hr />
+                            }
+                            <p class="section-kicker mb-1">Kỹ năng</p>
+                            <h2 class="h5 fw-bold">Luyện nhanh</h2>
+                            <div class="d-grid gap-2">
+                                <a class="skill-tile" asp-area="Customer" asp-controller="Vocabulary" asp-action="Quiz" asp-route-mode="type">
+                                    <i class="skill-vocab bi bi-translate"></i>
+                                    <span><strong>Ôn từ</strong><br /><small class="text-muted">Gõ / chọn nghĩa / nghe viết</small></span>
+                                </a>
+                                <a class="skill-tile" asp-area="Customer" asp-controller="Reading" asp-action="Index">
+                                    <i class="skill-read bi bi-journal-richtext"></i>
+                                    <span><strong>Đọc hiểu</strong><br /><small class="text-muted">Đoạn đọc + câu hỏi</small></span>
+                                </a>
+                                <a class="skill-tile" asp-area="Customer" asp-controller="Writing" asp-action="Index">
+                                    <i class="skill-write bi bi-pen"></i>
+                                    <span><strong>Luyện viết</strong><br /><small class="text-muted">Viết câu và chấm gần đúng</small></span>
+                                </a>
+                                <a class="skill-tile" asp-area="Customer" asp-controller="Grammar" asp-action="Index">
+                                    <i class="skill-grammar bi bi-spellcheck"></i>
+                                    <span><strong>Ngữ pháp</strong><br /><small class="text-muted">Drill theo bài</small></span>
+                                </a>
+                                <a class="skill-tile" asp-area="Customer" asp-controller="Speaking" asp-action="Prompt" asp-route-mode="sentence">
+                                    <i class="skill-speak bi bi-mic"></i>
+                                    <span><strong>Nói câu</strong><br /><small class="text-muted">Câu · hội thoại · đoạn</small></span>
+                                </a>
+                            </div>
+                            @if (today.WeakWords.Any())
+                            {
+                                <hr />
+                                <h3 class="h6 fw-bold">Từ yếu</h3>
+                                @foreach (var item in today.WeakWords)
+                                {
+                                    <span class="weak-chip">@item.Word?.WordText <span class="text-muted fw-normal">sai @item.WrongCount</span></span>
+                                }
+                                <div>
+                                    <a class="small" asp-area="Customer" asp-controller="Progress" asp-action="Skills">Xem thống kê kỹ năng</a>
+                                </div>
+                            }
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+}
+else
+{
+    <section class="hero-section">
+        <div class="hero-glow" aria-hidden="true"></div>
+        <div class="hero-orb hero-orb-a" aria-hidden="true"></div>
+        <div class="hero-orb hero-orb-b" aria-hidden="true"></div>
+        <div class="container">
+            <div class="row align-items-center g-5">
+                <div class="col-lg-6 reveal">
+                    <span class="home-badge">Lộ trình rõ ràng</span>
+                    <h1 class="hero-title">
+                        Học tiếng Anh
+                        <span>mỗi ngày</span>
+                    </h1>
+                    <p class="hero-description">
+                        Từ vựng, nghe, đọc, viết và nói trên một lộ trình rõ ràng — 15 phút là đủ để giữ nhịp.
+                    </p>
+                    <div class="hero-actions">
+                        <a asp-area="Identity" asp-controller="Account" asp-action="Register" class="btn-home-primary">
+                            Bắt đầu miễn phí
+                            <i class="bi bi-arrow-right"></i>
+                        </a>
+                        <a asp-area="Customer" asp-controller="Course" asp-action="Index" class="btn-home-ghost">
+                            Khám phá khóa học
+                        </a>
+                    </div>
+                    <div class="hero-stats">
+                        <div>
+                            <strong>Từ vựng</strong>
+                            <span>Ôn đúng lúc cần nhớ</span>
+                        </div>
+                        <div>
+                            <strong>4 kỹ năng</strong>
+                            <span>Nghe · nói · đọc · viết</span>
+                        </div>
+                        <div>
+                            <strong>Theo dõi</strong>
+                            <span>Streak và mục tiêu ngày</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-lg-6 reveal reveal-delay-2">
+                    <div class="hero-panel">
+                        <div class="hero-panel-card">
+                            <i class="bi bi-lightning-charge"></i>
+                            <div>
+                                <strong>Luyện mỗi ngày</strong>
+                                <span>15 phút mỗi ngày là đủ để tiến bộ.</span>
+                            </div>
+                        </div>
+                        <div class="hero-panel-card">
+                            <i class="bi bi-trophy"></i>
+                            <div>
+                                <strong>Thành tích</strong>
+                                <span>Mở khóa thành tích khi bạn chăm chỉ.</span>
+                            </div>
+                        </div>
+                        <div class="hero-panel-card">
+                            <i class="bi bi-graph-up-arrow"></i>
+                            <div>
+                                <strong>Tiến độ của bạn</strong>
+                                <span>Theo dõi lộ trình học của riêng bạn.</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+}
+
+    <section class="home-section @(Model.IsSignedIn ? "" : "home-section-muted")">
+        <div class="container">
+            <div class="section-header reveal">
+                <div>
+                    <p class="section-kicker">Khóa học</p>
+                    <h2>Khóa học nổi bật</h2>
+                </div>
+                <a asp-area="Customer" asp-controller="Course" asp-action="Index" class="btn-home-ghost">Xem tất cả</a>
+            </div>
+
+            @if (!courses.Any())
+            {
+                <div class="empty-state empty-courses">
+                    <i class="bi bi-journal-richtext"></i>
+                    <h3>Chưa có khóa học công khai</h3>
+                    <p>Khi khóa được mở, bạn sẽ thấy chúng ở đây.</p>
+                </div>
+            }
+            else
+            {
+                <div class="row g-4">
+                    @foreach (var course in courses)
+                    {
+                        <div class="col-lg-4 col-md-6 reveal">
+                            <article class="course-card">
+                                <div class="course-image">
+                                    @if (!string.IsNullOrWhiteSpace(course.ThumbnailUrl))
+                                    {
+                                        <img src="@course.ThumbnailUrl" alt="@course.Name" />
+                                    }
+                                    else
+                                    {
+                                        <i class="bi bi-mortarboard"></i>
+                                    }
+                                </div>
+                                <div class="course-body">
+                                    @if (!string.IsNullOrWhiteSpace(course.Level))
+                                    {
+                                        <span class="level-badge">@course.Level</span>
+                                    }
+                                    <h3>@course.Name</h3>
+                                    <p>@(string.IsNullOrWhiteSpace(course.Description) ? "Khóa học tiếng Anh dành cho bạn." : course.Description)</p>
+                                    <a asp-area="Customer" asp-controller="Course" asp-action="Details" asp-route-id="@course.Id" class="btn-home-primary">Học ngay</a>
+                                </div>
+                            </article>
+                        </div>
+                    }
+                </div>
+            }
+        </div>
+    </section>
+</div>

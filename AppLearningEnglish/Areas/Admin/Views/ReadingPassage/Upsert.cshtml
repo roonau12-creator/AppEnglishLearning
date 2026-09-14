@@ -1,0 +1,48 @@
+@model AppLearningEnglish.Models.ReadingPassage
+@{
+    var isEdit = Model.Id != 0;
+    ViewData["Title"] = isEdit ? "Sửa bài đọc" : "Thêm bài đọc";
+}
+<div class="admin-form-banner tone-violet">
+    <div class="admin-form-icon"><i class="bi bi-journal-text"></i></div>
+    <div>
+        <h1 class="fw-bold">@(isEdit ? "Chỉnh sửa bài đọc" : "Tạo bài đọc")</h1>
+        <p>Sau khi lưu, thêm câu hỏi ở trang chi tiết.</p>
+    </div>
+</div>
+<div class="card"><div class="card-body">
+    <form asp-action="Upsert" method="post">
+        @Html.AntiForgeryToken()
+        <input asp-for="Id" type="hidden" />
+        <div class="mb-3">
+            <label asp-for="Title" class="form-label">Tiêu đề</label>
+            <input asp-for="Title" class="form-control" />
+            <span asp-validation-for="Title" class="text-danger"></span>
+        </div>
+        <div class="row">
+            <div class="col-md-6 mb-3">
+                <label asp-for="Level" class="form-label">Trình độ</label>
+                <select asp-for="Level" class="form-select">
+                    <option>Beginner</option>
+                    <option>Elementary</option>
+                    <option>Intermediate</option>
+                    <option>Advanced</option>
+                </select>
+            </div>
+            <div class="col-md-6 mb-3">
+                <label asp-for="Topic" class="form-label">Chủ đề</label>
+                <input asp-for="Topic" class="form-control" />
+            </div>
+        </div>
+        <div class="mb-3">
+            <label asp-for="Body" class="form-label">Đoạn đọc</label>
+            <textarea asp-for="Body" class="form-control" rows="10"></textarea>
+            <span asp-validation-for="Body" class="text-danger"></span>
+        </div>
+        <div class="d-flex justify-content-end gap-2">
+            <a class="btn btn-outline-secondary" asp-action="Index">Quay lại</a>
+            <button class="btn btn-primary" type="submit">@(isEdit ? "Cập nhật" : "Tạo mới")</button>
+        </div>
+    </form>
+</div></div>
+@section Scripts { <partial name="_ValidationScriptsPartial" /> }
